@@ -83,7 +83,7 @@ function initLevelInfos()
     LI.sideStreets = 1;
     LI.laneCount = 2;
     LI.hazardType = trackSprites.hazard_sand;
-    LI.hazardChance = .003;
+    LI.hazardChance = .004;
     LI.tunnel = trackSprites.tunnel2;
     LI.trafficDensity = .7; // less traffic in desert, only 2 lanes
 
@@ -115,7 +115,7 @@ function initLevelInfos()
     LI.lineColor = hsl(.15,1,.95);
     LI.sunHeight = .7;
     LI.hazardType = trackSprites.hazard_rocks;
-    LI.hazardChance = .004;
+    LI.hazardChance = .003;
     LI.trafficDensity = 1.5; // extra traffic through snow
 
     // snowy mountains
@@ -149,7 +149,7 @@ function initLevelInfos()
     LI.horizonSpriteSize = 2;
     LI.sunColor = hsl(0,1,.7);
     LI.laneCount = 3;
-    LI.hazardChance = .008;
+    LI.hazardChance = .01;
     LI.billboardChance = .1 // less billboards in forest type areas
     LI.trafficDensity = .7;
 
@@ -186,7 +186,7 @@ function initLevelInfos()
     LI.sunColor = hsl(.15,1,.8);
     LI.sideStreets = 1;
     LI.laneCount = 5;
-    LI.trafficDensity = 3; // extra traffic in city
+    LI.trafficDensity = 2; // extra traffic in city
 
     // in front of city
     LI.turnChance = .3;
@@ -317,12 +317,11 @@ function initLevelInfos()
     LI.cloudColor = hsl(0,0,1,.5);
     LI.horizonSpriteSize = .5;
     LI.tunnel = trackSprites.tunnel1;
-    LI.trafficDensity = 2;
 
     // mountains, most difficult level
     LI.turnChance = 1;
     LI.turnMin = 0;
-    LI.turnMax = 1;
+    LI.turnMax = .8;
     LI.bumpChance = 1;
     LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .9;

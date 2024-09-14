@@ -215,7 +215,7 @@ function gameUpdateInternal()
 
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20 && !testDrive;
-    const trafficPosOffset = playerIsSlow? 0 : 2e5; // check in front/behind
+    const trafficPosOffset = playerIsSlow? 0 : 3e5; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
@@ -352,13 +352,13 @@ function updateCamera()
 // save data
 
 const saveDataKey = 'ffd';
-let bestTime     = localStorage[saveDataKey+'t']*1 || 0;
-let bestDistance = localStorage[saveDataKey+'d']*1 || 0;
+let bestTime     = localStorage[saveDataKey+'a']*1 || 0;
+let bestDistance = localStorage[saveDataKey+'b']*1 || 0;
 
 function writeSaveData()
 {
-    localStorage[saveDataKey+'t'] = bestTime;
-    localStorage[saveDataKey+'d'] = bestDistance;
+    localStorage[saveDataKey+'a'] = bestTime;
+    localStorage[saveDataKey+'b'] = bestDistance;
 }
 
 ///////////////////////////////////////
