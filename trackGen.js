@@ -15,7 +15,7 @@ function initTrackSprites()
     trackSprites.tree_palm   = new TrackSprite(vec3(0,1),1500,.2,.1,.03);
     trackSprites.tree_oak    = new TrackSprite(vec3(1,1),2e3,.3,.05,.1);
     trackSprites.tree_stump  = new TrackSprite(vec3(2,1),1e3,.6,.05);
-    trackSprites.tree_dead   = new TrackSprite(vec3(3,1),1e3,.3,.03,.05);
+    trackSprites.tree_dead   = new TrackSprite(vec3(3,1),800,.3,.03,.05);
     trackSprites.tree_pink   = new TrackSprite(vec3(4,1),1500,.3,.1,.03);
     trackSprites.tree_bush   = new TrackSprite(vec3(5,1),1e3,.5,.1,.05);
     trackSprites.tree_fall   = new TrackSprite(vec3(6,1),1500,.3,.1,.1);
@@ -50,7 +50,7 @@ function initTrackSprites()
     trackSprites.grass_flower1   = new TrackSprite(vec3(1,3),500,.3,1);
     trackSprites.grass_flower2   = new TrackSprite(vec3(2,3),500,.3,1);
     trackSprites.grass_flower3   = new TrackSprite(vec3(3,3),500,.3,1);
-    trackSprites.grass_red      = new TrackSprite(vec3(0,3),600,.3,1)
+    trackSprites.grass_red       = new TrackSprite(vec3(0,3),700,.3,1)
     trackSprites.grass_red.colorHSL  = vec3(0, .8, .5);
     trackSprites.grass_snow      = new TrackSprite(vec3(0,3),300,.5,1)
     trackSprites.grass_snow.colorHSL  = vec3(.4, 1, .9);
@@ -433,10 +433,9 @@ bumpy with turns
 
         const startOfTrack = !level && i < 400;
         const checkpointSegment = i%checkpointTrackSegments;
-        const levelBetweenRangeStart = 200;
-        const levelBetweenRangeEnd = 100;
-        let isBetweenLevels = checkpointSegment < levelBetweenRangeStart || 
-            checkpointSegment > checkpointTrackSegments - levelBetweenRangeEnd;
+        const levelBetweenRange = 100;
+        let isBetweenLevels = checkpointSegment < levelBetweenRange || 
+            checkpointSegment > checkpointTrackSegments - levelBetweenRange;
         isBetweenLevels |= startOfTrack; // start of track
         //const nextCheckpoint = (level+1)*checkpointTrackSegments;
 
@@ -505,8 +504,7 @@ bumpy with turns
         height = noise1D(noisePos)*noiseConstant*noiseSize;
 
         //turn = .7;
-        //turn =.7; height = 0;// width = 5000;
-
+        //turn =0; height = 0;// width = 5000;
         //height = noise1D(i/9)*100;; // bumps test
 
         // create track segment

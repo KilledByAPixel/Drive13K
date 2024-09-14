@@ -19,8 +19,8 @@ function initLevelInfos()
     LI.billboardChance = .3 // more billboards at start
     
     // mostly straight with few well defined turns or bumps
-    LI.turnChance = .7;
-    LI.turnMin = .2;
+    LI.turnChance = .6;
+    LI.turnMin = 0;
     LI.turnMax = .5;
     LI.bumpChance = .5;
     LI.bumpFreqMin = .2;
@@ -49,14 +49,15 @@ function initLevelInfos()
     LI.sunHeight = .7;
     //LI.laneCount = 1
     LI.billboardChance = .1 // less billboards in forest type areas
+    LI.trafficDensity = .7; // less traffic in froest, only 2 lanes
 
     // trail through forest
-    LI.turnChance = 1; // more small turns
+    LI.turnChance = .7; // more small turns
     LI.turnMin = 0;
     LI.turnMax = .6;
     LI.bumpChance = .8;
     LI.bumpFreqMin = .3;
-    LI.bumpFreqMax = .8;
+    LI.bumpFreqMax = .7;
     LI.bumpScaleMin = 50;
     LI.bumpScaleMax = 100;
 
@@ -68,26 +69,25 @@ function initLevelInfos()
         trackSprites.rock_big,
         trackSprites.tree_stump,
     ], trackSprites.telephonePole, trackSprites.horizon_desert);
-    LI.trackSideRate = 20;
+    LI.trackSideRate = 50;
+    LI.trackSideChance = 1;
     LI.skyColorTop = hsl(.15,1,.9);
     LI.skyColorBottom = hsl(.5,.7,.6);
     LI.roadColor = hsl(.1,.2,.2);
     LI.lineColor = hsl(0,0,1,.5);
     LI.groundColor = hsl(.1,.2,.5);
     LI.trackSideForce = 1; // telephone poles on right side
-    LI.trackSideRate = 50;
     LI.cloudHeight = .05;
     LI.horizonSpriteSize = 2;
     LI.sunHeight = .9;
     LI.sideStreets = 1;
     LI.laneCount = 2;
     LI.hazardType = trackSprites.hazard_sand;
-    LI.hazardChance = .002;
+    LI.hazardChance = .003;
     LI.tunnel = trackSprites.tunnel2;
-    LI.trafficDensity = .7; // less traffic in desert, only 2 lanes
 
     // flat desert
-    LI.turnChance = .7;
+    LI.turnChance = .5;
     LI.turnMin = .2;
     LI.turnMax = .5;
     LI.bumpChance = 1;
@@ -114,15 +114,15 @@ function initLevelInfos()
     LI.lineColor = hsl(.15,1,.95);
     LI.sunHeight = .7;
     LI.hazardType = trackSprites.hazard_rocks;
-    LI.hazardChance = .005;
+    LI.hazardChance = .004;
     LI.trafficDensity = 1.5; // extra traffic through snow
 
     // snowy mountains
-    LI.turnChance = .7;
+    LI.turnChance = .5;
     LI.turnMin = .4;
     LI.turnMax = .6;
     LI.bumpChance = .8;
-    LI.bumpFreqMin = 0;
+    LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .7;
     LI.bumpScaleMin = 80;
     LI.bumpScaleMax = 160;
@@ -147,18 +147,18 @@ function initLevelInfos()
     LI.cloudHeight = .1;
     LI.horizonSpriteSize = 2;
     LI.sunColor = hsl(0,1,.7);
-    LI.laneCount = 4;
-    LI.hazardChance = .01;
+    LI.laneCount = 3;
+    LI.hazardChance = .008;
     LI.billboardChance = .1 // less billboards in forest type areas
     LI.trafficDensity = .7;
 
     // rocky canyon
     LI.turnChance = .7;
     LI.turnMin = .1;
-    LI.turnMax = .7;
+    LI.turnMax = .6;
     LI.bumpChance = .9;
-    LI.bumpFreqMin = .1;
-    LI.bumpFreqMax = .5;
+    LI.bumpFreqMin = .4;
+    LI.bumpFreqMax = .7;
     LI.bumpScaleMin = 50;
     LI.bumpScaleMax = 80;
 
@@ -188,9 +188,9 @@ function initLevelInfos()
     LI.trafficDensity = 2; // extra traffic in city
 
     // in front of city
-    LI.turnChance = .4;
+    LI.turnChance = .3;
     LI.turnMin = .5
-    LI.turnMax = .9; // bigger turns since lanes are wide
+    LI.turnMax = .8; // bigger turns since lanes are wide
     LI.bumpChance = .5;
     LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .6;
@@ -218,14 +218,16 @@ function initLevelInfos()
     LI.sunHeight = 1.5;
     LI.laneCount = 3;
     LI.trafficDensity = .2;
+    LI.trackSideChance = 1; // more trees
+    LI.trackSideRate = 50;
 
     // thin road over hills in graveyard
     LI.turnChance = .5;
     LI.turnMin = .1;
     LI.turnMax = .7;
     LI.bumpChance = .5;
-    LI.bumpFreqMin = 0;
-    LI.bumpFreqMax = .5;
+    LI.bumpFreqMin = .4;
+    LI.bumpFreqMax = .8;
     LI.bumpScaleMin = 100;
     LI.bumpScaleMax = 150;
 
@@ -260,14 +262,14 @@ function initLevelInfos()
     LI.trafficDensity = 0;
 
     // bumpy jungle road
-    LI.turnChance = .9;
+    LI.turnChance = .7;
     LI.turnMin = 0;
     LI.turnMax = .8;
     LI.bumpChance = 1;
-    LI.bumpFreqMin = .3;
-    LI.bumpFreqMax = .9;
-    LI.bumpScaleMin = 30;
-    LI.bumpScaleMax = 80;
+    LI.bumpFreqMin = .4;
+    LI.bumpFreqMax = .8;
+    LI.bumpScaleMin = 10;
+    LI.bumpScaleMax = 60;
 
     // Level 9 - strange area
     LI = new LevelInfo(level++, [
@@ -289,12 +291,12 @@ function initLevelInfos()
     LI.laneCount = 4;
 
     // large strange hills
-    LI.turnChance = .8;
+    LI.turnChance = .7;
     LI.turnMin = .2;
     LI.turnMax = .7;
     LI.bumpChance = 1;
     LI.bumpFreqMin = .5;
-    LI.bumpFreqMax = .8;
+    LI.bumpFreqMax = .9;
     LI.bumpScaleMin = 100;
     LI.bumpScaleMax = 150;
 
@@ -321,7 +323,7 @@ function initLevelInfos()
     LI.turnMin = 0;
     LI.turnMax = 1;
     LI.bumpChance = 1;
-    LI.bumpFreqMin = .3;
+    LI.bumpFreqMin = .5;
     LI.bumpFreqMax = 1;
     LI.bumpScaleMin = 50;
     LI.bumpScaleMax = 80;

@@ -31,9 +31,9 @@ const laneWidth = 1400;            // how wide is track
 const trackSegmentLength = 100;    // length of each segment
 const drawDistance = 1e3;          // how many track segments to draw for scenery
 const cameraPlayerOffset = vec3(0,680,1050);
-const checkpointTrackSegments = testLevels?1e3:4e3;
+const checkpointTrackSegments = testLevels?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;  // how far between checkpoints
-const startCheckpointTime = 40;
+const startCheckpointTime = 50;
 const levelLerpRange = .1;
 const levelGoal = 10;
 const playerStartZ = 2e3;
@@ -227,7 +227,7 @@ function gameUpdateInternal()
         if (playerIsSlow)
         {
             // spawn behind
-            spawnVehicle(playerVehicle.pos.z-1e3);
+            spawnVehicle(playerVehicle.pos.z-1300);
             vehicleSpawnTimer.set(rand(2,4)/trafficDensity);
         }
         else if (trafficDensity)
@@ -281,10 +281,10 @@ function gameUpdate(frameTimeMS=0)
     // update time keeping
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
-    const debugSpeedUp   = debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
+    const debugSpeedUp   = testDrive||debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
     const debugSpeedDown = debug && keyIsDown('Minus'); // -
     if (debug) // +/- to speed/slow time
-        frameTimeDeltaMS *= debugSpeedUp ? 10 : debugSpeedDown ? .2 : 1;
+        frameTimeDeltaMS *= debugSpeedUp ? 20 : debugSpeedDown ? .2 : 1;
     averageFPS = lerp(.05, averageFPS, 1e3/(frameTimeDeltaMS||1));
     frameTimeBufferMS += paused ? 0 : frameTimeDeltaMS;
     frameTimeBufferMS = min(frameTimeBufferMS, 50); // clamp in case of slow framerate

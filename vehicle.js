@@ -150,6 +150,12 @@ class Vehicle
         const p = this.pos.copy();
         p.y += vehicleHeight;
         p.z = p.z - cameraOffset;
+
+        if (p.z < 0)
+        {
+            // causes glitches if rendered
+            return; // behind camera
+        }
         
         /*{       // test cube
                 //p.y = trackInfo.offset.y;
@@ -171,6 +177,21 @@ class Vehicle
         const mcar = m1.multiply(buildMatrix(0, 0, vec3(450,this.isTruck?700:500,450)));
         carMesh.render(mcar, this.color); 
         //cubeMesh.render(m1.multiply(buildMatrix(0, 0, this.collisionSize)), BLACK);  // collis
+
+        // wheels
+        const wheelRadius = 110;
+        const wheelSize = vec3(40,wheelRadius,wheelRadius);
+        const wheelM1 = buildMatrix(0,vec3(this.pos.z/500,this.wheelTurn),wheelSize);
+        const wheelM2 = buildMatrix(0,vec3(this.pos.z/500,0),wheelSize);
+        const wheelColor = hsl(0,0,.2);
+        const wheelOffset1 = vec3(240,25,220);
+        const wheelOffset2 = vec3(240,25,-300);
+        for (let i=4;i--;)
+        {
+            const wo = i<2? wheelOffset1 : wheelOffset2;
+            const o = vec3(i%2?wo.x:-wo.x, wo.y, i<2? wo.z : wo.z);
+            carWheel.render(m1.multiply(buildMatrix(o)).multiply(i<2 ? wheelM1 :wheelM2), wheelColor);
+        }
         
 
         let bumperY = 130, bumperZ = -440;
@@ -181,9 +202,10 @@ class Vehicle
             const truckO = vec3(0,290,-250);
             const truckColor = this.truckColor;
             const truckSize = vec3(240,truckO.y,300);
-            glPolygonOffset(1,-10);
+            glPolygonOffset(20);
             cubeMesh.render(m1.multiply(buildMatrix(truckO, 0, truckSize)), truckColor);
         }
+        glPolygonOffset(); // turn it off!
 
         if (optimizedCulling)
         {
@@ -193,11 +215,13 @@ class Vehicle
         }
 
         // decals
-        glPolygonOffset(1,-20);
+        glPolygonOffset(40);
 
         // bumpers
         cubeMesh.render(m1.multiply(buildMatrix(vec3(0,bumperY,bumperZ), 0, vec3(140,50,20))), hsl(0,0,.1));
-        cubeMesh.render(m1.multiply(buildMatrix(vec3(0,10,440), 0, vec3(240,30,30))), hsl(0,0,.5));
+
+        if (this.isPlayer) // only player needs front bumper
+            cubeMesh.render(m1.multiply(buildMatrix(vec3(0,10,440), 0, vec3(240,30,30))), hsl(0,0,.5));
 
         // break lights
         const isBraking = this.isBraking;
@@ -220,32 +244,16 @@ class Vehicle
             //quadMesh.renderTile(mcar,WHITE, getSpriteTile(vec3(4,0)));
         }
 
-        // wheels
-        const wheelRadius = 110;
-        const wheelSize = vec3(40,wheelRadius,wheelRadius);
-        const wheelM1 = buildMatrix(0,vec3(this.pos.z/500,this.wheelTurn),wheelSize);
-        const wheelM2 = buildMatrix(0,vec3(this.pos.z/500,0),wheelSize);
-        const wheelColor = hsl(0,0,.2);
-        const wheelOffset1 = vec3(240,25,220);
-        const wheelOffset2 = vec3(240,25,-300);
-        for (let i=4;i--;)
-        {
-            const wo = i<2? wheelOffset1 : wheelOffset2;
-            const o = vec3(i%2?wo.x:-wo.x, wo.y, i<2? wo.z : wo.z);
-            carWheel.render(m1.multiply(buildMatrix(o)).multiply(i<2 ? wheelM1 :wheelM2), wheelColor);
-        }
-
         {
             // shadow
             glSetDepthTest(1,0);
-            glPolygonOffset(this.isPlayer?-10:-2,1);
+            glPolygonOffset(this.isPlayer?150:20);
             const lightOffset = vec3(0,0,-50).rotateY(worldHeading);
             const shadowColor = rgb(0,0,0,.5);
             const shadowPosBase = vec3(p.x,trackInfo.pos.y,p.z).add(lightOffset);
-            const shadowSize = vec3(580,200,670);
+            const shadowSize = vec3(-580,200,670); // why x negative?
             
             const m2 = buildMatrix(shadowPosBase, vec3(trackPitch,0)).multiply(mHeading);
-            shadowSize.x*=-1; // make it visible
             const mshadow = m2.multiply(buildMatrix(0, 0, shadowSize));
             shadowMesh.renderTile(mshadow, shadowColor, getSpriteTile(vec3(2,0))); 
             glPolygonOffset();
@@ -312,8 +320,7 @@ class PlayerVehicle extends Vehicle
         {
             ++playerLevel;
             nextCheckpointDistance += checkpointDistance;
-            checkpointTimeLeft += 40;
-            checkpointTimeLeft = min(checkpointTimeLeft, 60);
+            checkpointTimeLeft = min(checkpointTimeLeft+40, 60);
             
             //speak('CHECKPOINT');
             checkpointSoundCount = 3;
@@ -494,8 +501,8 @@ class PlayerVehicle extends Vehicle
             // engine
             if (playerInput.y>0)
             {
+                const accel = playerInput.y*playerAccel*lerp(speedPercent, 1, .45);
                 // extra boost at low speeds
-                const accel = playerInput.y*playerAccel*lerp(speedPercent, 1, .4);
                 const lowSpeedPercent = (1-percent(this.velocity.z, 0, 100))**2;
                 this.velocity.z += accel * lerp(lowSpeedPercent, 1, 6);
             }
@@ -537,14 +544,14 @@ class PlayerVehicle extends Vehicle
 
                     if (trackObject.sprite.isBump)
                     {
-                        // just slow down the player
-                        bump(.95);
+                        bump(.93);
                         break;
                     }
                     if (trackObject.sprite.isSlow)
                     {
                         // just slow down the player
-                        this.velocity = this.velocity.scale(.96);
+                        this.velocity = this.velocity.scale(.95);
+                        sound_bump.play(2,.2);
                         break;
                     }
 

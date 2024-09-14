@@ -122,10 +122,10 @@ function drawHUD()
         }
     }
 
-    /*const mph = playerVehicle.velocity.z|0;
-    const mphPos = vec3(.01,.95);
-    drawHUDText(mph+' MPH', mphPos, .08, RED, WHITE,undefined,'left',900,'italic');
-    */
+    //const mph = playerVehicle.velocity.z>>1;
+    //const mphPos = vec3(.01,.95);
+    //drawHUDText(mph+' MPH', mphPos, .08, RED, WHITE,undefined,'left',900,'italic');
+    
     /*
     if (enableMusic && radioMusic>=0)
     {

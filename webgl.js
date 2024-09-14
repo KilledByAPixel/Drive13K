@@ -139,10 +139,10 @@ function glPreRender()
 const glSetCapability = (cap, enable=1) => enable ? glContext.enable(cap) : glContext.disable(cap);
 const glUniform = (name) => glContext.getUniformLocation(glShader, name);
 
-function glPolygonOffset(factor=0, units=0)
+function glPolygonOffset(units)
 {
-    glContext.polygonOffset(factor, units);
-    glSetCapability(gl_POLYGON_OFFSET_FILL, !!factor);
+    glContext.polygonOffset(0, -units);
+    glSetCapability(gl_POLYGON_OFFSET_FILL, !!units);
 }
 
 function glSetDepthTest(depthTest=1, depthWrite=1)

@@ -40,7 +40,7 @@ function drawSky()
 
     // sky
     const skyZ   = 1e5;
-    const skyTop = 1e5;
+    const skyTop = 13e4; // slightly above camera
     const skyW   = 5e5;
     const skyH   = 8e4;
     {

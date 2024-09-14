@@ -25,7 +25,12 @@ function debugUpdate()
         debugSkipped = 1;
     }
     if (keyIsDown('Digit2'))
-        playerVehicle.pos.z += 1000;
+    {
+            playerVehicle.pos.z += 1000;
+            const trackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
+            playerVehicle.pos.y = trackInfo.offset.y;
+            playerVehicle.pos.x = 0;
+    }
     if (keyIsDown('Digit3') || keyIsDown('NumpadSubtract'))
     {
         playerVehicle.pos.z -= keyIsDown('NumpadSubtract') ? 100 : 1000;
@@ -37,6 +42,8 @@ function debugUpdate()
         debugCapture = 1;
     if (keyWasPressed('Digit6'))
         checkpointTimeLeft=1
+    if (keyWasPressed('Digit7'))
+        soundVolume = soundVolume ? 0 : .3;
         
     if (keyWasPressed('KeyQ'))
         testDrive = !testDrive
@@ -53,7 +60,7 @@ function debugUpdate()
     }
 
     if (debug && keyWasPressed('KeyV'))
-        spawnVehicle(playerVehicle.pos.z-1e3)
+        spawnVehicle(playerVehicle.pos.z-1300)
         
     //if (!document.hasFocus())
     //    testDrive = 1;
