@@ -37,4 +37,9 @@ Created by Frank Force for JS13k 2024
 
 ## Enhanced Features
 
-This debug version also works on touch devices and has some secret developer features!
+This debug version has some extra features.
+
+- Touch support
+- Gamepad support
+- Pause button
+- Secret dev keys
