@@ -128,7 +128,8 @@ class Vehicle
 
         // get projected track angle
         const delta = trackInfo2.pos.subtract(trackInfo.pos);
-        this.wheelTurn = this.drawTurn = Math.atan2(delta.x, delta.z);
+        this.drawTurn = Math.atan2(delta.x, delta.z);
+        this.wheelTurn = this.drawTurn / 2;
         this.drawPitch = trackInfo.pitch;
 
         // remove in front or behind
@@ -180,7 +181,7 @@ class Vehicle
 
         // wheels
         const wheelRadius = 110;
-        const wheelSize = vec3(40,wheelRadius,wheelRadius);
+        const wheelSize = vec3(50,wheelRadius,wheelRadius);
         const wheelM1 = buildMatrix(0,vec3(this.pos.z/500,this.wheelTurn),wheelSize);
         const wheelM2 = buildMatrix(0,vec3(this.pos.z/500,0),wheelSize);
         const wheelColor = hsl(0,0,.2);

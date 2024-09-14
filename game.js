@@ -342,7 +342,7 @@ function updateCamera()
     cameraPos.y = playerTrackInfo.offset.y + (titleScreenMode?1e3:cameraPlayerOffset.y);
 
     // move camera with player
-    cameraPos.x = playerVehicle.pos.x*.7;
+    cameraPos.x = playerVehicle.pos.x;
 
     // slight tilt camera with road
     cameraRot.x = lerp(.1,cameraRot.x, cameraTrackInfo.pitch/3);

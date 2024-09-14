@@ -49,7 +49,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     //LI.laneCount = 1
     LI.billboardChance = .1 // less billboards in forest type areas
-    LI.trafficDensity = .5; // less traffic in froest, only 2 lanes
+    LI.trafficDensity = .5; // less traffic in forest
 
     // trail through forest
     LI.turnChance = .7; // more small turns
@@ -85,6 +85,7 @@ function initLevelInfos()
     LI.hazardType = trackSprites.hazard_sand;
     LI.hazardChance = .003;
     LI.tunnel = trackSprites.tunnel2;
+    LI.trafficDensity = .7; // less traffic in desert, only 2 lanes
 
     // flat desert
     LI.turnChance = .5;
