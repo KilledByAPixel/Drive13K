@@ -42,7 +42,7 @@ function drawRoad(zwrite = 0)
 
         const p1 = segment1.pos;
         const p2 = segment2.pos;
-        if (i % (lerp(i/drawDistance,1,4)|0)) // fade in road resolution
+        if (i % (lerp(i/drawDistance,1,5)|0)) // fade in road resolution
             continue;
             
         const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
@@ -103,7 +103,7 @@ function drawRoad(zwrite = 0)
 function drawTrackScenery()
 {
     // this is last pass from back to front so do do not write to depth
-    glSetDepthTest(1,0);
+    glSetDepthTest(1, glEnableLighting = 0);
 
     const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
     const cameraTrackSegment = cameraTrackInfo.segmentIndex;
@@ -131,12 +131,15 @@ function drawTrackScenery()
                 // water
                 const sprite = trackSprites.water;
                 const s = sprite.size*sprite.getRandomSpriteScale();
-                const o = trackSpriteSide * random.float(w+6e3,5e4);
-                const wave = segmentIndex/39+time;
-                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),0));
+                const o2 = w+6e3+random.float(6e4);
+                const o = trackSpriteSide * o2;
+                // raise up as it goes father away
+                const h = percent(trackSegment.pos.z,5e3,1e5)*2e3;
+                const wave = segmentIndex/40+time;
+                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),h));
                 const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive
                 const c = hsl(0,random.float(.9,1),random.float(.9,1));
-                pushTrackObject(p, vec3(trackSpriteSide*s,s,s), c, sprite, waveWind);
+                pushTrackObject(p, vec3(trackSpriteSide*s*random.float(1,1.5),s,s), c, sprite, waveWind);
             }
             else
             {
@@ -170,12 +173,14 @@ function drawTrackScenery()
     }
 
     glRender();
+    glSetDepthTest();
+    glEnableLighting = 1;
 }
 
 function drawTrack()
 {
     glEnableFog = 0; // disable track fog
-    drawRoad(true); // first draw just flat ground with z write
+    drawRoad(1); // first draw just flat ground with z write
     drawRoad();  // then draw the road without z write
     glEnableFog = 1;
 }

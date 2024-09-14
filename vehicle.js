@@ -22,15 +22,14 @@ class Vehicle
 {
     constructor(z, color, isPlayer=0)
     {
-        this.pos = vec3(0,0,z);
-
         if (!color)
         {
-            color = 
+            color = // random color
                 randInt(9) ? hsl(rand(), rand(.5,.9),.5) :
                 randInt(2) ? WHITE : hsl(0,0,.1);
         }
 
+        this.pos = vec3(0,0,z);
         this.color = color;
         this.isPlayer = isPlayer;
         this.breaking = 
@@ -42,8 +41,7 @@ class Vehicle
 
         if (!isPlayer)
         {
-            this.isTruck = rand() < .5;
-            if (this.isTruck)
+            if (this.isTruck = randInt(2)) // random trucks
             {
                 this.collisionSize.z = 450;
                 this.truckColor = hsl(rand(),rand(.5,1),rand(.2,1));
@@ -91,10 +89,7 @@ class Vehicle
 
         {
             // update lanes
-            if (this.lane > levelInfo.laneCount-1)
-                this.lane = levelInfo.laneCount-1;
-
-            // pick new random lane
+            this.lane = min(this.lane, levelInfo.laneCount-1);
             //if (rand() < .01 && this.pos.z > playerVehicle.pos.z)
             //    this.lane = randInt(levelInfo.laneCount);
 
@@ -117,7 +112,6 @@ class Vehicle
 
         // update physics
         this.pos.z += this.velocity.z += accel;
-
         if (!trackInfo2.pos)
             return; // not visible
 
@@ -195,7 +189,7 @@ class Vehicle
         if (optimizedCulling)
         {
             const distanceFromPlayer = this.pos.z - playerVehicle.pos.z;
-            if (distanceFromPlayer > 3e4)
+            if (distanceFromPlayer > 4e4)
                 return; // cull too far
         }
 
@@ -416,7 +410,7 @@ class PlayerVehicle extends Vehicle
         const gravity = -3;           // gravity to apply in y axis
         const lateralDamping = .5;    // dampen player x speed
         const playerAccel = 1;        // player acceleration
-        const playerBrake = 2;        // player acceleration when breaking
+        const playerBrake = 3;        // player acceleration when breaking
         const playerMaxSpeed = 200;   // limit max player speed
         const speedPercent = clamp(this.velocity.z/playerMaxSpeed);
 
@@ -435,10 +429,11 @@ class PlayerVehicle extends Vehicle
         // check if on ground
         let onGround = 0;
 
-        // todo fix elasticity
-        const elasticity = 1.2;            // bounce elasticity (2 is full bounce, 1 is none)
+        // bounce elasticity (2 is full bounce, 1 is none)
+        const elasticity = 1.2;            
         if (this.pos.y < playerTrackInfo.offset.y)
         {
+            onGround = 1;
             this.pos.y = playerTrackInfo.offset.y;
             const trackPitch = playerTrackInfo.pitch;
             this.drawPitch = lerp(.2,this.drawPitch, trackPitch);
@@ -458,14 +453,13 @@ class PlayerVehicle extends Vehicle
                 bump();
             }
             
-            onGround = 1;
             if (this.velocity.z < 10)
                 this.velocity.z *= .95; // slow to stop
         }
         else
         {
             // in air
-            this.drawPitch = lerp(.01,this.drawPitch, 0);
+            this.drawPitch *= .01; // level out pitch
         }
 
         {

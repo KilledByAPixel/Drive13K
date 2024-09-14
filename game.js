@@ -1,7 +1,7 @@
 'use strict';
 
 showMap = 0;
-debugInfo = 0
+debugInfo = 0;
 //debugInfo = 1
 //debugTile = vec3(1,3)
 //debugGenerativeCanvas = 1
@@ -13,7 +13,6 @@ let freeRide = 0;
 let testLevelInfo;
 const testStartZ = quickStart&&!testLevelInfo?5e3:0;
 const testLevels = 0;
-
 
 ///////////////////////////////////////////////////
 
@@ -32,12 +31,13 @@ const trackSegmentLength = 100;    // length of each segment
 const drawDistance = 1e3;          // how many track segments to draw for scenery
 const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testLevels?1e3:4500;
-const checkpointDistance = checkpointTrackSegments*trackSegmentLength;  // how far between checkpoints
+const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
 const startCheckpointTime = 50;
 const levelLerpRange = .1;
 const levelGoal = 10;
 const playerStartZ = 2e3;
 const optimizedCulling = 1;
+const turnWorldScale = 2e4;
 
 let mainCanvasSize = pixelate ? vec3(640, 420) : vec3(1280, 720);
 let mainCanvas, mainContext;
@@ -315,13 +315,10 @@ function gameUpdate(frameTimeMS=0)
     // add the time smoothing back in
     frameTimeBufferMS += fluxCapacitor;
 
-    preRenderSky();
-    glPreRender();
-
-    mainContext.lineCap = mainContext.lineJoin = 'round';
     //mainContext.imageSmoothingEnabled = !pixelate;
     //glContext.imageSmoothingEnabled = !pixelate;
 
+    glPreRender();
     drawScene();
     drawHUD();
     debugDraw();
@@ -335,8 +332,8 @@ function updateCamera()
     const playerTrackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
 
     // update world heading based on speed and track turn
-    const turnWorldScale = .00005;
-    worldHeading += turnWorldScale*cameraTrackInfo.offset.x*playerVehicle.velocity.z;
+    const v = playerVehicle.velocity.z;
+    worldHeading += v*cameraTrackInfo.offset.x/turnWorldScale;
 
     // put camera above player
     cameraPos.y = playerTrackInfo.offset.y + (titleScreenMode?1e3:cameraPlayerOffset.y);

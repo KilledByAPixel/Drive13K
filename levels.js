@@ -344,7 +344,6 @@ function initLevelInfos()
 }
 
 const getLevelInfo = (level) => testLevelInfo || levelInfoList[level|0] || levelInfoList[0];
-const getPlayerLevelFloat = () => playerVehicle.pos.z/checkpointDistance;
 
 // info about how to build and draw each level
 class LevelInfo

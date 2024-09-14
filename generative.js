@@ -127,8 +127,6 @@ function generateTetures()
             this.branchAngleRandomness = .1;
             this.branchRate = 451;
             this.branchLoss = .9;
-            this.branchDieChance = 0;
-            this.multiBranch = 0;
             this.leafChance = 3;
             this.leafMaxSize = .06;
             this.leafOffset = .03;
@@ -138,11 +136,13 @@ function generateTetures()
             this.minBranchSize = 0.005;
             this.leafHue = .3;
             this.leafBrightness = .4;
-            this.flowerChance = 0;
             this.flowerColor = RED;
-            this.stump = 0;
             this.branchScale = 1;
             this.leafSat = .5;
+            this.branchDieChance =
+            this.multiBranch = 
+            this.flowerChance = 
+            this.stump = 0;
         }
 
         draw()
@@ -369,7 +369,7 @@ function generateTetures()
         setupContext(1,2);
         drawZZFXSign();
         setupContext(2,2);
-        drawGenericSign('GitHub',.3,WHITE,BLACK);
+        drawGenericSign('GitHub',.3);
         setupContext(3,2);
         //drawGenericSign('GAME BY FRANK FORCE',.25,BLACK,WHITE);
         drawDoubleLineSign('FRANK FORCE','GAME BY',BLACK,0,.42,.2);
@@ -379,7 +379,7 @@ function generateTetures()
         //drawHarrisSign();
         drawDoubleLineSign('HARRIS','WALZ',hsl(.6,.9,.3));
         setupContext(5,2);
-        drawGenericSign('VOTE',.4,WHITE,BLACK);
+        drawGenericSign('VOTE',.4);
         //setupContext(6,2);
         //drawDwitterSign();
         setupContext(7,2);
@@ -914,7 +914,7 @@ function generateTetures()
     function drawFlower(pos, flowerPetals, flowerSize, c=RED)
     {
         const flowerAngle = random.angle();
-        const regularity = random.float(.9,1.1);
+        const regularity = 1+random.floatSign(.1);
         flowerSize = random.float(flowerSize*.6,flowerSize);
         color(random.mutateColor(WHITE,.2));
         circle(pos.x,pos.y,flowerSize*random.float(.5,1));
@@ -995,15 +995,16 @@ function generateTetures()
         rectLine(x,y+.15,x+r,y+.15-ry,.07);
     }
 
-    function drawGenericSign(t,size=.5,c=hsl(0,0,.1),color2=WHITE,font)
+    function drawGenericSign(t,size)
     {
-        drawSignBackground(1,size+.1,c,color2);
-        color(color2,1);
-        text(t,.5,(size+.15)/2,size,.9,.01,font);
+        drawSignBackground(1,size+.1,WHITE,BLACK);
+        color(BLACK,1);
+        text(t,.5,(size+.15)/2,size,.9,.01);
     }
 
-    function drawZZFXSign(t='ZZFX')
+    function drawZZFXSign()
     {
+        const t='ZZFX';
         drawSignBackground(1,.6,BLACK,hsl(0,0,.2));
         color(hsl(.6,1,.5),1);
         const x = .47, y = .38, o = .03;

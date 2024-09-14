@@ -121,7 +121,7 @@ function initTrackSprites()
 
     // special sprites
     trackSprites.water            = new TrackSprite(vec3(5,4),3e3,.2,1);
-    trackSprites.water.spriteYOffset = -.08;
+    trackSprites.water.spriteYOffset = -.1;
     trackSprites.sign_start       = new TrackSprite(vec3(5,0),2300,0,.01,0,0);
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);
@@ -337,11 +337,10 @@ class TrackSegment
     getWind()
     {
         const offset = this.offset;
-        const noiseScale = .0003;
+        const noiseScale = 3e3;
         const windSpeed = time;
-        const noiseX = noiseScale*offset.x;
-        const noiseZ = noiseScale*offset.z;
-        return .5*Math.sin(windSpeed+noiseX+noiseZ);
+        const noisePos = offset.scale(noiseScale);
+        return .5*Math.sin(windSpeed+noisePos.x+noisePos.z);
     }
 
     addSprite(sprite,x=0,y=0)
@@ -563,8 +562,7 @@ bumpy with turns
         }
 
         const roadSignRate = 10;
-        let signSide = rightTurns > leftTurns ? 1 : -1;
-
+        const signSide = sign(rightTurns - leftTurns);
         if (i < levelGoal*checkpointTrackSegments) // end of level
         if (i%roadSignRate == 0)
         {
@@ -587,25 +585,16 @@ bumpy with turns
                 if (tunnelTime-- < 0)
                 {
                     tunnelOn = !tunnelOn;
-                    if (tunnelOn)
-                    {
-                        // thin arch in mountains
-                        tunnelTime = isMountains ? 10 : random.int(200,600);
-                    }
-                    else
-                        tunnelTime = random.int(300,600); // wait longer when off
+                    tunnelTime = tunnelOn? 
+                        isMountains ? 10 : random.int(200,600) :
+                        tunnelTime = random.int(300,600); // longer when off
                 }
 
                 if (tunnelOn)
                 {
-                    let sprite = levelInfo.tunnel;
-                    if (isDesert && !wasOn) // desert
-                    {
-                        sprite = trackSprites.tunnel2Front; // light up front
-                        
-                        // rocks on sides?
-                        //t.addSprite(trackSprites.tunnel2_rock, 1e4);
-                    }
+                    // brighter front of tunnel
+                    const sprite = isDesert && !wasOn ?
+                        trackSprites.tunnel2Front : levelInfo.tunnel;
                     t.addSprite(sprite, 0);
 
                     if (isDesert && i%50==0)

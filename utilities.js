@@ -4,7 +4,6 @@
 // Math Stuff
 
 const PI = Math.PI;
-const RADIANS_TO_DEGREES = 180/PI;
 const abs = (value) => Math.abs(value);
 const min = (valueA, valueB) => Math.min(valueA, valueB);
 const max = (valueA, valueB) => Math.max(valueA, valueB);
@@ -21,7 +20,7 @@ const isOverlapping = (posA, sizeA, posB, sizeB=vec3()) =>
     abs(posA.x - posB.x)*2 < sizeA.x + sizeB.x && abs(posA.y - posB.y)*2 < sizeA.y + sizeB.y;
 function buildMatrix(pos, rot, scale)
 {
-    const R2D = RADIANS_TO_DEGREES;
+    const R2D = 180/PI;
     let m = new DOMMatrix;
     pos && m.translateSelf(pos.x, pos.y, pos.z);
     rot && m.rotateSelf(rot.x*R2D, rot.y*R2D, rot.z*R2D);
@@ -160,9 +159,9 @@ class Color
         l = clamp(l);
         const q = l < .5 ? l*(1+s) : l+s-l*s, p = 2*l-q,
             f = (p, q, t)=>
-                (t = ((t%1)+1)%1) < 1/6 ? p+(q-p)*6*t :
-                t < 1/2 ? q :
-                t < 2/3 ? p+(q-p)*(2/3-t)*6 : p;
+                (t = mod(t,1))*6 < 1 ? p+(q-p)*6*t :
+                t*2 < 1 ? q :
+                t*3 < 2 ? p+(q-p)*(4-t*6) : p;
         this.r = f(p, q, h + 1/3);
         this.g = f(p, q, h);
         this.b = f(p, q, h - 1/3);

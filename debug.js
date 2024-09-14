@@ -18,25 +18,29 @@ function debugInit()
 
 function debugUpdate()
 {
-    if (keyWasPressed('Digit1'))
+    if (keyWasPressed('Digit1') || keyIsDown('Digit2'))
     {
-        playerVehicle.pos.z += checkpointDistance;
+        const d = keyWasPressed('Digit1') ? 1 : -1;
+        playerVehicle.pos.z += d * checkpointDistance;
+        playerVehicle.pos.z = max(playerVehicle.pos.z, 0);
         checkpointTimeLeft = 40;
         debugSkipped = 1;
     }
-    if (keyIsDown('Digit2'))
+    if (keyIsDown('Digit3') || keyIsDown('Digit4'))
     {
-            playerVehicle.pos.z += 1000;
-            const trackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
-            playerVehicle.pos.y = trackInfo.offset.y;
-            playerVehicle.pos.x = 0;
-    }
-    if (keyIsDown('Digit3') || keyIsDown('NumpadSubtract'))
-    {
-        playerVehicle.pos.z -= keyIsDown('NumpadSubtract') ? 100 : 1000;
+        const v = keyIsDown('Digit3') ? 1e3 : -1e3;
+        playerVehicle.pos.z += v;
         playerVehicle.pos.z = max(playerVehicle.pos.z, 0);
-        playerVehicle.pos.x *= .9;
+
+        const trackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
+        playerVehicle.pos.y = trackInfo.offset.y;
+        playerVehicle.pos.x = 0;
+            
+        // update world heading based on speed and track turn
+        const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+        worldHeading += v*cameraTrackInfo.offset.x/turnWorldScale;
         debugSkipped = 1;
+
     }
     if (keyWasPressed('Digit5'))
         debugCapture = 1;

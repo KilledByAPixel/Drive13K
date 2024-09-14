@@ -1,6 +1,7 @@
 'use strict';
 
 let radioMusic = -1;
+const showTitle = 1;
 
 function initHUD()
 {
@@ -11,6 +12,7 @@ function drawHUD()
 {
     if (titleScreenMode)
     {
+        if (showTitle)
         for(let j=2;j--;)
         {
             // draw logo
@@ -57,7 +59,6 @@ function drawHUD()
             const timeString = formatTimeString(bestTime);
             drawHUDText('BEST TIME', vec3(.5,.87), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
             drawHUDText(timeString, vec3(.5,.94), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
-
         }
         /*else
         {
@@ -157,6 +158,7 @@ function drawHUDText(text, pos, size=.1, color=WHITE, shadowColor=BLACK, font='a
     pos = pos.multiply(mainCanvasSize);
     
     const context = mainContext;
+    context.lineCap = context.lineJoin = 'round';
     context.font = `${style} ${weight} ${size}px ${font}`;
     context.textBaseline = 'middle';
     context.textAlign = textAlign;
@@ -170,11 +172,8 @@ function drawHUDText(text, pos, size=.1, color=WHITE, shadowColor=BLACK, font='a
         context.fillText(text, pos.x+shadowOffset, pos.y+shadowOffset, width);
     }
 
-    if (outline)
-    {
-        context.lineWidth = outline;
-        context.strokeText(text, pos.x, pos.y, width);
-    }
+    context.lineWidth = outline;
+    outline && context.strokeText(text, pos.x, pos.y, width);
     context.fillStyle = color;
     context.fillText(text, pos.x, pos.y, width);
 }

@@ -23,9 +23,9 @@ function inputUpdatePost()
 ///////////////////////////////////////////////////////////////////////////////
 // Input functions
 
-const keyIsDown = (key) => inputData[key] & 1 ? 1 : 0; 
-const keyWasPressed = (key) => inputData[key] & 2 ? 1 : 0; 
-const keyWasReleased = (key) => inputData[key] & 4 ? 1 : 0; 
+const keyIsDown = (key) => inputData[key] & 1; 
+const keyWasPressed = (key) => (inputData[key]>>1) & 1; 
+const keyWasReleased = (key) => (inputData[key]>>2) & 1; 
 const clearInput = () => inputData = [];
 const mouseIsDown = keyIsDown;
 const mouseWasPressed = keyWasPressed;
