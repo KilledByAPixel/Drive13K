@@ -4,6 +4,8 @@ An outrun inspired drive across 10 stages, can you make it to the garden?
 
 ## [LIVE DEMO](https://killedbyapixel.github.io/Drive13K)
 
+![DR1V3N WILD - A JS13k Game by Frank Force](/screenshot.png)
+
 Your best distance and fastest time are saved!
 
 Recommended running in Chrome browser with Windows 10.
