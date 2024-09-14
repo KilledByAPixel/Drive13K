@@ -17,7 +17,7 @@ let sound_bump =new Sound([4,.2,400,.01,.01,.01,,.8,-60,-70,,,.03,.1,,,.1,.5,.01
 
 let sound_checkpoint_outrun = new Sound([.3,0,980,,,,,3,,,,,,,,.03,,,,,500]); // outrun checkpoint - Copy 4
 
-let sound_win = new Sound([,,110,.04,.2,2,,3,,1,332,.06,.05,,,,.3,.8,.3,.5,-1e3]); // Powerup 6686;
+let sound_win = new Sound([,,110,.04,.2,2,,3,,1,330,.06,.05,,,,.3,.8,.3,.5,-1e3]); // Powerup 6686;
 
 let sound_lose = new Sound([2,,120,.02,.03,2,1,3,,.6,,,,2,,.2,.4,.5,.15,,500]); // Explosion 621
 

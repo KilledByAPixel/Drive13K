@@ -24,7 +24,7 @@ const frameRate = 60;
 const timeDelta = 1/60;
 const aiVehicles = 1;
 const pixelateScale = 3;
-const clampAspectRatios = 0;
+const clampAspectRatios = debug;
 
 // track settings
 const laneWidth = 1400;            // how wide is track

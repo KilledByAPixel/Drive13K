@@ -1077,7 +1077,7 @@ function generateTetures()
     {
         color(hsl(0,0,.8))
         rect();
-        color(hsl(232/360, .9, .25),1);
+        color(hsl(.7, .9, .25),1);
         text('JS-13K',.5,.6,1,.9,.03,'monospace');
     }
 }
