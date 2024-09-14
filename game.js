@@ -291,7 +291,7 @@ function gameUpdate(frameTimeMS=0)
 
     // apply flux capacitor, improves smoothness of framerate in some browsers
     let fluxCapacitor = 0;
-    if (frameTimeBufferMS < 0)
+    if (frameTimeBufferMS < 0 && frameTimeBufferMS > -9)
     {
         // force at least one update each frame since it is waiting for refresh
         // the flux capacitor is what makes time travel possible
