@@ -142,7 +142,7 @@ function initLevelInfos()
     LI.trackSideRate = 20;
     LI.skyColorTop = hsl(.7,1,.7);
     LI.skyColorBottom = hsl(.2,1,.9);
-    LI.roadColor = hsl(0,0,.1);
+    LI.roadColor = hsl(0,0,.15);
     LI.groundColor = hsl(.1,.4,.5);
     LI.cloudColor = hsl(0,0,1,.3);
     LI.cloudHeight = .1;
@@ -174,7 +174,7 @@ function initLevelInfos()
     LI.trackSideRate = 30;
     LI.skyColorTop = YELLOW;
     LI.skyColorBottom = RED;
-    LI.roadColor = hsl(0,0,.05);
+    LI.roadColor = hsl(0,0,.1);
     LI.lineColor = hsl(.15,1,.7);
     LI.groundColor = hsl(.05,.5,.4);
     LI.cloudColor = hsl(.15,1,.5,.5);
@@ -210,7 +210,7 @@ function initLevelInfos()
     LI.trackSideRate = 50;
     LI.skyColorTop = hsl(.5,1,.5);
     LI.skyColorBottom = hsl(0,1,.8);
-    LI.roadColor = hsl(.6,.3,.05);
+    LI.roadColor = hsl(.6,.3,.15);
     LI.groundColor = hsl(.2,.3,.5);
     LI.lineColor = hsl(0,0,1,.5);
     LI.billboardChance = 0; // no ads in graveyard
@@ -282,7 +282,7 @@ function initLevelInfos()
     LI.skyColorTop = hsl(.05,1,.8);
     LI.skyColorBottom = hsl(.15,1,.7);
     LI.lineColor = hsl(0,1,.9);
-    LI.roadColor = hsl(.6,1,.05);
+    LI.roadColor = hsl(.6,1,.1);
     LI.groundColor = hsl(.6,1,.6);
     LI.cloudColor = hsl(.9,1,.5,.3);
     LI.cloudHeight = .2;
@@ -312,7 +312,7 @@ function initLevelInfos()
     LI.trackSideRate = 50;
     LI.skyColorTop = hsl(.2,1,.9);
     LI.skyColorBottom = hsl(.55,1,.5);
-    LI.roadColor = hsl(0,0,.05);
+    LI.roadColor = hsl(0,0,.1);
     LI.groundColor = hsl(.1,.5,.7);
     LI.cloudColor = hsl(0,0,1,.5);
     LI.horizonSpriteSize = .5;

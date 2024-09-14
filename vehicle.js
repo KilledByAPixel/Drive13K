@@ -179,22 +179,6 @@ class Vehicle
         carMesh.render(mcar, this.color); 
         //cubeMesh.render(m1.multiply(buildMatrix(0, 0, this.collisionSize)), BLACK);  // collis
 
-        // wheels
-        const wheelRadius = 110;
-        const wheelSize = vec3(50,wheelRadius,wheelRadius);
-        const wheelM1 = buildMatrix(0,vec3(this.pos.z/500,this.wheelTurn),wheelSize);
-        const wheelM2 = buildMatrix(0,vec3(this.pos.z/500,0),wheelSize);
-        const wheelColor = hsl(0,0,.2);
-        const wheelOffset1 = vec3(240,25,220);
-        const wheelOffset2 = vec3(240,25,-300);
-        for (let i=4;i--;)
-        {
-            const wo = i<2? wheelOffset1 : wheelOffset2;
-            const o = vec3(i%2?wo.x:-wo.x, wo.y, i<2? wo.z : wo.z);
-            carWheel.render(m1.multiply(buildMatrix(o)).multiply(i<2 ? wheelM1 :wheelM2), wheelColor);
-        }
-        
-
         let bumperY = 130, bumperZ = -440;
         if (this.isTruck)
         {
@@ -215,6 +199,23 @@ class Vehicle
                 return; // cull too far
         }
 
+        // wheels
+        const wheelRadius = 110;
+        const wheelSize = vec3(50,wheelRadius,wheelRadius);
+        const wheelM1 = buildMatrix(0,vec3(this.pos.z/500,this.wheelTurn),wheelSize);
+        const wheelM2 = buildMatrix(0,vec3(this.pos.z/500,0),wheelSize);
+        const wheelColor = hsl(0,0,.2);
+        const wheelOffset1 = vec3(240,25,220);
+        const wheelOffset2 = vec3(240,25,-300);
+        for (let i=4;i--;)
+        {
+            const wo = i<2? wheelOffset1 : wheelOffset2;
+
+            glPolygonOffset(this.isTruck && i>1 && 20);
+            const o = vec3(i%2?wo.x:-wo.x, wo.y, i<2? wo.z : wo.z);
+            carWheel.render(m1.multiply(buildMatrix(o)).multiply(i<2 ? wheelM1 :wheelM2), wheelColor);
+        }
+        
         // decals
         glPolygonOffset(40);
 
@@ -248,7 +249,7 @@ class Vehicle
         {
             // shadow
             glSetDepthTest(1,0);
-            glPolygonOffset(this.isPlayer?150:20);
+            glPolygonOffset(this.isPlayer?150:30);
             const lightOffset = vec3(0,0,-50).rotateY(worldHeading);
             const shadowColor = rgb(0,0,0,.5);
             const shadowPosBase = vec3(p.x,trackInfo.pos.y,p.z).add(lightOffset);
@@ -321,7 +322,7 @@ class PlayerVehicle extends Vehicle
         {
             ++playerLevel;
             nextCheckpointDistance += checkpointDistance;
-            checkpointTimeLeft = min(checkpointTimeLeft+40, 60);
+            checkpointTimeLeft += 40;
             
             //speak('CHECKPOINT');
             checkpointSoundCount = 3;
