@@ -186,7 +186,7 @@ function gameUpdateInternal()
             if ((lastCheckpointTimeLeft|0) != (checkpointTimeLeft|0))
             {
                 // low time warning
-                sound_beep.play(1,4);
+                sound_beep.play(1,3);
             }
 
             if (!freeRide)
@@ -215,8 +215,8 @@ function gameUpdateInternal()
 
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20 && !testDrive;
-    const trafficLevelOffset = playerIsSlow? 0 : 8e4; // check in front/behind
-    const trafficLevel = (playerVehicle.pos.z+trafficLevelOffset)/checkpointDistance;
+    const trafficPosOffset = playerIsSlow? 0 : 2e5; // check in front/behind
+    const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
     const maxVehicleCount = 10*trafficDensity;

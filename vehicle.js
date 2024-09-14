@@ -295,7 +295,7 @@ class PlayerVehicle extends Vehicle
             }
         }
 
-        const bump=(amount = .98)=>
+        const bump=(amount = .99)=>
         {
             this.velocity.z *= amount;
             if (this.bumpTime < 0)
@@ -370,6 +370,12 @@ class PlayerVehicle extends Vehicle
             mouseControl = 0;
         if (debug && (mouseWasPressed(0) || mouseWasPressed(2)))
             testDrive = 0;
+
+        if (debug)
+        {
+            document.body.style.cursor = // fun cursors!
+                !mouseControl ? 'none': mouseIsDown(2) ? 'pointer' : mouseIsDown(0) ? 'grabbing' : 'grab';
+        }
 
         if (mouseControl || mouseIsDown(0))
         {

@@ -42,7 +42,7 @@ function debugUpdate()
         debugCapture = 1;
     if (keyWasPressed('Digit6'))
         checkpointTimeLeft=1
-    if (keyWasPressed('Digit7'))
+    if (keyWasPressed('KeyM')) // toggle mute
         soundVolume = soundVolume ? 0 : .3;
         
     if (keyWasPressed('KeyQ'))

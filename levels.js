@@ -49,7 +49,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     //LI.laneCount = 1
     LI.billboardChance = .1 // less billboards in forest type areas
-    LI.trafficDensity = .7; // less traffic in froest, only 2 lanes
+    LI.trafficDensity = .5; // less traffic in froest, only 2 lanes
 
     // trail through forest
     LI.turnChance = .7; // more small turns
@@ -185,7 +185,7 @@ function initLevelInfos()
     LI.sunColor = hsl(.15,1,.8);
     LI.sideStreets = 1;
     LI.laneCount = 5;
-    LI.trafficDensity = 2; // extra traffic in city
+    LI.trafficDensity = 3; // extra traffic in city
 
     // in front of city
     LI.turnChance = .3;
@@ -224,7 +224,7 @@ function initLevelInfos()
     // thin road over hills in graveyard
     LI.turnChance = .5;
     LI.turnMin = .1;
-    LI.turnMax = .7;
+    LI.turnMax = .6;
     LI.bumpChance = .5;
     LI.bumpFreqMin = .4;
     LI.bumpFreqMax = .8;
@@ -258,13 +258,13 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
     LI.hazardType = trackSprites.rock_big;
-    LI.hazardChance = .01;
-    LI.trafficDensity = 0;
+    LI.hazardChance = .008;
+    LI.trafficDensity = 0;  // no other cars in jungle
 
-    // bumpy jungle road
-    LI.turnChance = .7;
+    // bumpy jungle road 
+    LI.turnChance = .5;
     LI.turnMin = 0;
-    LI.turnMax = .8;
+    LI.turnMax = .5; // mostly straight
     LI.bumpChance = 1;
     LI.bumpFreqMin = .4;
     LI.bumpFreqMax = .8;
@@ -323,8 +323,8 @@ function initLevelInfos()
     LI.turnMin = 0;
     LI.turnMax = 1;
     LI.bumpChance = 1;
-    LI.bumpFreqMin = .5;
-    LI.bumpFreqMax = 1;
+    LI.bumpFreqMin = .3;
+    LI.bumpFreqMax = .9;
     LI.bumpScaleMin = 50;
     LI.bumpScaleMax = 80;
 
