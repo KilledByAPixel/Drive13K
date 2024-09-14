@@ -461,7 +461,7 @@ class PlayerVehicle extends Vehicle
         else
         {
             // in air
-            this.drawPitch *= .01; // level out pitch
+            this.drawPitch *= .99; // level out pitch
         }
 
         {
