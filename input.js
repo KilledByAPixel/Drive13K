@@ -1,16 +1,20 @@
 'use strict';
 
 const allowTouch = debug;
-const inputWASDEmulateDirection = debug; // only in debug to save space
-
+const gamepadsEnable = debug;
+const inputWASDEmulateDirection = debug;
+const gamepadDirectionEmulateStick = 1;
 const isTouchDevice = allowTouch && window.ontouchstart !== undefined;
+
 let mousePos = vec3();
 let inputData = [];
+let isUsingGamepad = 0;
 
 function inputUpdate()
 {
     // clear input when lost focus (prevent stuck keys)
     isTouchDevice || document.hasFocus() || clearInput();
+    gamepadsEnable && gamepadsUpdate();
 }
 
 function inputUpdatePost()
@@ -38,6 +42,7 @@ function inputInit()
 {
     onkeydown = (e)=>
     {
+        isUsingGamepad = 0;
         if (!e.repeat)
         {
             inputData[e.code] = 3;
@@ -56,6 +61,7 @@ function inputInit()
     // mouse event handlers
     onmousedown   = (e)=>
     {
+        isUsingGamepad = 0;
         inputData[e.button] = 3; 
         mousePos = mouseToScreen(vec3(e.x,e.y)); 
         //e.button && e.preventDefault();
@@ -137,6 +143,78 @@ function inputInit()
             
             // must return true so the document will get focus
             return true;
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// gamepad input
+
+// gamepad internal variables
+let gamepadData, stickData;
+
+const gamepadIsDown = (key, gamepad=0) => gamepadData[gamepad][key] & 1; 
+const gamepadWasPressed = (key, gamepad=0) => (gamepadData[gamepad][key]>>1) & 1; 
+const gamepadWasReleased = (key, gamepad=0) => (gamepadData[gamepad][key]>>2) & 1; 
+const gamepadStick = (stick, gamepad=0) =>
+    stickData[gamepad] ? stickData[gamepad][stick] || vec3() : vec3();
+
+// gamepads are updated by engine every frame automatically
+function gamepadsUpdate()
+{
+    // return if gamepads are disabled or not supported
+    if (!navigator || !navigator.getGamepads)
+        return;
+
+    // only poll gamepads when focused or in debug mode (allow playing when not focused in debug)
+    if (!debug && !document.hasFocus())
+        return;
+
+    if (!gamepadData) // init
+        gamepadData = [], stickData = [];
+
+    const applyDeadZones = (v)=>
+    {
+        const min=.3, max=.8;
+        const deadZone = (v)=> 
+            v >  min ?  percent( v, min, max) : 
+            v < -min ? -percent(-v, min, max) : 0;
+        return vec3(deadZone(v.x), deadZone(-v.y)).clampLength();
+    }
+
+    // poll gamepads
+    const gamepads = navigator.getGamepads();
+    for (let i = gamepads.length; i--;)
+    {
+        // get or create gamepad data
+        const gamepad = gamepads[i];
+        const data = gamepadData[i] || (gamepadData[i] = []);
+        const sticks = stickData[i] || (stickData[i] = []);
+
+        if (gamepad)
+        {
+            // read analog sticks
+            for (let j = 0; j < gamepad.axes.length-1; j+=2)
+                sticks[j>>1] = applyDeadZones(vec3(gamepad.axes[j],gamepad.axes[j+1]));
+            
+            // read buttons
+            for (let j = gamepad.buttons.length; j--;)
+            {
+                const button = gamepad.buttons[j];
+                const wasDown = gamepadIsDown(j,i);
+                data[j] = button.pressed ? wasDown ? 1 : 3 : wasDown ? 4 : 0;
+                isUsingGamepad ||= !i && button.pressed;
+            }
+
+            if (gamepadDirectionEmulateStick)
+            {
+                // copy dpad to left analog stick when pressed
+                const dpad = vec3(
+                    (gamepadIsDown(15,i)&&1) - (gamepadIsDown(14,i)&&1), 
+                    (gamepadIsDown(12,i)&&1) - (gamepadIsDown(13,i)&&1));
+                if (dpad.lengthSquared())
+                    sticks[0] = dpad.clampLength();
+            }
         }
     }
 }

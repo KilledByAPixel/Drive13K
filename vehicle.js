@@ -364,6 +364,14 @@ class PlayerVehicle extends Vehicle
             keyIsDown('ArrowRight') - keyIsDown('ArrowLeft'),
             keyIsDown('Space') ? -1 : keyIsDown('ArrowUp')    - keyIsDown('ArrowDown'));
 
+        if (isUsingGamepad)
+        {
+            playerInput.x = gamepadStick(0).x;
+            const gasing = gamepadIsDown(0) || gamepadIsDown(7);
+            const breaking = gamepadIsDown(1) || gamepadIsDown(2) || gamepadIsDown(3) || gamepadIsDown(6);
+            playerInput.y = gasing ? 1 : breaking ? -1 : 0;
+        }
+
         if (playerInput.y)
             mouseControl = 0;
         if (debug && (mouseWasPressed(0) || mouseWasPressed(2)))

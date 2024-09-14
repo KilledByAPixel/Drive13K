@@ -71,6 +71,11 @@ function drawHUD()
         return;
     }
 
+    if (debug && paused)
+    {
+        drawHUDText('-PAUSE-', vec3(.5,.87), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
+    }
+
     if (startCountdownTimer.active() || startCountdown)
     {
         // count down

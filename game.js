@@ -126,7 +126,7 @@ function gameUpdateInternal()
     if (titleScreenMode)
     {
         // update title screen
-        if (mouseWasPressed(0) || keyWasPressed('Space'))
+        if (mouseWasPressed(0) || keyWasPressed('Space') || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
         {
             titleScreenMode = 0;
             sound_bump.play(2,2);
@@ -157,7 +157,7 @@ function gameUpdateInternal()
             titleModeStartCount = 0;
             gameStart();
         }
-        if (keyWasPressed('Escape'))
+        if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
         {
             // go back to title screen
             sound_bump.play(2);
@@ -278,6 +278,28 @@ function gameUpdate(frameTimeMS=0)
         mainCanvas.style.height = glCanvas.style.height = innerAspect < fixedAspect ? '' : '100%';
     }
 
+    if (debug && paused)
+    {
+        // hack: special input handling when paused
+        inputUpdate();
+        if (keyWasPressed('Space') || keyWasPressed('KeyP') 
+            || mouseWasPressed(0) || isUsingGamepad && gamepadWasPressed(9))
+        {
+            paused = 0;
+            sound_checkpoint_outrun.play();
+        }
+        if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
+        {
+            // go back to title screen
+            paused = 0;
+            sound_bump.play(2);
+            titleScreenMode = 1;
+            ++titleModeStartCount;
+            gameStart();
+        }
+        inputUpdatePost();
+    }
+
     // update time keeping
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
@@ -307,6 +329,15 @@ function gameUpdate(frameTimeMS=0)
         gameUpdateInternal();
         debugUpdate();
         inputUpdate();
+    
+        if (debug && !titleScreenMode)
+        if (keyWasPressed('KeyP') || isUsingGamepad && gamepadWasPressed(9))
+        {
+            // update pause
+            paused = 1;
+            sound_checkpoint_outrun.play(1,.5);
+        }
+        
         updateCamera();
         trackPreUpdate();
         inputUpdatePost();
