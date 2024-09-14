@@ -5,130 +5,68 @@
 
 let soundEnable = true;
 let soundVolume = .3;
-let soundDefaultRange = 40;
-let soundDefaultTaper = .7;
-let speakEnable = 1;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class Sound
 {
-    constructor(zzfxSound, range=soundDefaultRange, taper=soundDefaultTaper)
+    constructor(zzfxSound)
     {
         if (!soundEnable) return;
 
-        this.range = range;
-        this.taper = taper;
         this.randomness = 0;
-
         if (zzfxSound)
         {
             // generate zzfx sound now for fast playback
             this.randomness = zzfxSound[1] || 0;
             zzfxSound[1] = 0; // generate without randomness
-            this.sampleChannels = [zzfxG(...zzfxSound)];
-            this.sampleRate = zzfxR;
+            this.samples = zzfxG(...zzfxSound);
         }
     }
 
-    play(volume=1, pitch=1, randomnessScale=1, loop=false)
+    play(volume=1, pitch=1, randomnessScale=1)
     {
-        if (!soundEnable || !this.sampleChannels) return;
-
-        let pan;
+        if (!soundEnable) return;
 
         // play the sound
         const playbackRate = pitch + pitch * this.randomness*randomnessScale*rand(-1,1);
-        return this.source = playSamples(this.sampleChannels, volume, playbackRate, pan, loop, this.sampleRate);
+        return playSamples(this.samples, volume, playbackRate);
     }
-
-    stop()
-    {
-        if (this.source)
-            this.source.stop();
-        this.source = undefined;
-    }
-    
-    getSource() { return this.source; }
 
     playNote(semitoneOffset, pos, volume)
     { return this.play(pos, volume, 2**(semitoneOffset/12), 0); }
-
-    getDuration() 
-    { return this.sampleChannels && this.sampleChannels[0].length / this.sampleRate; }
 }
-
-class Music extends Sound
-{
-    constructor(zzfxMusic)
-    {
-        super(undefined);
-
-        if (!soundEnable) return;
-        this.randomness = 0;
-        this.sampleChannels = zzfxM(...zzfxMusic);
-        this.sampleRate = zzfxR;
-    }
-
-    playMusic(volume, loop=1)
-    { return super.play( volume, 1, 1, loop); }
-}
-
-function speak(text)
-{
-    if (!soundEnable || !speechSynthesis || !speakEnable) return;
-
-    speechSynthesis.cancel();
-
-    // common languages (not supported by all browsers)
-    // en - english,  it - italian, fr - french,  de - german, es - spanish
-    // ja - japanese, ru - russian, zh - chinese, hi - hindi,  ko - korean
-
-    // build utterance and speak
-    const utterance = new SpeechSynthesisUtterance(text);
-    //utterance.lang = 'it';
-    utterance.volume = soundVolume*2.5;
-    //utterance.rate = rate;
-    //utterance.pitch = 2;
-    speechSynthesis.speak(utterance);
-    return utterance;
-}
-
-function getNoteFrequency(semitoneOffset, rootFrequency=220)
-{ return rootFrequency * 2**(semitoneOffset/12); }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 let audioContext;
-let audioSuspended = false;
 
-function playSamples(sampleChannels, volume=1, rate=1, pan=0, loop=false, sampleRate=zzfxR) 
+function playSamples(samples, volume=1, rate=1) 
 {
-    if (!soundEnable) return;
+    const sampleRate=zzfxR;
+
+    if (!soundEnable || isTouchDevice && !audioContext)
+        return;
+    
     if (!audioContext)
         audioContext = new AudioContext; // create audio context
 
     // prevent sounds from building up if they can't be played
-    const audioWasSuspended = audioSuspended;
-    if (audioSuspended = audioContext.state != 'running')
+    if (audioContext.state != 'running')
     {
         // fix stalled audio
         audioContext.resume();
-
-        // prevent suspended sounds from building up
-        if (audioWasSuspended)
-            return;
+        return; // prevent suspended sounds from building up
     }
 
     // create buffer and source
-    const buffer = audioContext.createBuffer(sampleChannels.length, sampleChannels[0].length, sampleRate), 
-        source = audioContext.createBufferSource();
+    const buffer = audioContext.createBuffer(1, samples.length, sampleRate), 
+         source = audioContext.createBufferSource();
 
     // copy samples to buffer and setup source
-    sampleChannels.forEach((c,i)=> buffer.getChannelData(i).set(c));
+    buffer.getChannelData(0).set(samples);
     source.buffer = buffer;
     source.playbackRate.value = rate;
-    source.loop = loop;
 
     // create and connect gain node (createGain is more widely spported then GainNode construtor)
     const gainNode = audioContext.createGain();
@@ -136,7 +74,8 @@ function playSamples(sampleChannels, volume=1, rate=1, pan=0, loop=false, sample
     gainNode.connect(audioContext.destination);
 
     // connect source to stereo panner and gain
-    source.connect(new StereoPannerNode(audioContext, {'pan':clamp(pan, -1, 1)})).connect(gainNode);
+    //source.connect(new StereoPannerNode(audioContext, {'pan':clamp(pan, -1, 1)})).connect(gainNode);
+    source.connect(gainNode);
 
     // play and return sound
     source.start();
@@ -184,15 +123,18 @@ function zzfxG
     pitchJumpTime *= sampleRate;
     repeatTime = repeatTime * sampleRate | 0;
 
+    ASSERT(shape != 3 && shape != 2); // need save space
+
     // generate waveform
     for(length = attack + decay + sustain + release + delay | 0;
         i < length; b[i++] = s * volume)               // sample
     {
         if (!(++c%(bitCrush*100|0)))                   // bit crush
         {
-            s = shape? shape>1? shape>2? shape>3?      // wave shape
-                Math.sin(t**3) :                       // 4 noise
-                clamp(Math.tan(t),1,-1):               // 3 tan
+            s = shape? shape>1? 
+                //shape>2? shape>3?      // wave shape
+                //Math.sin(t**3) :                       // 4 noise
+                //clamp(Math.tan(t),1,-1):               // 3 tan
                 1-(2*t/PI2%2+2)%2:                     // 2 saw
                 1-4*abs(Math.round(t/PI2)-t/PI2):      // 1 triangle
                 Math.sin(t);                           // 0 sin
@@ -239,102 +181,4 @@ function zzfxG
     }
 
     return b;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// ZzFX Music Renderer v2.0.3 by Keith Clark and Frank Force
-
-function zzfxM(instruments, patterns, sequence, BPM = 125) 
-{
-  let i, j, k;
-  let instrumentParameters;
-  let note;
-  let sample;
-  let patternChannel;
-  let notFirstBeat;
-  let stop;
-  let instrument;
-  let attenuation;
-  let outSampleOffset;
-  let isSequenceEnd;
-  let sampleOffset = 0;
-  let nextSampleOffset;
-  let sampleBuffer = [];
-  let leftChannelBuffer = [];
-  let rightChannelBuffer = [];
-  let channelIndex = 0;
-  let panning = 0;
-  let hasMore = 1;
-  let sampleCache = {};
-  let beatLength = zzfxR / BPM * 60 >> 2;
-
-  // for each channel in order until there are no more
-  for (; hasMore; channelIndex++) {
-
-    // reset current values
-    sampleBuffer = [hasMore = notFirstBeat = outSampleOffset = 0];
-
-    // for each pattern in sequence
-    sequence.forEach((patternIndex, sequenceIndex) => {
-      // get pattern for current channel, use empty 1 note pattern if none found
-      patternChannel = patterns[patternIndex][channelIndex] || [0, 0, 0];
-
-      // check if there are more channels
-      hasMore |= patterns[patternIndex][channelIndex]&&1;
-
-      // get next offset, use the length of first channel
-      nextSampleOffset = outSampleOffset + (patterns[patternIndex][0].length - 2 - (notFirstBeat?0:1)) * beatLength;
-      // for each beat in pattern, plus one extra if end of sequence
-      isSequenceEnd = sequenceIndex == sequence.length - 1;
-      for (i = 2, k = outSampleOffset; i < patternChannel.length + isSequenceEnd; notFirstBeat = ++i) {
-
-        // <channel-note>
-        note = patternChannel[i];
-
-        // stop if end, different instrument or new note
-        stop = i == patternChannel.length + isSequenceEnd - 1 && isSequenceEnd ||
-            instrument != (patternChannel[0] || 0) || note | 0;
-
-        // fill buffer with samples for previous beat, most cpu intensive part
-        for (j = 0; j < beatLength && notFirstBeat;
-
-            // fade off attenuation at end of beat if stopping note, prevents clicking
-            j++ > beatLength - 99 && stop && attenuation < 1? attenuation += 1 / 99 : 0
-        ) {
-          // copy sample to stereo buffers with panning
-          sample = (1 - attenuation) * sampleBuffer[sampleOffset++] / 2 || 0;
-          leftChannelBuffer[k] = (leftChannelBuffer[k] || 0) - sample * panning + sample;
-          rightChannelBuffer[k] = (rightChannelBuffer[k++] || 0) + sample * panning + sample;
-        }
-
-        // set up for next note
-        if (note) {
-          // set attenuation
-          attenuation = note % 1;
-          panning = patternChannel[1] || 0;
-          if (note |= 0) {
-            // get cached sample
-            sampleBuffer = sampleCache[
-              [
-                instrument = patternChannel[sampleOffset = 0] || 0,
-                note
-              ]
-            ] = sampleCache[[instrument, note]] || (
-                // add sample to cache
-                instrumentParameters = [...instruments[instrument]],
-                instrumentParameters[2] *= 2 ** ((note - 12) / 12),
-
-                // allow negative values to stop notes
-                note > 0 ? zzfxG(...instrumentParameters) : []
-            );
-          }
-        }
-      }
-
-      // update the sample offset
-      outSampleOffset = nextSampleOffset;
-    });
-  }
-
-  return [leftChannelBuffer, rightChannelBuffer];
 }

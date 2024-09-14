@@ -5,7 +5,9 @@ let showMap, debugGenerativeCanvas, debugInfo;
 
 function debugInit() {}
 function drawDebug() {}
+function debugUpdate() {}
 function debugSaveCanvas() {}
 function debugSaveText() {}
+function debugDraw() {}
 function debugSaveDataURL() {}
 function ASSERT() {}

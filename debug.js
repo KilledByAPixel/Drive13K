@@ -1,33 +1,74 @@
 'use strict';
 
-let debug=1, downloadLink, debugMesh, debugTile, debugTakeScreenshot;
-let showMap=0, debugGenerativeCanvas=0, debugInfo=1;
-
-onerror=(event, source, lineno, colno, error)=>
-{ 
-    document.body.innerHTML = '<pre style="color:red;font-size:20px;">'+
-        event + '\n' + source + '\n' + 'Ln ' + lineno + ', Col ' + colno; 
-}
+let debug=1, downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
+let showMap=0, debugGenerativeCanvas=0, debugInfo=1, debugSkipped=0;
+let debugGenerativeCanvasCached;
 
 function ASSERT(assert, output) 
 { output ? console.assert(assert, output) : console.assert(assert); }
-
 function LOG() { console.log(...arguments); }
+
+///////////////////////////////////////////////////////////////////////////////
 
 function debugInit()
 {
-    // create link for saving screenshots
-    document.body.appendChild(downloadLink = document.createElement('a'));
-    downloadLink.style.display = 'none';
+    debugCanvas = document.createElement('canvas');
+    downloadLink = document.createElement('a');
 }
 
-function drawDebug()
+function debugUpdate()
 {
-    if (debugInfo)
-        drawHUDText('fps: ' + (averageFPS|0) + ' draws: ' + glDrawCalls, vec3(.8,.05), .04);
+    if (keyWasPressed('Digit1'))
+    {
+        playerVehicle.pos.z += checkpointDistance;
+        checkpointTimeLeft = 40;
+        debugSkipped = 1;
+    }
+    if (keyIsDown('Digit2'))
+        playerVehicle.pos.z += 1000;
+    if (keyIsDown('Digit3') || keyIsDown('NumpadSubtract'))
+    {
+        playerVehicle.pos.z -= keyIsDown('NumpadSubtract') ? 100 : 1000;
+        playerVehicle.pos.z = max(playerVehicle.pos.z, 0);
+        playerVehicle.pos.x *= .9;
+        debugSkipped = 1;
+    }
+    if (keyWasPressed('Digit5'))
+        debugCapture = 1;
+    if (keyWasPressed('Digit6'))
+        checkpointTimeLeft=1
+        
+    if (keyWasPressed('KeyQ'))
+        testDrive = !testDrive
+    if (keyWasPressed('KeyE'))
+    {
+        //sound_win.play(1,2);
+        sound_beep.play(1,4);
+    }
+    if (keyWasPressed('KeyR')) // restart
+    {
+        titleScreenMode = 0;
+        sound_lose.play(1,2);
+        gameStart();
+    }
+
+    if (debug && keyWasPressed('KeyV'))
+        spawnVehicle(playerVehicle.pos.z-1e3)
+        
+    //if (!document.hasFocus())
+    //    testDrive = 1;
+}
+
+function debugDraw()
+{
+    if (debugInfo && !debugCapture)
+        drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls, vec3(.95,.1),.03,undefined,undefined,undefined,'right');
 
     const c = mainCanvas;
     const context = mainContext;
+
+    if (testDrive)
+        drawHUDText('AUTO', vec3(.1,.95),.05,RED);
 
     if (showMap)
     {
@@ -67,17 +108,21 @@ function drawDebug()
     {
         const s = 512;
         //context.imageSmoothingEnabled = false;
-        context.drawImage(generativeCanvas, 0, 0, s, s);
+        context.drawImage(debugGenerativeCanvasCached, 0, 0, s, s);
        // context.strokeRect(0, 0, s, s);
     }
 
-    if (debugTakeScreenshot)
+    if (debugCapture)
     {
-        debugTakeScreenshot = 0;
-        mainContext.fillStyle = '#000';
-        mainContext.fillRect(0,0,mainCanvas.width,mainCanvas.height);
-        mainContext.drawImage(glCanvas, 0, 0);
-        debugSaveCanvas(mainCanvas);
+        debugCapture = 0;
+        const context = debugCanvas.getContext('2d');
+        debugCanvas.width = mainCanvas.width;
+        debugCanvas.height = mainCanvas.height;
+        context.fillStyle = '#000';
+        context.fillRect(0,0,mainCanvas.width,mainCanvas.height);
+        context.drawImage(glCanvas, 0, 0);
+        context.drawImage(mainCanvas, 0, 0);
+        debugSaveCanvas(debugCanvas);
     }
 
     {
@@ -88,21 +133,34 @@ function drawDebug()
         //debugTile = vec3(0,1)
         if (debugTile)
         {
-            const s = 256, w = generativeTileSize, v = debugTile.scale(w);
+            const s = 256*2, w = generativeTileSize, v = debugTile.scale(w);
             const x = mainCanvas.width/2-s/2;
-            context.fillStyle = '#555';
+            context.fillStyle = '#5f5';
             context.fillRect(x, 0, s, s);
-            context.drawImage(generativeCanvas, v.x, v.y, w, w, x, 0, s, s);
+            context.drawImage(debugGenerativeCanvasCached, v.x, v.y, w, w, x, 0, s, s);
             context.strokeRect(x, 0, s, s);
-            //pushTrackSprite(cameraPos.add(vec3(0,0,100)), vec3(100), WHITE, debugTile);  
+            //pushTrackObject(cameraPos.add(vec3(0,0,100)), vec3(100), WHITE, debugTile);  
         }
     }
 
+    if (0) // world cube
     {
-        // world cube
-        //const r = vec3(0,-worldHeading,0);
-        //const m1 = buildMatrix(vec3(0,1e3,2e3), r, vec3(200));
-        //cubeMesh.render(m1, hsl(0,.8,.5)); 
+        const r = vec3(0,-worldHeading,0);
+        const m1 = buildMatrix(vec3(2220,1e3,2e3), r, vec3(200));
+        cubeMesh.render(m1, hsl(0,.8,.5)); 
+    }
+
+    if (0)
+    {
+        // test noise
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, 500, 500);
+        context.fillStyle = '#000';
+        for(let i=0; i < 1e3; i++)
+        {
+            const n = noise1D(i/129-time*9)*99;
+            context.fillRect(i, 200+n, 9, 9);
+        }
     }
 
     //cubeMesh.render(buildMatrix(vec3(0,-500,0), vec3(0), vec3(1e5,10,1e5)), RED);   // ground
@@ -112,6 +170,8 @@ function drawDebug()
 
     glRender();
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 function debugSaveCanvas(canvas, filename=engineName, type='image/png')
 { debugSaveDataURL(canvas.toDataURL(type), filename); }

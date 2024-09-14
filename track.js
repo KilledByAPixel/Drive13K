@@ -1,36 +1,18 @@
 'use strict';
 
-function trackPreRender()
+function trackPreUpdate()
 {
-    // update camera
-    cameraOffset = playerVehicle.pos.z - cameraPlayerOffset.z;
-    cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
-    worldHeading += .00005*cameraTrackInfo.offset.x*playerVehicle.velocity.z;
-
-    if (attractMode)
-        cameraPos.y = cameraTrackInfo.offset.y + 1e3;
-    else
-        cameraPos.y = cameraTrackInfo.offset.y + cameraPlayerOffset.y;
-
-    cameraRot.x = cameraTrackInfo.pitch/2;
-    cameraPos.x = playerVehicle.pos.x*.7;
-
-    // track settings
-    lightDirection = vec3(0,4,-1).rotateY(worldHeading).normalize()
-    lightColor = hsl(0,1,1);
-    ambientColor = hsl(.7,.1,.2);
-    fogColor = hsl(.6,1,.7);
-
     // calcuate track x offsets and projections (iterate in reverse)
-    const cameraTrackSegment = cameraTrackInfo.segment;
+    const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+    const cameraTrackSegment = cameraTrackInfo.segmentIndex;
     const cameraTrackSegmentPercent = cameraTrackInfo.percent;
     const turnScale = 2;
     let x, v, i;
-    for(x = v = i = 0; i < drawDistance+1; ++i)
+    for(x = v = i = 0; i < drawDistance; ++i)
     {
         const j = cameraTrackSegment+i;
         if (!track[j])
-            break;
+            continue;
 
         // create track world position
         const s = i < 1 ? 1-cameraTrackSegmentPercent : 1;
@@ -45,276 +27,218 @@ function drawRoad(zwrite = 0)
     glSetDepthTest(zwrite,zwrite);
     
     // draw the road segments
-    const cameraTrackSegment = cameraTrackInfo.segment;
-    for(let i = drawDistance, segment2; i--; )
+    const drawLineDistance = 500;
+    const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+    const cameraTrackSegment = cameraTrackInfo.segmentIndex;
+    for(let i = drawDistance, segment1, segment2; i--; )
     {
         const segmentIndex = cameraTrackSegment+i;
-        const segment1 = track[segmentIndex];    
+        segment1 = track[segmentIndex];    
         if (!segment1 || !segment2)
         {
-            segment2 = segment1
+            segment2 = segment1;
             continue;
         }
 
         const p1 = segment1.pos;
         const p2 = segment2.pos;
-        if (i % (lerp(i/drawDistance,1,6)|0) == 0) // fade in road resolution
+        if (i % (lerp(i/drawDistance,1,4)|0)) // fade in road resolution
+            continue;
+            
+        const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
+        function pushRoadVerts(width, color, offset=0, width2=width, offset2=offset)
         {
-            const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
-            for(let pass=0; pass < (zwrite ? 1 : 3); ++pass)
-            {
-                let color, offset;
-                if (pass == 0)
-                {
-                    // ground
-                    color = segment1.colorGround;
-                    offset = p1.z*20; // fill the screen
-                }
-                else if (pass == 1)
-                {
-                    // road
-                    color = segment1.colorRoad;
-                    offset = segment1.width;
-                }
-                else if (pass == 2)
-                {
-                    // stripe
-                    color = segment1.colorLine;
-                    offset = 30;
-                }
-
-                const point1a = vec3(p1.x+offset, p1.y, p1.z);
-                const point1b = vec3(p1.x-offset, p1.y, p1.z);
-                const point2a = vec3(p2.x+offset, p2.y, p2.z);
-                const point2b = vec3(p2.x-offset, p2.y, p2.z);
-                const poly = [point1a, point1b, point2a, point2b];
-                color.a && glPushPoints(poly, normals, color, 0, 1);
-            }
-            segment2 = segment1;
+            const point1a = vec3(p1.x+width+offset, p1.y, p1.z);
+            const point1b = vec3(p1.x-width+offset, p1.y, p1.z);
+            const point2a = vec3(p2.x+width2+offset2, p2.y, p2.z);
+            const point2b = vec3(p2.x-width2+offset2, p2.y, p2.z);
+            const poly = [point1a, point1b, point2a, point2b];
+            color.a && glPushVertsCapped(poly, normals, color);
         }
+
+        {
+            // ground
+            const color = segment1.colorGround;
+            const width = 1e5; // fill the width of the screen
+            pushRoadVerts(width, color);
+        }
+
+        if (zwrite)
+        {
+            segment2 = segment1;
+            continue;
+        }
+
+        {
+            // road
+            const color = segment1.colorRoad;
+            const width = segment1.width;
+            const width2 = segment2.width;
+            pushRoadVerts(width, color, undefined, width2);
+        }
+
+        if (i < drawLineDistance)
+        {
+            // lines on road
+            const w = segment1.width;
+            const lineBias = .2
+            const laneCount = 2*w/laneWidth - lineBias;
+            for(let j=1; j<laneCount; ++j)
+            {
+                const color = segment1.colorLine;
+                const lineWidth = 30;
+                const offset = j*laneWidth-segment1.width;
+                const offset2 = j*laneWidth-segment2.width;
+                pushRoadVerts(lineWidth, color, offset, undefined, offset2);
+            }
+        }
+        
+        segment2 = segment1;
     }
 
     glRender();
     glSetDepthTest();
 }
 
-function drawScenery()
+function drawTrackScenery()
 {
+    // this is last pass from back to front so do do not write to depth
     glSetDepthTest(1,0);
-    glPolygonOffset(100);
-    
-    const cameraTrackSegment = cameraTrackInfo.segment;
-    for(let i = sceneryDrawDistance; i--; )
+
+    const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+    const cameraTrackSegment = cameraTrackInfo.segmentIndex;
+    for(let i=drawDistance; i--; )
     {
         const segmentIndex = cameraTrackSegment+i;
         const trackSegment = track[segmentIndex];    
         if (!trackSegment)
             continue;
 
-        // random scenery
-        random.setSeed(segmentIndex);
-        const w = trackSegment.width;
-        for(let i=5;i--;)
-        {
-            const m = random.sign();
-            const s = random.float(300, 600);
-            const o = random.floatSign(w+300,5e4);
-            const p = trackSegment.pos.add(vec3(o,0,0));
-            pushTrackSprite(p, vec3(s*m,s,s), hsl(random.float(.1,.15),1,.5), vec3(1,1));
-        }
+        // draw objets for this segment
+        random.setSeed(trackSeed+segmentIndex);
+        for(const trackObject of trackSegment.trackObjects)
+            trackObject.draw();
 
-        // collidable sprites
-        for(const sprite of trackSegment.sprites)
-            sprite.draw(trackSegment);
+        // random scenery
+        const levelInfo = getLevelInfo(trackSegment.level);
+        const w = trackSegment.width;
+        if (!trackSegment.sideStreet) // no sprites on side streets
+        for(let k=3;k--;)
+        {
+            const trackSpriteSide = (segmentIndex+k)%2 ? 1 : -1;
+            if (trackSpriteSide == levelInfo.waterSide)
+            {
+                // water
+                const sprite = trackSprites.water;
+                const s = sprite.size*sprite.getRandomSpriteScale();
+                const o = trackSpriteSide * random.float(w+6e3,5e4);
+                const wave = segmentIndex/39+time;
+                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),0));
+                const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive
+                const c = hsl(0,random.float(.9,1),random.float(.9,1));
+                pushTrackObject(p, vec3(trackSpriteSide*s,s,s), c, sprite, waveWind);
+            }
+            else
+            {
+                // lerp in next level scenery at end
+                const levelFloat = trackSegment.offset.z/checkpointDistance;
+                const levelInfoNext = getLevelInfo(levelFloat+1);
+                const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
+                const sceneryLevelInfo = random.bool(levelLerpPercent) ? levelInfoNext : levelInfo;
+                
+                // scenery on far side like grass and flowers
+                const sceneryList = sceneryLevelInfo.scenery;
+                const sceneryListBias = sceneryLevelInfo.sceneryListBias;
+                if (sceneryLevelInfo.scenery)
+                {
+                    const sprite = random.fromList(sceneryList,sceneryListBias);
+                    const s = sprite.size*sprite.getRandomSpriteScale();
+
+                    // push farther away if big collision
+                    const xm = w+sprite.size+8*sprite.collideScale*s; 
+                    const o = trackSpriteSide * random.float(xm,3e4);
+                    const p = trackSegment.pos.add(vec3(o,0));
+                    const wind = trackSegment.getWind();
+                    const color = sprite.getRandomSpriteColor();
+                    const scale = vec3(s);
+                    if (sprite.canMirror && random.bool())
+                        scale.x *= -1;
+                    pushTrackObject(p, scale, color, sprite, wind);
+                }
+            }
+        }
     }
 
     glRender();
-    glSetDepthTest();
-    glPolygonOffset(0);
 }
 
 function drawTrack()
 {
-    drawRoad(1); // first draw just flat ground with z write
+    glEnableFog = 0; // disable track fog
+    drawRoad(true); // first draw just flat ground with z write
     drawRoad();  // then draw the road without z write
+    glEnableFog = 1;
 }
 
-function pushTrackSprite(pos, scale, color, tilePos)
-{
-    const offset = 20; // offset from the ground
-    pushShadow(pos.add(vec3(0,offset)), scale.y, scale.y*.2);
-    pushSprite(pos.add(vec3(0,offset+scale.y)), scale, color, getGenerativeTile(tilePos));
+function pushTrackObject(pos, scale, color, sprite, trackWind)
+ {
+    if (optimizedCulling)
+    {
+        const cullScale = 100;
+        if (cullScale*scale.y < pos.z)
+            return; // cull out small sprites
+        if (abs(pos.x)-abs(scale.x) > pos.z*4)
+            return; // out of view
+        if (pos.z < 0)
+            return; // behind camera
+    }
+
+    const tilePos = sprite.tilePos;
+    const spriteYOffset = scale.y*(1+sprite.spriteYOffset);
+    const shadowScale = sprite.shadowScale;
+    const wind = sprite.windScale * trackWind;
+    const yShadowOffset = 10;
+
+    if (shadowScale)
+        pushShadow(pos.add(vec3(0,yShadowOffset)), scale.y*shadowScale, scale.y*shadowScale/6);
+
+    // draw on top of shadow
+    pushSprite(pos.add(vec3(0,spriteYOffset)), scale, color, getSpriteTile(tilePos), wind);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class TrackSegmentInfo
+/*function draw3DTrackScenery()
 {
-    constructor(z)
-    {
-        const segment = this.segment = z/trackSegmentLength|0;
-        const percent = this.percent = z/trackSegmentLength%1;
-        if (track[segment] && track[segment+1])
-        {
-            if (track[segment].pos && track[segment+1].pos)
-                this.pos = track[segment].pos.lerp(track[segment+1].pos, percent);
-            else
-                this.pos = vec3(0,0,z);
-            this.offset = track[segment].offset.lerp(track[segment+1].offset, percent);
-            this.pitch = lerp(percent, track[segment].pitch, track[segment+1].pitch);
-            this.width = lerp(percent, track[segment].width, track[segment+1].width);
-        }
-        else
-        {
-            this.offset = this.pos = vec3(0,0,z);
-            this.pitch = 0;
-            this.width = trackWidth;
-        }
-    }
-}
-
-class TrackSprite
-{
-    constructor(offset, scale, color, tilePos, collideSize=60)
-    {
-        this.offset = offset;
-        this.scale = scale;
-        this.color = color;
-        this.tilePos = tilePos;
-        this.collideSize = collideSize;
-    }
-
-    draw(trackSegment)
-    {
-        const pos = trackSegment.pos.add(this.offset);
-        pushTrackSprite(pos, this.scale, this.color, this.tilePos);
-    }
-}
-
-class TrackSegment
-{
-    constructor(segmentIndex,offset,width)
-    {
-        this.offset = offset;
-        this.width = width;
-        this.pitch = 0;
-        this.normal = vec3(0,1);
-        this.sprites = [];
-        
-        const previous = track[segmentIndex-1];
-        if (previous)
-        {
-            this.pitch = Math.atan2(previous.offset.y-offset.y, trackSegmentLength);
-            const v = vec3(0,offset.y-previous.offset.y, trackSegmentLength);
-            this.normal = v.cross(vec3(1,0)).normalize();
-        }
-
-        let checkpointLine = segmentIndex > 25 && segmentIndex < 30;
-        if (segmentIndex%checkpointTrackSegments < 5)
-            checkpointLine = 1;
-        {
-            // setup colors
-            const largeSegmentIndex = segmentIndex/6|0;
-            const stripe = largeSegmentIndex% 2 ? .1: 0;
-            this.colorGround = hsl(.083, .2, .7 + Math.cos(segmentIndex*2/PI)*.05);
-            this.colorRoad = hsl(0, 0, stripe ? .6 : .55);
-            if (checkpointLine)
-                this.colorRoad = WHITE; // starting line
-            this.colorLine = hsl(0,0,1,stripe?1:0);
-        }
-
-        // spawn sprites
-        const addSprite = (...a)=>this.sprites.push(new TrackSprite(...a));
-        if (segmentIndex%checkpointTrackSegments == 0) // checkpoint
-        {
-            addSprite(vec3(-width+100,0), vec3(800), WHITE, vec3(6,0), 0);
-            addSprite(vec3(width-100,0), vec3(800), WHITE, vec3(7,0), 0);
-        }
-        if (segmentIndex == 30) // start
-            addSprite(vec3(0,-700,0), vec3(1300), WHITE, vec3(5,0), 0);
-        else
-        {
-            let s = random.float(1e3, 1400);
-            let sideTree = segmentIndex%13 == 0;
-            let m = segmentIndex%2 ? 1 : -1;
-            let m2 = sideTree ? m : random.sign();
-            let o = (width+(sideTree?500:random.float(2e5)))*m2;
-            let offset = vec3(o,0,0);
-
-            if (random.bool(.01))
-            {
-                // billboard
-                offset = vec3((width+700)*random.sign(),0,0)
-                addSprite(offset, vec3(400), hsl(0,0,random.float(.9,1)), vec3(random.int(8),2));
-            }
-            else
-            {
-                addSprite(offset, vec3(s*m,s,s), hsl(0,0,random.float(.9,1)), vec3(0,1));
-            }
-        }
-    }
-}
-
-function buildTrack()
-{
-    /////////////////////////////////////////////////////////////////////////////////////
-    // build the road with procedural generation
-    /////////////////////////////////////////////////////////////////////////////////////
-
-    // set random seed & time
-    let roadGenSectionDistanceMax = 0;
-    let roadGenWidth = trackWidth;
-    let roadGenSectionDistance = 0;
-    let roadGenTaper = 0;
-    let roadGenWaveFrequencyX = 0;
-    let roadGenWaveFrequencyY = 0;
-    let roadGenWaveScaleX = 0;
-    let roadGenWaveScaleY = 0;
-    random.setSeed(5123);
-    track = []; 
+    const cameraTrackSegment = cameraTrackInfo.segmentIndex;
     
-    // generate the road
-    for(let i = 0; i < trackEnd + 3e3 + drawDistance; ++i)
+    // 3d scenery
+    for(let i=drawDistance, segment1, segment2; i--; )
     {
-        if (roadGenSectionDistance++ > roadGenSectionDistanceMax)
-        {
-            // calculate difficulty percent
-            const difficulty =1; Math.min(1, i*trackSegmentLength/checkpointDistance/checkpointMaxDifficulty);
-            
-            // randomize road settings
-            roadGenWidth = trackWidth//*random.float(1-difficulty*.7, 3-2*difficulty);
-            roadGenWaveFrequencyX = random.float(lerp(difficulty, .01, .03));
-            roadGenWaveFrequencyY = random.float(lerp(difficulty, .01, .1));
-            roadGenWaveScaleX = i > trackEnd ? 0 : random.float(lerp(difficulty, .2, .8));
-            roadGenWaveScaleY = random.float(5,lerp(difficulty, 10, 40));
-            
-            // apply taper and move back
-            roadGenTaper = random.float(99, 1e3)|0;
-            roadGenSectionDistanceMax = roadGenTaper + random.float(99, 1e3);
-            i -= roadGenTaper;
-            roadGenSectionDistance = 0;
-        }
-        
-        // make wavy hills
-        let x = Math.sin(i*roadGenWaveFrequencyX) * roadGenWaveScaleX;
-        let ys = min(2e3,10/roadGenWaveFrequencyY);
-        let y = ys * Math.sin(i*roadGenWaveFrequencyY);
-        let z = i*trackSegmentLength;
-        let o = vec3(x,y,z);
-        let w = i > trackEnd ? 0 : roadGenWidth;
-        let t = track[i];
-        if (t)
-        {
-            // lerp in taper
-            const p = clamp(roadGenSectionDistance / roadGenTaper, 0, 1);
-            o = t.offset.lerp(o, p);
-            w = lerp(p, t.width, w);
-        }
-
-        if (i<0)
+        segment2 = segment1;
+        const segmentIndex = cameraTrackSegment+i;
+        segment1 = track[segmentIndex];    
+        if (!segment1 || !segment2)
             continue;
 
-        // make the road gen segment
-        track[i] = new TrackSegment(i, o, w);
+        if (segmentIndex%7)
+            continue
+
+        const d = segment1.pos.subtract(segment2.pos);
+        const heading = PI-Math.atan2(d.x, d.z);
+
+        // random scenery
+        random.setSeed(trackSeed+segmentIndex);
+        const w = segment1.width;
+        const o =(segmentIndex%2?1:-1)*(random.float(5e4,1e5))
+        const r = vec3(0,-heading,0);
+        const p = segment1.pos.add(vec3(-o,0));
+
+        const s = vec3(random.float(500,1e3),random.float(1e3,4e3),random.float(500,1e3));
+        //const s = vec3(500,random.float(2e3,2e4),500);
+        const m4 = buildMatrix(p,r,s);
+        const c = hsl(0,0,random.float(.2,1));
+        cubeMesh.render(m4, c);
     }
 }
+*/

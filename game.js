@@ -1,47 +1,61 @@
 'use strict';
 
 showMap = 0;
-
-speakEnable = 1;
-debugInfo = 0;
-//debugTile = vec3(6,0)
+debugInfo = 0
+//debugInfo = 1
+//debugTile = vec3(1,3)
 //debugGenerativeCanvas = 1
-soundVolume = .3;
+soundVolume = .3
+
+const quickStart = 0;
+let testDrive = 0;
+let freeRide = 0;
+let testLevelInfo;
+const testStartZ = quickStart&&!testLevelInfo?5e3:0;
+const testLevels = 0;
+
+
+///////////////////////////////////////////////////
 
 const engineName = 'js13kRace';
-const testDrive = 0;
-const enableTexture = 1;
-const enableLighting = 1;
 const pixelate = 0;
 const canvasFixedSize = 0;
 const frameRate = 60;
 const timeDelta = 1/60;
+const aiVehicles = 1;
+const pixelateScale = 3;
+const clampAspectRatios = 0;
 
 // track settings
-const trackWidth = 1000;           // how wide is track
-const trackEnd = 1e4;              // how many sections until end of the track
+const laneWidth = 1400;            // how wide is track
 const trackSegmentLength = 100;    // length of each segment
-const drawDistance = 1e3;          // how many track segments to draw in front
-const sceneryDrawDistance = 500;   // how far to draw scenery
-const cameraPlayerOffset = vec3(0,700,1050);
-const checkpointTrackSegments = 3e3;
+const drawDistance = 1e3;          // how many track segments to draw for scenery
+const cameraPlayerOffset = vec3(0,680,1050);
+const checkpointTrackSegments = testLevels?1e3:4e3;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;  // how far between checkpoints
-const checkpointMaxDifficulty = 9; // how many checkpoints before max difficulty
-const startCheckpointTime = 30;
+const startCheckpointTime = 40;
+const levelLerpRange = .1;
+const levelGoal = 10;
+const playerStartZ = 2e3;
+const optimizedCulling = 1;
 
-let quickStart = 0;
-let attractMode = 1;
 let mainCanvasSize = pixelate ? vec3(640, 420) : vec3(1280, 720);
 let mainCanvas, mainContext;
 let time, frame, frameTimeLastMS, averageFPS, frameTimeBufferMS;
-let attractVehicleSpawnTimer;
+let vehicleSpawnTimer;
 let paused;
 let checkpointTimeLeft, startCountdown, startCountdownTimer, gameOverTimer, nextCheckpointDistance;
+let raceTime, playerLevel, playerWin, playerNewRecord;
+let titleScreenMode = 1;
+let titleModeStartCount = 0;
+const trackSeed = 1331;
+
+let checkpointSoundCount, checkpointSoundTimer;
 
 ///////////////////////////////
 // game variables
 
-let cameraPos, cameraRot, cameraOffset, cameraTrackInfo;
+let cameraPos, cameraRot, cameraOffset;
 let worldHeading, mouseControl;
 let track, vehicles, playerVehicle;
 
@@ -50,66 +64,78 @@ let track, vehicles, playerVehicle;
 function gameInit()
 {
     if (quickStart)
-        attractMode = 0;
+        titleScreenMode = 0;
 
     debug && debugInit();
     glInit();
-    
-    const styleBody = 'background-color:#111;margin:0';
+        
+    document.body.appendChild(mainCanvas = document.createElement('canvas'));
+    mainContext = mainCanvas.getContext('2d');
+
     const styleCanvas = 'position:absolute;' +             // position
         'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
         (pixelate?' image-rendering: pixelated':'');
+    mainCanvas.style.cssText = styleCanvas;
 
-    document.body.style = styleBody;
-    document.body.appendChild(mainCanvas = document.createElement('canvas'));
-    mainContext = mainCanvas.getContext('2d');
-    mainContext.imageSmoothingEnabled = !pixelate;
-    glContext.imageSmoothingEnabled = !pixelate;
-    glCanvas.style.cssText = mainCanvas.style.cssText = styleCanvas;
+    const styleWebglCanvas = 'position:absolute;' +             // position
+        'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
+        'background:#000;'+
+        (pixelate?' image-rendering: pixelated':'');
+    glCanvas.style.cssText = styleWebglCanvas;
+    //glCanvas.style.backgroundColor = '#000';
 
     drawInit();
-    inputInit();
+    inputInit()
     initSounds()
     initGenerative();
     initHUD();
-    buildTrack();
+    initTrackSprites();
+    initLevelInfos();
     gameStart();
     gameUpdate();
 }
 
 function gameStart()
 {
-    attractVehicleSpawnTimer = time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
-        worldHeading = cameraOffset = checkpointTimeLeft = 0;
+    time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
+        cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart ? 0 : 4;
+    worldHeading = 2;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
     gameOverTimer = new Timer;
+    vehicleSpawnTimer = new Timer;
+    checkpointSoundTimer = new Timer;
     cameraPos = vec3();
     cameraRot = vec3();
     vehicles = [];
-    playerVehicle = new PlayerVehicle(2e3, hsl(0,.8,.5));
+    buildTrack();
+    playerVehicle = new PlayerVehicle(testStartZ?testStartZ:playerStartZ, hsl(0,.8,.5));
     vehicles.push(playerVehicle);
 
-    for(let i = 10; i--;)
-        vehicles.push(new Vehicle(5e3*i+3e3, hsl(rand(),.8,.5)));
+    if (titleScreenMode)
+    {
+        const level = titleModeStartCount*2%9;
+        playerVehicle.pos.z = 4e3+level*checkpointDistance;
+    }
 }
 
 function gameUpdateInternal()
 {
-    if (attractMode)
+    if (titleScreenMode)
     {
-        // update attract mode
-        if (vehicles.length < 10 && attractVehicleSpawnTimer-- < 0)
+        // update title screen
+        if (mouseWasPressed(0) || keyWasPressed('Space'))
         {
-            vehicles.push(new Vehicle(playerVehicle.pos.z-1e3, hsl(rand(),.8,.5)));
-            attractVehicleSpawnTimer = randInt(100,300);
+            titleScreenMode = 0;
+            sound_bump.play(2,2);
+            gameStart();
         }
-        if (mouseWasPressed(0))
+        if (time > 90)
         {
-            attractMode = 0;
-            sound_start.play();
+            // restart
+            ++titleModeStartCount;
             gameStart();
         }
     }
@@ -118,113 +144,223 @@ function gameUpdateInternal()
         if (startCountdown > 0 && !startCountdownTimer.active())
         {
             --startCountdown;
-            speak(startCountdown || 'GO!' );
+            if (startCountdown < 3)
+                sound_beep.play(1,startCountdown?1:2);
+            //speak(startCountdown || 'GO!' );
             startCountdownTimer.set(1);
         }
-        
+
+        if (gameOverTimer.get() > 1 && mouseWasPressed(0) || gameOverTimer.get() > 9)
+        {
+            // go back to title screen after a while
+            titleScreenMode = 1;
+            titleModeStartCount = 0;
+            gameStart();
+        }
         if (keyWasPressed('Escape'))
         {
-            attractMode = 1;
-            sound_start.play();
+            // go back to title screen
+            sound_bump.play(2);
+            titleScreenMode = 1;
+            ++titleModeStartCount;
             gameStart();
         }
-
-        if (gameOverTimer > 1 && mouseWasPressed(0) || gameOverTimer > 9)
+        /*if (keyWasPressed('KeyR'))
         {
-            attractMode = 1;
+            titleScreenMode = 0;
+            sound_lose.play(1,2);
             gameStart();
-        }
+        }*/
+        
+        if (keyWasPressed('KeyF'))
+            freeRide = 1;
 
-        if (checkpointTimeLeft > 0 && startCountdown == 0)
+        if (!startCountdown && !gameOverTimer.isSet())
         {
+            raceTime += timeDelta;
+
+            const lastCheckpointTimeLeft = checkpointTimeLeft;
             checkpointTimeLeft -= timeDelta;
-            if (checkpointTimeLeft <= 0)
+
+            if (checkpointTimeLeft < 3)
+            if ((lastCheckpointTimeLeft|0) != (checkpointTimeLeft|0))
             {
-                speak('GAME OVER');
-                gameOverTimer.set();
-                checkpointTimeLeft = 0;
+                // low time warning
+                sound_beep.play(1,4);
+            }
+
+            if (!freeRide)
+            {    
+                const playerDistance = playerVehicle.pos.z;
+                if (playerDistance > bestDistance && playerDistance > 5e3)
+                {
+                    if (!playerNewRecord && bestDistance)
+                        sound_win.play(1,2);// new record!
+                    bestDistance = playerDistance;
+                    writeSaveData();
+                    //speak('NEW RECORD');
+                    playerNewRecord = 1;
+                }
+
+                if (checkpointTimeLeft <= 0)
+                {
+                    checkpointTimeLeft = 0;
+                    //speak('GAME OVER');
+                    gameOverTimer.set();
+                    sound_lose.play();
+                }
             }
         }
     }
 
-    if (keyWasPressed('KeyR'))
+    // spawn in more vehicles
+    const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20 && !testDrive;
+    const trafficLevelOffset = playerIsSlow? 0 : 8e4; // check in front/behind
+    const trafficLevel = (playerVehicle.pos.z+trafficLevelOffset)/checkpointDistance;
+    const trafficLevelInfo = getLevelInfo(trafficLevel);
+    const trafficDensity = trafficLevelInfo.trafficDensity;
+    const maxVehicleCount = 10*trafficDensity;
+
+    if (vehicles.length<maxVehicleCount && !gameOverTimer.isSet() && !vehicleSpawnTimer.active())
     {
-        attractMode = 0;
-        sound_start.play();
-        gameStart();
+        // todo prevent vehicles being spawned too close to each other
+        if (playerIsSlow)
+        {
+            // spawn behind
+            spawnVehicle(playerVehicle.pos.z-1e3);
+            vehicleSpawnTimer.set(rand(2,4)/trafficDensity);
+        }
+        else if (trafficDensity)
+        {
+            spawnVehicle(playerVehicle.pos.z + rand(5e4,6e4));
+            vehicleSpawnTimer.set(rand(2,4)/trafficDensity);
+        }
     }
-    
+
     for(const v of vehicles)
         v.update();
+    vehicles = vehicles.filter(o=>!o.destroyed);
 }
 
 function gameUpdate(frameTimeMS=0)
 {
-    if (canvasFixedSize)
-    {
-        // clear canvas and set fixed size
-        mainCanvas.width  = mainCanvasSize.x;
-        mainCanvas.height = mainCanvasSize.y;
-    }
+    requestAnimationFrame(gameUpdate);
+    if (!clampAspectRatios)
+        mainCanvasSize = vec3(mainCanvas.width=innerWidth, mainCanvas.height=innerHeight);
     else
     {
-        mainCanvasSize = vec3(innerWidth, innerHeight);
-        if (pixelate)
+        // more complex aspect ratio handling
+        const innerAspect = innerWidth / innerHeight;
+        if (canvasFixedSize)
         {
-            const s = 2;
-            mainCanvasSize.x = mainCanvasSize.x / s | 0;
-            mainCanvasSize.y = mainCanvasSize.y / s | 0;
+            // clear canvas and set fixed size
+            mainCanvas.width  = mainCanvasSize.x;
+            mainCanvas.height = mainCanvasSize.y;
         }
-
-        mainCanvas.width  = mainCanvasSize.x;
-        mainCanvas.height = mainCanvasSize.y;
+        else
+        {
+            const minAspect = .5, maxAspect = 2.5;
+            const correctedWidth = innerAspect > maxAspect ? innerHeight * maxAspect :
+                    innerAspect < minAspect ? innerHeight * minAspect : innerWidth;
+            if (pixelate)
+            {
+                const w = correctedWidth / pixelateScale | 0;
+                const h = innerHeight / pixelateScale | 0;
+                mainCanvasSize = vec3(mainCanvas.width = w, mainCanvas.height = h);
+            }
+            else
+                mainCanvasSize = vec3(mainCanvas.width=correctedWidth, mainCanvas.height=innerHeight);
+        }
+            
+        // fit to window by adding space on top or bottom if necessary
+        const fixedAspect = mainCanvas.width / mainCanvas.height;
+        mainCanvas.style.width  = glCanvas.style.width  = innerAspect < fixedAspect ? '100%' : '';
+        mainCanvas.style.height = glCanvas.style.height = innerAspect < fixedAspect ? '' : '100%';
     }
-        
-    // fit to window by adding space on top or bottom if necessary
-    const aspect = innerWidth / innerHeight;
-    const fixedAspect = mainCanvas.width / mainCanvas.height;
-    mainCanvas.style.width  = glCanvas.style.width  = aspect < fixedAspect ? '100%' : '';
-    mainCanvas.style.height = glCanvas.style.height = aspect < fixedAspect ? '' : '100%';
 
     // update time keeping
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
-    const debugSpeedUp   = debug && keyIsDown('Equal'); // +
+    const debugSpeedUp   = debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
     const debugSpeedDown = debug && keyIsDown('Minus'); // -
     if (debug) // +/- to speed/slow time
-        frameTimeDeltaMS *= debugSpeedUp ? 5 : debugSpeedDown ? .2 : 1;
+        frameTimeDeltaMS *= debugSpeedUp ? 10 : debugSpeedDown ? .2 : 1;
     averageFPS = lerp(.05, averageFPS, 1e3/(frameTimeDeltaMS||1));
     frameTimeBufferMS += paused ? 0 : frameTimeDeltaMS;
     frameTimeBufferMS = min(frameTimeBufferMS, 50); // clamp in case of slow framerate
 
-    // apply time delta smoothing, improves smoothness of framerate in some browsers
-    let deltaSmooth = 0;
-    if (frameTimeBufferMS < 0 && frameTimeBufferMS > -9)
+    // apply flux capacitor, improves smoothness of framerate in some browsers
+    let fluxCapacitor = 0;
+    if (frameTimeBufferMS < 0)
     {
-        // force an update each frame if time is close enough (not just a fast refresh rate)
-        deltaSmooth = frameTimeBufferMS;
+        // force at least one update each frame since it is waiting for refresh
+        // the flux capacitor is what makes time travel possible
+        fluxCapacitor = frameTimeBufferMS;
         frameTimeBufferMS = 0;
     }
     
     // update multiple frames if necessary in case of slow framerate
-    inputUpdate();
-    for (;frameTimeBufferMS >= 0; frameTimeBufferMS -= 1e3 / frameRate)
+    for (;frameTimeBufferMS >= 0; frameTimeBufferMS -= 1e3/frameRate)
     {
         // increment frame and update time
         time = frame++ / frameRate;
         gameUpdateInternal();
+        debugUpdate();
+        inputUpdate();
+        updateCamera();
+        trackPreUpdate();
+        inputUpdatePost();
     }
 
     // add the time smoothing back in
-    frameTimeBufferMS += deltaSmooth;
+    frameTimeBufferMS += fluxCapacitor;
 
-    trackPreRender();
+    preRenderSky();
     glPreRender();
+
+    mainContext.lineCap = mainContext.lineJoin = 'round';
+    //mainContext.imageSmoothingEnabled = !pixelate;
+    //glContext.imageSmoothingEnabled = !pixelate;
+
     drawScene();
     drawHUD();
-    drawDebug();
-    inputUpdatePost();
-    requestAnimationFrame(gameUpdate);
+    debugDraw();
 }
+
+function updateCamera()
+{
+    // update camera
+    cameraOffset = playerVehicle.pos.z - cameraPlayerOffset.z;
+    const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+    const playerTrackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
+
+    // update world heading based on speed and track turn
+    const turnWorldScale = .00005;
+    worldHeading += turnWorldScale*cameraTrackInfo.offset.x*playerVehicle.velocity.z;
+
+    // put camera above player
+    cameraPos.y = playerTrackInfo.offset.y + (titleScreenMode?1e3:cameraPlayerOffset.y);
+
+    // move camera with player
+    cameraPos.x = playerVehicle.pos.x*.7;
+
+    // slight tilt camera with road
+    cameraRot.x = lerp(.1,cameraRot.x, cameraTrackInfo.pitch/3);
+}
+
+///////////////////////////////////////
+// save data
+
+const saveDataKey = 'ffd';
+let bestTime     = localStorage[saveDataKey+'t']*1 || 0;
+let bestDistance = localStorage[saveDataKey+'d']*1 || 0;
+
+function writeSaveData()
+{
+    localStorage[saveDataKey+'t'] = bestTime;
+    localStorage[saveDataKey+'d'] = bestDistance;
+}
+
+///////////////////////////////////////
 
 gameInit();

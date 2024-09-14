@@ -1,16 +1,31 @@
-<head></head>
-<meta charset=utf-8>
+<!DOCTYPE html><head>
+<meta charset='utf-8'>
+<title>DR1V3N WILD 🚗🌴</title>
+<meta name=apple-mobile-web-app-capable content=yes>
+<meta name=mobile-web-app-capable content=yes>
+</head><body>
+
 <body>
-<script src=debug.js></script>
-<script src=utilities.js></script>
-<script src=webgl.js></script>
-<script src=draw.js></script>
-<script src=scene.js></script>
-<script src=track.js></script>
-<script src=generative.js></script>
-<script src=input.js></script>
-<script src=audio.js></script>
-<script src=sounds.js></script>
-<script src=vehicle.js></script>
-<script src=hud.js></script>
-<script src=game.js></script>
+<script>
+onerror=(event, source, lineno, colno, error)=>
+{
+    document.body.style.backgroundColor = '#222';
+    document.body.innerHTML = '<pre style="color:red;font-size:50px;">'+
+        event + '\n' + source + '\n' + 'Ln ' + lineno + ', Col ' + colno; 
+}
+</script>
+<script src=debug.js?170></script>
+<script src=utilities.js?170></script>
+<script src=webgl.js?170></script>
+<script src=draw.js?170></script>
+<script src=scene.js?170></script>
+<script src=track.js?170></script>
+<script src=levels.js?170></script>
+<script src=trackGen.js?170></script>
+<script src=generative.js?170></script>
+<script src=input.js?170></script>
+<script src=audio.js?170></script>
+<script src=sounds.js?170></script>
+<script src=vehicle.js?170></script>
+<script src=hud.js?170></script>
+<script src=game.js?170></script>

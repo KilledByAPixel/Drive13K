@@ -5,22 +5,20 @@
 
 const PI = Math.PI;
 const RADIANS_TO_DEGREES = 180/PI;
-function abs(value) { return Math.abs(value); }
-function min(valueA, valueB) { return Math.min(valueA, valueB); }
-function max(valueA, valueB) { return Math.max(valueA, valueB); }
-function sign(value) { return Math.sign(value); }
-function mod(dividend, divisor=1) { return ((dividend % divisor) + divisor) % divisor; }
-function clamp(value, min=0, max=1) { return value < min ? min : value > max ? max : value; }
-function clampAngle(value) { return ((value+PI) % (2*PI) + 2*PI) % (2*PI) - PI; }
-function percent(value, valueA, valueB) { const d=valueB-valueA; return d ? clamp((value-valueA)/d) : 0; }
-function lerp(percent, valueA, valueB) { return valueA + clamp(percent) * (valueB-valueA); }
-function rand(valueA=1, valueB=0) { return valueB + Math.random() * (valueA-valueB); }
-function randInt(valueA, valueB=0) { return Math.floor(rand(valueA,valueB)); }
-function isOverlapping(posA, sizeA, posB, sizeB=vec3())
-{ 
-    return abs(posA.x - posB.x)*2 < sizeA.x + sizeB.x 
-        && abs(posA.y - posB.y)*2 < sizeA.y + sizeB.y;
-}
+const abs = (value) => Math.abs(value);
+const min = (valueA, valueB) => Math.min(valueA, valueB);
+const max = (valueA, valueB) => Math.max(valueA, valueB);
+const sign = (value) => value < 0 ? -1 : 1;
+const mod = (dividend, divisor=1) => ((dividend % divisor) + divisor) % divisor;
+const clamp = (value, min=0, max=1) => value < min ? min : value > max ? max : value;
+const clampAngle = (value) => ((value+PI) % (2*PI) + 2*PI) % (2*PI) - PI;
+const percent = (value, valueA, valueB) => (valueB-=valueA) ? clamp((value-valueA)/valueB) : 0;
+const lerp = (percent, valueA, valueB) => valueA + clamp(percent) * (valueB-valueA);
+const rand = (valueA=1, valueB=0) => valueB + Math.random() * (valueA-valueB);
+const randInt = (valueA, valueB=0) => Math.floor(rand(valueA,valueB));
+const smoothStep = (p) => p * p * (3 - 2 * p);
+const isOverlapping = (posA, sizeA, posB, sizeB=vec3()) =>
+    abs(posA.x - posB.x)*2 < sizeA.x + sizeB.x && abs(posA.y - posB.y)*2 < sizeA.y + sizeB.y;
 function buildMatrix(pos, rot, scale)
 {
     const R2D = RADIANS_TO_DEGREES;
@@ -30,19 +28,44 @@ function buildMatrix(pos, rot, scale)
     scale && m.scaleSelf(scale.x, scale.y, scale.z);
     return m;
 }
+function shuffle(array)
+{
+    for(let currentIndex = array.length; currentIndex;)
+    {
+        const randomIndex = random.int(currentIndex--);
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+function formatTimeString(t)
+{
+    const timeS = t%60|0;
+    const timeM = t/60|0;
+    const timeMS = t%1*1e3|0;
+    return `${timeM}:${timeS<10?'0'+timeS:timeS}.${(timeMS<10?'00':timeMS<100?'0':'')+timeMS}`;
+}
+
+function noise1D(x)
+{
+    const hash = x=>(new Random(x)).float(-1,1);
+    return lerp(smoothStep(mod(x,1)), hash(x), hash(x+1));
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vector3
 
 const vec3 = (x, y, z)=> y == undefined && z == undefined ? new Vector3(x, x, x) : new Vector3(x, y, z);
-
-function isVector3(v) { return v instanceof Vector3; }
-function isNumber(value) { return typeof value === 'number'; }
-function ASSERT_VEC3(v) { ASSERT(isVector3(v)); }
+const isVector3 = (v) => v instanceof Vector3;
+const isNumber = (value) => typeof value === 'number';
+const ASSERT_VEC3 = (v) => ASSERT(isVector3(v));
 
 class Vector3
 {
-    constructor(x=0, y=0, z=0) { this.x=x; this.y=y; this.z=z; }
+    constructor(x=0, y=0, z=0)
+    {
+        ASSERT(isNumber(x) && isNumber(y) && isNumber(z));
+        this.x=x; this.y=y; this.z=z; 
+    }
     copy() { return vec3(this.x, this.y, this.z); }
     abs() { return vec3(abs(this.x), abs(this.y), abs(this.z)); }
     add(v) { ASSERT_VEC3(v); return vec3(this.x + v.x, this.y + v.y, this.z + v.z); }
@@ -65,7 +88,6 @@ class Vector3
     clamp(a, b) { return vec3(clamp(this.x, a, b), clamp(this.y, a, b), clamp(this.z, a, b)); }
     cross(v) { ASSERT_VEC3(v); return vec3(this.y*v.z-this.z*v.y, this.z*v.x-this.x*v.z, this.x*v.y-this.y*v.x); }
     lerp(v, p) { ASSERT_VEC3(v); return this.add(v.subtract(this).scale(clamp(p))); }
-    DOMPoint() { return new DOMPoint(this.x, this.y, this.z); }
     rotateX(a)
     {
         const c=Math.cos(a), s=Math.sin(a); 
@@ -86,17 +108,15 @@ class Vector3
         const p = matrix.transformPoint(this);
         return vec3(p.x, p.y, p.z);
     }
-    transformDOM(matrix)
-    {
-        return matrix.transformPoint(this);
-    }
+    getHSLColor(a=1) { return hsl(this.x, this.y, this.z, a); }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Color
 
-function rgb(r, g, b, a) { return new Color(r, g, b, a); }
-function hsl(h, s, l, a) { return new Color().setHSLA(h, s, l, a); }
+const rgb = (r, g, b, a) => new Color(r, g, b, a);
+const hsl = (h, s, l, a) => rgb().setHSLA(h, s, l, a);
+const isColor = (c) => c instanceof Color;
 
 class Color
 {
@@ -108,10 +128,36 @@ class Color
         this.a = a;
     }
     
-    copy() { return new Color(this.r, this.g, this.b, this.a); }
+    copy() { return rgb(this.r, this.g, this.b, this.a); }
+
+    lerp(c, percent)
+    {
+        ASSERT(isColor(c));
+        percent = clamp(percent);
+        return rgb(
+            lerp(percent, this.r, c.r),
+            lerp(percent, this.g, c.g),
+            lerp(percent, this.b, c.b),
+            lerp(percent, this.a, c.a),
+        );
+    }
+
+    brighten(amount=.1)
+    {
+        return rgb
+        (
+            clamp(this.r + amount),
+            clamp(this.g + amount),
+            clamp(this.b + amount),
+            this.a
+        );
+    }
 
     setHSLA(h=0, s=0, l=1, a=1)
     {
+        h = mod(h,1);
+        s = clamp(s);
+        l = clamp(l);
         const q = l < .5 ? l*(1+s) : l+s-l*s, p = 2*l-q,
             f = (p, q, t)=>
                 (t = ((t%1)+1)%1) < 1/6 ? p+(q-p)*6*t :
@@ -123,21 +169,9 @@ class Color
         this.a = a;
         return this;
     }
-
-    rgbaInt()
-    {
-        const r = clamp(this.r)*255|0;
-        const g = clamp(this.g)*255<<8;
-        const b = clamp(this.b)*255<<16;
-        const a = clamp(this.a)*255<<24;
-        return r + g + b + a;
-    }
     
-    toString(useAlpha = true)      
-    { 
-        const toHex = (c)=> ((c=c*255|0)<16 ? '0' : '') + c.toString(16);
-        return '#' + toHex(this.r) + toHex(this.g) + toHex(this.b) + (useAlpha ? toHex(this.a) : '');
-    }
+    toString()      
+    { return `rgb(${this.r*255},${this.g*255},${this.b*255},${this.a})`; }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,15 +179,15 @@ class Color
 
 class Random
 {
-    constructor(seed=1) { this.setSeed(seed); }
-    setSeed(seed) { this.seed = seed+1e5|0;this.float();this.float();this.float(); }
+    constructor(seed=0) { this.setSeed(seed); }
+    setSeed(seed) { this.seed = seed+1|0;this.warmup(); }
     float(a=1, b=0)
     {
         // xorshift
         this.seed ^= this.seed << 13;
         this.seed ^= this.seed >>> 17;
         this.seed ^= this.seed << 5;
-        return b + (a-b) * Math.abs(this.seed % 1e9) / 1e9;
+        return b + (a-b) * abs(this.seed % 1e9) / 1e9;
     }
     floatSign(a, b)   { return this.float(a,b) * this.sign(); }
     int(a=1, b=0)     { return this.float(a, b)|0; }
@@ -164,27 +198,29 @@ class Random
     {
         const r = this.float()**bias*radius;
         const a = this.float(PI*2);
-        return vec2(r*Math.cos(a), r*Math.sin(a));
+        return vec3(r*Math.cos(a), r*Math.sin(a));
     }
-    mutateColor(color, amount=.1)
+    mutateColor(color, amount=.1, brightnessAmount=0)
     {
-        return new Color
+        return rgb
         (
-            color.r + this.floatSign(amount),
-            color.g + this.floatSign(amount),
-            color.b + this.floatSign(amount),
+            clamp((1-random.float(brightnessAmount))*(color.r + this.floatSign(amount))),
+            clamp((1-random.float(brightnessAmount))*(color.g + this.floatSign(amount))),
+            clamp((1-random.float(brightnessAmount))*(color.b + this.floatSign(amount))),
             color.angle
         );
     }
+    fromList(list,startBias=1) { return list[this.float()**startBias*list.length|0]; }
+    warmup(count=3) { for(let i=count;i--;) this.float(); }
 }
-const random = new Random();
+const random = new Random;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class Timer
 {
-    constructor(timeLeft) { this.time = timeLeft == undefined ? undefined : time + timeLeft; this.setTime = timeLeft; }
-
+    constructor(timeLeft) 
+    { this.time = timeLeft == undefined ? undefined : time + timeLeft; this.setTime = timeLeft; }
     set(timeLeft=0) { this.time = time + timeLeft; this.setTime = timeLeft; }
     unset() { this.time = undefined; }
     isSet() { return this.time != undefined; }
@@ -192,5 +228,4 @@ class Timer
     elapsed() { return time >= this.time; }
     get() { return this.isSet()? time - this.time : 0; }
     getPercent() { return this.isSet()? percent(this.time - time, this.setTime, 0) : 0; }
-    valueOf() { return this.get(); }
 }
