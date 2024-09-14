@@ -211,7 +211,7 @@ class Vehicle
         }
         
         // decals
-        glPolygonOffset(40);
+        glPolygonOffset(this.isTruck ? 60 : 40);
 
         // bumpers
         cubeMesh.render(m1.multiply(buildMatrix(vec3(0,bumperY,bumperZ), 0, vec3(140,50,20))), hsl(0,0,.1));
@@ -224,8 +224,10 @@ class Vehicle
         for(let i=2;i--;)
         {
             const color = isBraking ? hsl(0,1,.5) : hsl(0,.9,.3);
-            cubeMesh.render(m1.multiply(buildMatrix(vec3((i?1:-1)*180,bumperY-25,bumperZ-10), 0, vec3(40,25,5))), color, isBraking);
-            cubeMesh.render(m1.multiply(buildMatrix(vec3((i?1:-1)*180,bumperY+25,bumperZ-10), 0, vec3(40,25,5))), hsl(0,0,.8));
+            glEnableLighting = !isBraking; // make it full bright when braking
+            cubeMesh.render(m1.multiply(buildMatrix(vec3((i?1:-1)*180,bumperY-25,bumperZ-10), 0, vec3(40,25,5))), color);
+            glEnableLighting = 1;
+            cubeMesh.render(m1.multiply(buildMatrix(vec3((i?1:-1)*180,bumperY+25,bumperZ-10), 0, vec3(40,25,5))), WHITE);
         }
 
         if (this.isPlayer)

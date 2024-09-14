@@ -85,9 +85,9 @@ class Mesh
         this.uvs = uvs;
     }
 
-    render(transform, color, unlit)
+    render(transform, color)
     {
-        glPushVerts(this.points, unlit ? 0 : this.normals, color);
+        glPushVerts(this.points, this.normals, color);
         glRender(transform);
     }
 

@@ -281,7 +281,7 @@ function gameUpdate(frameTimeMS=0)
     // update time keeping
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
-    const debugSpeedUp   = testDrive||debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
+    const debugSpeedUp   = debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
     const debugSpeedDown = debug && keyIsDown('Minus'); // -
     if (debug) // +/- to speed/slow time
         frameTimeDeltaMS *= debugSpeedUp ? 20 : debugSpeedDown ? .2 : 1;

@@ -465,12 +465,11 @@ bumpy with turns
             }
 
             // bumps
-            let bumpChance   = levelInfo.bumpChance;   // chance of bump
-            let bumpFreqMin  = levelInfo.bumpFreqMin;  // no bumps
-            let bumpFreqMax  = levelInfo.bumpFreqMax;  // raipd bumps
-            let bumpScaleMin = levelInfo.bumpScaleMin; // small rapid bumps
-            let bumpScaleMax = levelInfo.bumpScaleMax; // large hills
-
+            const bumpChance   = levelInfo.bumpChance;   // chance of bump
+            const bumpFreqMin  = levelInfo.bumpFreqMin;  // no bumps
+            const bumpFreqMax  = levelInfo.bumpFreqMax;  // raipd bumps
+            const bumpScaleMin = levelInfo.bumpScaleMin; // small rapid bumps
+            const bumpScaleMax = levelInfo.bumpScaleMax; // large hills
             if (sectionYEndDistance-- < 0)
             {
                 // pick random section distance

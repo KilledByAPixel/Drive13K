@@ -194,7 +194,7 @@ function glPushVerts(points, normals, color, uvs)
         glRender();
     }
 
-    const na = vec3(9); // z > 1 means no lighting/texture
+    const na = vec3(1); // no lighting/texture
     for(let i=count; i--;)
         glDrawVerts(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
 }
@@ -209,7 +209,7 @@ function glPushVertsCapped(points, normals, color, uvs)
         glRender();
     }
 
-    const na = vec3(9); // z > 1 means no lighting/texture
+    const na = vec3(1); // no lighting/texture
     glDrawVerts(points[count-1], na, na, color);
     for(let i=count; i--;)
         glDrawVerts(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
@@ -226,7 +226,7 @@ function glPushColoredVerts(points, colors)
         glRender();
     }
 
-    const na = vec3(9); // z > 1 means no lighting/texture
+    const na = vec3(1); // no lighting/texture
     glDrawVerts(points[count-1], na, na, colors[count-1]);
     for(let i=count; i--;)
         glDrawVerts(points[i], na, na, colors[i]);

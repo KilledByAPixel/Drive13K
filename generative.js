@@ -1079,6 +1079,6 @@ function generateTetures()
         color(hsl(0,0,.8))
         rect();
         color(hsl(.7, .9, .25),1);
-        text('JS-13K',.5,.6,1,.9,.03,'monospace');
+        text('OUTASPACE',.5,.6,.9,.9,.03,'monospace');
     }
 }
