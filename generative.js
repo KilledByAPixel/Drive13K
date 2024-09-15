@@ -393,6 +393,7 @@ function generateTetures()
         setupContext(2,3);
         drawGrass(.35,.5,.3,.3,YELLOW);
         setupContext(3,3);
+        random.setSeed(5);
         drawGrass(.3,.5,.3,.64,BLUE);
         setupContext(4,3);
         {
@@ -914,7 +915,7 @@ function generateTetures()
     function drawFlower(pos, flowerPetals, flowerSize, c=RED)
     {
         const flowerAngle = random.angle();
-        const regularity = 1+random.floatSign(.1);
+        const regularity = 1+random.floatSign(.08);
         flowerSize = random.float(flowerSize*.6,flowerSize);
         color(random.mutateColor(WHITE,.2));
         circle(pos.x,pos.y,flowerSize*random.float(.5,1));
@@ -922,7 +923,7 @@ function generateTetures()
         for(let i=flowerPetals; i--;)
         {
             const a = i/flowerPetals*PI*2+flowerAngle;
-            const pos2 = pos.add(vec3(flowerSize,0).rotateZ(a));
+            const pos2 = pos.add(vec3(flowerSize/.8,0).rotateZ(a));
             color(random.mutateColor(c,.2));
             ellipse(pos2.x,pos2.y,flowerSize, flowerSize/2,a**regularity);
         }
