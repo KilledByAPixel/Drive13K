@@ -1,12 +1,12 @@
 'use strict';
 
+const glEnableTexture = 1;
+const glMaxBatchWarning = 0;
+const glRenderScale = 100; // fixes floating point issues on some devices
+
+let glEnableFog, glEnableLighting;
 let glCanvas, glContext, glShader, glVertexData;
 let glBatchCount, glBatchCountTotal, glDrawCalls;
-let glEnableFog = 1;
-let glEnableLighting = 0;
-const glMaxBatchWarning = 0;
-const glEnableTexture = 1;
-const glRenderScale = 100;
 
 ///////////////////////////////////////////////////////////////////////////////
 // webgl setup
@@ -15,8 +15,10 @@ function glInit()
 {
     // create the canvas
     document.body.appendChild(glCanvas = document.createElement('canvas'));
-    glContext = glCanvas.getContext('webgl2', {alpha: false, antialias:false});
+    
     // anti-aliasing causes thin dark lines on some devices
+    // there should be no alpha for the background texture
+    glContext = glCanvas.getContext('webgl2', {alpha: false, antialias:false});
 
     // setup vertex and fragment shaders
     glShader = glCreateProgram(
@@ -115,9 +117,9 @@ function glCreateTexture(image)
 function glPreRender()
 {
     // clear and set to same size as main canvas
-    //debug && glContext.clearColor(1, 0, 1, 1); // test background color
     glContext.viewport(0, 0, glCanvas.width = mainCanvas.width, glCanvas.height = mainCanvas.height);
     glDrawCalls = glBatchCount = glBatchCountTotal = 0; // reset draw counts
+    //debug && glContext.clearColor(1, 0, 1, 1); // test background color
     //glContext.clear(gl_DEPTH_BUFFER_BIT|gl_COLOR_BUFFER_BIT); // auto cleared
 
     // use point filtering for pixelated rendering
@@ -129,13 +131,14 @@ function glPreRender()
     const combinedMatrix = glCreateProjectionMatrix().multiply(viewMatrix);
     glContext.uniformMatrix4fv(glUniform('m'), 0, combinedMatrix.toFloat32Array());
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 // webgl helper functions
 
 const glSetCapability = (cap, enable=1) => enable ? glContext.enable(cap) : glContext.disable(cap);
 const glUniform = (name) => glContext.getUniformLocation(glShader, name);
 
-function glPolygonOffset(units)
+function glPolygonOffset(units=0)
 {
     glContext.polygonOffset(0, -units);
     glSetCapability(gl_POLYGON_OFFSET_FILL, !!units);
@@ -262,7 +265,6 @@ function glDrawVerts(pos, normal, uv, color)
 const 
 gl_TRIANGLE_STRIP = 5,
 gl_DEPTH_BUFFER_BIT = 256,
-gl_LEQUAL = 515,
 gl_SRC_ALPHA = 770,
 gl_ONE_MINUS_SRC_ALPHA = 771,
 gl_CULL_FACE = 2884,
@@ -277,7 +279,6 @@ gl_TEXTURE_MAG_FILTER = 10240,
 gl_TEXTURE_MIN_FILTER = 10241,
 gl_COLOR_BUFFER_BIT = 16384,
 gl_POLYGON_OFFSET_FILL = 32823,
-gl_TEXTURE0 = 33984,
 gl_ARRAY_BUFFER = 34962,
 gl_DYNAMIC_DRAW = 35048,
 gl_FRAGMENT_SHADER = 35632, 
@@ -286,7 +287,7 @@ gl_COMPILE_STATUS = 35713,
 gl_LINK_STATUS = 35714,
 
 // constants for batch rendering
-gl_MAX_BATCH = 2e4,
+gl_MAX_BATCH = 2e4,                  // max verts per batch
 gl_INDICIES_PER_VERT =  (1 * 4) * 4, // vec4 * 4
-gl_VERTEX_BYTE_STRIDE = (4 * 4) * 4, // vec4 * 4
-gl_VERTEX_BUFFER_SIZE = gl_MAX_BATCH * gl_INDICIES_PER_VERT * 4;
+gl_VERTEX_BYTE_STRIDE = gl_INDICIES_PER_VERT * 4, // 4 bytes per float
+gl_VERTEX_BUFFER_SIZE = gl_MAX_BATCH * gl_VERTEX_BYTE_STRIDE;
