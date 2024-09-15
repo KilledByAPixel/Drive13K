@@ -383,12 +383,6 @@ class PlayerVehicle extends Vehicle
         if (debug && (mouseWasPressed(0) || mouseWasPressed(2)))
             testDrive = 0;
 
-        if (debug)
-        {
-            document.body.style.cursor = // fun cursors!
-                !mouseControl && document.hasFocus() ? 'none': mouseIsDown(2) ? 'pointer' : mouseIsDown(0) ? 'grabbing' : 'grab';
-        }
-
         if (mouseControl || mouseIsDown(0))
         {
             mouseControl = 1;

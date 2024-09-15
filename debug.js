@@ -56,7 +56,7 @@ function debugUpdate()
             const info = levelInfoList[i];
             info.level = i;
             shuffle(info.scenery);
-            info.sceneryListBias = random.float(1,29);
+            info.sceneryListBias = random.float(5,30);
         }
         levelInfoList.push(endLevel);
         buildTrack();

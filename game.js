@@ -261,6 +261,12 @@ function gameUpdate(frameTimeMS=0)
         mainCanvas.style.width  = glCanvas.style.width  = innerAspect < fixedAspect ? '100%' : '';
         mainCanvas.style.height = glCanvas.style.height = innerAspect < fixedAspect ? '' : '100%';
     }
+    
+    if (debug)
+    {
+        document.body.style.cursor = // fun cursors!
+            !mouseControl && document.hasFocus() ? 'none': mouseIsDown(2) ? 'grabbing' : mouseIsDown(0) ? 'pointer' : 'grab';
+    }
 
     if (debug && paused)
     {
