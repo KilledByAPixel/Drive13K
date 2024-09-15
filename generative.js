@@ -410,15 +410,15 @@ function generateTetures()
             drawRock(x,random.float(.03),random.float(.05),.005,.4,.3,.3,y,z,500,cHSL,.4);
         }
         setupContext(5,4);
-        random.setSeed(8);
-        for(let i=500; i--;) // water
+        random.setSeed(9);
+        for(let i=99; i--;) // water
         {
-            const p = i/500;
-            const x = lerp(p,.1,.9)+random.floatSign(.1);
+            const p = i/99;
+            const x = lerp(p,.05,.9);
             const w = .01;
-            const h = .02;
-            const cHSL = vec3(.56,1,1);
-            drawRock(x,w,h,.02,.3,.5,.6,0,.01,500,cHSL,.8-p*.6);
+            const h = .3+Math.sin(p*PI-1)/4;
+            const cHSL = vec3(.53,1,1);
+            drawRock(x,w,h,.01,.3,.6,.5,0,.01,500,cHSL,.4-p*.2);
         }
         setupContext(6,4);
         {
@@ -580,21 +580,18 @@ function generateTetures()
         setupContext(3,6);
         {
             // city building
-            const w = .03;
-            color(hsl(0,0,.05));
+            color(BLACK);
             rect(.5,.6,.3,1);
             for(let i=19; i--;)
-            {
-                color(BLACK);
-                rect(.5+random.floatSign(.15),.1,random.float(.02),random.float(.15));
-            }
+                rect(.5+random.floatSign(.14),.1,random.float(.02),random.float(.1));
+
             for(let j=33; j--;)
             for(let i=9; i--;)
             {
-                color(hsl(random.float(.1,.15),random.float(.6,1),(i&j)%2?0:random.float(.3,1)**4));
-
+                const w = .03;
                 const x = .37+i*w;
                 const y = .13+j*w;
+                color(hsl(random.float(.1,.15),random.float(.5,1),(i&j)%2?0:random.float(.3,1)**3));
                 rect(x,y,w*.7,w*.7);
             }
         }

@@ -259,8 +259,6 @@ class Vehicle
             // top number
             const m3 = buildMatrix(0,vec3(0,PI)); // flip for some reason
             quadMesh.renderTile(m1.multiply(buildMatrix(vec3(0,230,-200), vec3(PI/2-.2,0,0), vec3(140)).multiply(m3)),WHITE, getSpriteTile(vec3(4,0)));
-
-            //quadMesh.renderTile(mcar,WHITE, getSpriteTile(vec3(4,0)));
         }
         
         glPolygonOffset();
@@ -278,7 +276,6 @@ class PlayerVehicle extends Vehicle
         this.bumpTime = 
         this.engineTime = 0;
         this.hitTimer = new Timer;
-        
     }
 
     draw() { titleScreenMode || super.draw(); }
@@ -323,21 +320,18 @@ class PlayerVehicle extends Vehicle
         const playerDistance = playerVehicle.pos.z;
         if (playerDistance > nextCheckpointDistance)
         {
+            // checkpoint
             ++playerLevel;
             nextCheckpointDistance += checkpointDistance;
             checkpointTimeLeft += 40;
-            
-            //speak('CHECKPOINT');
-            checkpointSoundCount = 3;
-
-            if (!gameOverTimer.isSet())
-            if (playerLevel >= levelGoal)
+                
+            if (playerLevel >= levelGoal && !gameOverTimer.isSet())
             {
-                sound_win.play();
+                // end of level
                 playerWin = 1;
+                sound_win.play();
                 gameOverTimer.set();
-                if (!testDrive)
-                if (!(debug && debugSkipped))
+                if (!testDrive && !(debug && debugSkipped))
                 if (!freeRide)
                 {
                     bestDistance = 0; // reset best distance
@@ -349,6 +343,11 @@ class PlayerVehicle extends Vehicle
                     }
                     writeSaveData();
                 }
+            }
+            else
+            {
+                //speak('CHECKPOINT');
+                checkpointSoundCount = 3;
             }
         }
 

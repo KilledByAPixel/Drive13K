@@ -70,7 +70,6 @@ function initTrackSprites()
     PB(trackSprites.sign_vote      = new TrackSprite(vec3(5,2),600,0,.02,1,0));
     //PB(trackSprites.sign_dwitter   = new TrackSprite(vec3(6,2),550,0,.02,1,0));
     PB(trackSprites.sign_avalanche = new TrackSprite(vec3(7,2),600,0,.02,1,0));
-
     PB(trackSprites.sign_harris    = new TrackSprite(vec3(4,2),300,0,.02,1,0));
     
     // signs
@@ -79,7 +78,6 @@ function initTrackSprites()
     //trackSprites.sign_curve     = new TrackSprite(vec3(1,5),500,0,.05,.5);
     //trackSprites.sign_curve.trackFace = 1; // signs face track
     //trackSprites.sign_warning    = new TrackSprite(vec3(2,5),500,0,.05,1,0);
-    
     //trackSprites.sign_speed      = new TrackSprite(vec3(4,5),500,0,.05,50,0);
     //trackSprites.sign_interstate = new TrackSprite(vec3(5,5),500,0,.05,50,0);
 
@@ -122,7 +120,7 @@ function initTrackSprites()
     //trackSprites.hazard_snow.isSlow = 1;
 
     // special sprites
-    trackSprites.water            = new TrackSprite(vec3(5,4),6e3,.2,1);
+    trackSprites.water            = new TrackSprite(vec3(5,4),6e3,.5,1);
     trackSprites.sign_start       = new TrackSprite(vec3(5,0),2300,0,.01,0,0);
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);
@@ -135,7 +133,11 @@ function initTrackSprites()
     trackSprites.light_tunnel      = new TrackSprite(vec3(0,0),200,0,0,0,0);
 
     // horizon sprites
-    trackSprites.horizon_city           = new TrackSprite(vec3(3,6));
+    trackSprites.horizon_city           = new TrackSprite(vec3(3,6),0,0,0,0,1);
+    trackSprites.horizon_city.hueRandomness = 
+        trackSprites.horizon_city.lightnessRandomness = .1;
+    trackSprites.horizon_city.colorHSL = vec3(1); // vary color
+
     trackSprites.horizon_mountains      = new TrackSprite(vec3(7,6));
     trackSprites.horizon_mountains.colorHSL = vec3(0, 0, .7);
     trackSprites.horizon_islands        = new TrackSprite(vec3(7,6));
@@ -222,7 +224,6 @@ class TrackObject
 
         const scale = sprite.size * sizeScale;
         this.scale = vec3(scale);
-
         const trackWidth = trackSegment.width;
         const trackside = offset.x < trackWidth*2 && offset.x > -trackWidth*2;
         if (trackside && sprite.trackFace)
@@ -384,20 +385,6 @@ function buildTrack()
     // build the road with procedural generation
     /////////////////////////////////////////////////////////////////////////////////////
 
-    /*
-
-sections
-
-separate x and y
-
-
-straight
-turns
-bumpy
-bumpy with turns
-
-
-    */
     const trackEnd = levelGoal*checkpointTrackSegments+5e3;
 
     // set random seed & time

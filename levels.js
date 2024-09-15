@@ -78,7 +78,6 @@ function initLevelInfos()
     LI.groundColor = hsl(.1,.2,.5);
     LI.trackSideForce = 1; // telephone poles on right side
     LI.cloudHeight = .05;
-    LI.horizonSpriteSize = 2;
     LI.sunHeight = .9;
     LI.sideStreets = 1;
     LI.laneCount = 2;
@@ -147,7 +146,6 @@ function initLevelInfos()
     LI.groundColor = hsl(.1,.4,.5);
     LI.cloudColor = hsl(0,0,1,.3);
     LI.cloudHeight = .1;
-    LI.horizonSpriteSize = 2;
     LI.sunColor = hsl(0,1,.7);
     LI.laneCount = 3;
     LI.hazardChance = .01;
@@ -256,7 +254,6 @@ function initLevelInfos()
     LI.cloudColor = hsl(0,1,.96,.8);
     LI.cloudWidth = .6;
     LI.cloudHeight = .3;
-    LI.horizonSpriteSize = 2;
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
     LI.hazardType = trackSprites.rock_big;
@@ -287,7 +284,6 @@ function initLevelInfos()
     LI.groundColor = hsl(.6,1,.6);
     LI.cloudColor = hsl(.9,1,.5,.3);
     LI.cloudHeight = .2;
-    LI.horizonSpriteSize = 2;
     LI.sunHeight = .9;
     LI.sunColor = BLACK;
     LI.laneCount = 4;
@@ -383,7 +379,7 @@ class LevelInfo
         this.cloudWidth = 1;
         this.cloudHeight = .3;
         this.horizonSprite = horizonSprite;
-        this.horizonSpriteSize = 1;
+        this.horizonSpriteSize = 2;
         this.sunHeight = .8;
         this.sunColor = hsl(.15,1,.95);
 
@@ -400,25 +396,5 @@ class LevelInfo
         this.bumpFreqMax =  1;   // more often bumps
         this.bumpScaleMin = 50;  // rapid bumps
         this.bumpScaleMax = 150; // largest hills
-
-        // test level with color
-        //this.groundColorHSL = vec3(level/9,1,.5);
-
-        // info about track generation, colors, horizon colors, etc.
-        /*
-
-        windSpeed
-        cloud type and count
-
-        this.parallaxSprites
-        this.trafficDensity
-
-        this.trackLineColor
-        this.windScale
-
-        //light settings
-        this.lightColor
-
-        */
     }
 }

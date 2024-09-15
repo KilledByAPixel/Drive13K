@@ -83,15 +83,16 @@ function drawSky()
         const ltt = .1;
         let levelTransition = levelPercent < ltt ? (levelPercent/ltt)**ltp : 
                 levelPercent > 1-ltt ? 1-((levelPercent-1)/ltt+1)**ltp : 1;
-        if (levelFloat>levelGoal-.5 | levelFloat<.5)
+        if (levelFloat<.5)
             levelTransition = 1; // dont transition out of last level
             
-        const parallax = lerp(p, 1.01, 1.09);
+        const parallax = lerp(p, 1.01, 1.07);
         const s = random.float(1e2,2e2)*horizonSpriteSize;
+        const size = vec3(random.float(1,2)*(horizonSprite.canMirror ? s*random.sign() : s),s,s);
         const x = mod(worldHeading*headingScale/parallax + random.float(range),range) - range/2;
         const y = lerp(levelTransition, -s*1.5, random.float(s));
         const c = horizonSprite.getRandomSpriteColor();
-        pushSprite(cameraPos.add(vec3( x, y, skyZ)), vec3(s*random.float(1,2),s,s), c, horizonSpriteTile);
+        pushSprite(cameraPos.add(vec3( x, y, skyZ)), size, c, horizonSpriteTile);
     }
 
     {

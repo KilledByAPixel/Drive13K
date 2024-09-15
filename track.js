@@ -42,7 +42,7 @@ function drawRoad(zwrite = 0)
 
         const p1 = segment1.pos;
         const p2 = segment2.pos;
-        if (i % (lerp(i/drawDistance,1,5)|0)) // fade in road resolution
+        if (i % (lerp(i/drawDistance,1,8)|0)) // fade in road resolution
             continue;
             
         const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
@@ -134,13 +134,12 @@ function drawTrackScenery()
                 const s = sprite.size*sprite.getRandomSpriteScale();
                 const o2 = w+random.float(1e4,8e4);
                 const o = trackSpriteSide * o2;
-                // raise up as it goes father away to cover horizon
-                const h = lerp(percent(trackSegment.pos.z,2e3,5e4), .3, 2);
+                // get taller in distance to cover horizon
+                const h = lerp(percent(trackSegment.pos.z,2e3,5e4), .05, .13);
                 const wave = segmentIndex/40+time;
                 const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),0));
-                const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive
-                const c = hsl(0,random.float(.9,1),random.float(.9,1));
-                pushTrackObject(p, vec3(trackSpriteSide*s,s*h,s), c, sprite, waveWind);
+                const waveWind = 9*Math.cos(wave); // fake wind to make wave seam more alive
+                pushTrackObject(p, vec3(trackSpriteSide*s,s*h,s), WHITE, sprite, waveWind);
             }
             else
             {

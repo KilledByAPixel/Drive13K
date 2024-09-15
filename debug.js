@@ -64,7 +64,7 @@ function debugUpdate()
     }
     if (keyWasPressed('Digit0'))
         debugCapture = 1;
-    if (keyWasPressed('Backquote'))
+    if (keyWasPressed('KeyI'))
         debugInfo = !debugInfo;
     if (keyWasPressed('KeyM')) // toggle mute
         soundVolume = soundVolume ? 0 : .3;
@@ -93,7 +93,7 @@ function debugUpdate()
 function debugDraw()
 {
     if (debugInfo && !debugCapture)
-        drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls + ' / ' + vehicles.length, vec3(.98,.1),.03, undefined, 'monospace','right');
+        drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls + ' / ' + vehicles.length, vec3(.98,.12),.03, undefined, 'monospace','right');
 
     const c = mainCanvas;
     const context = mainContext;

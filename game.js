@@ -45,7 +45,7 @@ let time, frame, frameTimeLastMS, averageFPS, frameTimeBufferMS;
 let vehicleSpawnTimer;
 let paused;
 let checkpointTimeLeft, startCountdown, startCountdownTimer, gameOverTimer, nextCheckpointDistance;
-let raceTime, playerLevel, playerWin, playerNewRecord;
+let raceTime, playerLevel, playerWin, playerNewDistanceRecord, playerNewRecord;
 let titleScreenMode = 1;
 let titleModeStartCount = 0;
 let trackSeed = 1331;
@@ -89,9 +89,9 @@ function gameInit()
 function gameStart()
 {
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
-        cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewRecord = freeRide = checkpointSoundCount = 0;
+        cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart ? 0 : 4;
-    worldHeading = titleScreenMode ? rand(1e3) : 2;
+    worldHeading = titleScreenMode ? rand(9) : 2;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
@@ -108,7 +108,7 @@ function gameStart()
     if (titleScreenMode)
     {
         const level = titleModeStartCount*2%9;
-        playerVehicle.pos.z = 4e3+level*checkpointDistance;
+        playerVehicle.pos.z = 7e4+level*checkpointDistance;
     }
 }
 
@@ -123,7 +123,7 @@ function gameUpdateInternal()
             sound_bump.play(2,2);
             gameStart();
         }
-        if (time > 30)
+        if (time > 60)
         {
             // restart
             ++titleModeStartCount;
@@ -179,12 +179,12 @@ function gameUpdateInternal()
             const playerDistance = playerVehicle.pos.z;
             if (playerDistance > bestDistance && playerDistance > 5e3)
             {
-                if (!playerNewRecord && bestDistance)
+                if (!playerNewDistanceRecord && bestDistance)
                     sound_win.play(1,2);// new record!
                 bestDistance = playerDistance;
-                writeSaveData();
                 //speak('NEW RECORD');
-                playerNewRecord = 1;
+                playerNewDistanceRecord = 1;
+                writeSaveData();
             }
 
             if (checkpointTimeLeft <= 0)
@@ -264,7 +264,7 @@ function gameUpdate(frameTimeMS=0)
     if (debug)
     {
         document.body.style.cursor = // fun cursors!
-            !mouseControl && document.hasFocus() ? 'none': mouseIsDown(2) ? 'grabbing' : mouseIsDown(0) ? 'pointer' : 'grab';
+            !mouseControl ? 'auto': mouseIsDown(2) ? 'grabbing' : mouseIsDown(0) ? 'pointer' : 'grab';
 
         if (paused)
         {
@@ -304,8 +304,8 @@ function gameUpdate(frameTimeMS=0)
     let fluxCapacitor = 0;
     if (frameTimeBufferMS < 0 && frameTimeBufferMS > -9)
     {
-        // force at least one update each frame since it is waiting for refresh
         // the flux capacitor is what makes time travel possible
+        // force at least one update each frame since it is waiting for refresh
         // -9 needed to prevent fast speeds on > 60fps monitors
         fluxCapacitor = frameTimeBufferMS;
         frameTimeBufferMS = 0;
@@ -369,13 +369,14 @@ function updateCamera()
 ///////////////////////////////////////
 // save data
 
-let bestTime     = localStorage[gameName]*1   || 0;
-let bestDistance = localStorage[gameName+1]*1 || 0;
+const saveName = 'DW';
+let bestTime     = localStorage[saveName+1]*1 || 0;
+let bestDistance = localStorage[saveName+2]*1 || 0;
 
 function writeSaveData()
 {
-    localStorage[gameName]   = bestTime;
-    localStorage[gameName+1] = bestDistance;
+    localStorage[saveName+1] = bestTime;
+    localStorage[saveName+2] = bestDistance;
 }
 
 ///////////////////////////////////////
