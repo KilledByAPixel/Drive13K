@@ -467,7 +467,7 @@ class PlayerVehicle extends Vehicle
             {
                 const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .45);
                 // extra boost at low speeds
-                const lowSpeedPercent = (1-percent(this.velocity.z, 0, 100))**2;
+                const lowSpeedPercent = percent(this.velocity.z, 100, 0)**2;
                 this.velocity.z += accel * lerp(lowSpeedPercent, 1, 6);
             }
             else if (this.velocity.z < 10)

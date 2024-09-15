@@ -285,7 +285,9 @@ class TrackSegment
                 this.colorRoad = hsl(0,.8,.5);
             else if (checkpointLine)
                 this.colorRoad = WHITE; // starting line
-            this.colorLine = stripe ? lineColor : rgb(0,0,0,0);
+            this.colorLine = lineColor;
+            if (stripe)
+                this.colorLine.a = 0;
             if (this.sideStreet)
                 this.colorLine = this.colorGround = this.colorRoad;
         }
@@ -323,16 +325,15 @@ class TrackSegment
             this.addSprite(trackSprites.sign_start);
 
             // left
-            let o = -(width+100);
-            //this.addSprite(trackSprites.sign_dwitter,ol,1600);
-            this.addSprite(trackSprites.sign_zzfx,o,750);
-            this.addSprite(trackSprites.sign_avalanche,o);
+            const ol = -(width+100);
+            this.addSprite(trackSprites.sign_zzfx,ol,750);
+            this.addSprite(trackSprites.sign_avalanche,ol);
 
             // right
-            o = width+100;
-            this.addSprite(trackSprites.sign_frankForce,o,1500);
-            this.addSprite(trackSprites.sign_github,o,350);
-            this.addSprite(trackSprites.sign_js13k,o);
+            const or = width+100;
+            this.addSprite(trackSprites.sign_frankForce,or,1500);
+            this.addSprite(trackSprites.sign_github,or,350);
+            this.addSprite(trackSprites.sign_js13k,or);
         }
     }
 
@@ -374,10 +375,7 @@ class TrackSegmentInfo
             this.width = lerp(percent, track[segment].width,track[segment+1].width);
         }
         else
-        {
-            this.offset = this.pos = vec3(0,0,z);
-            this.pitch = this.width = 0;
-        }
+            this.offset = this.pos = vec3(this.pitch = this.width = 0,0,z);
     }
 }
 

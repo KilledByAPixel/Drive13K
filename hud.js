@@ -1,6 +1,7 @@
 'use strict';
 
 const showTitle = 1;
+const gameName = 'DR1V3N';
 
 function drawHUD()
 {
@@ -10,7 +11,7 @@ function drawHUD()
         for(let j=2;j--;)
         {
             // draw logo
-            const text = j?'DR1V3N':'WILD';
+            const text = j?gameName:'WILD';
             const pos = vec3(.47,.25-j*.15).multiply(mainCanvasSize);
             const size = mainCanvasSize.y/9;
             const weight = 900;

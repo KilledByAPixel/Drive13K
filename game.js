@@ -92,7 +92,7 @@ function gameStart()
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart ? 0 : 4;
-    worldHeading = 2;
+    worldHeading = titleScreenMode ? rand(1e3) : 2;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
@@ -266,28 +266,28 @@ function gameUpdate(frameTimeMS=0)
     {
         document.body.style.cursor = // fun cursors!
             !mouseControl && document.hasFocus() ? 'none': mouseIsDown(2) ? 'grabbing' : mouseIsDown(0) ? 'pointer' : 'grab';
-    }
 
-    if (debug && paused)
-    {
-        // hack: special input handling when paused
-        inputUpdate();
-        if (keyWasPressed('Space') || keyWasPressed('KeyP') 
-            || mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
+        if (paused)
         {
-            paused = 0;
-            sound_checkpoint_outrun.play();
+            // hack: special input handling when paused
+            inputUpdate();
+            if (keyWasPressed('Space') || keyWasPressed('KeyP') 
+                || mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
+            {
+                paused = 0;
+                sound_checkpoint_outrun.play();
+            }
+            if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
+            {
+                // go back to title screen
+                paused = 0;
+                sound_bump.play(2);
+                titleScreenMode = 1;
+                ++titleModeStartCount;
+                gameStart();
+            }
+            inputUpdatePost();
         }
-        if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
-        {
-            // go back to title screen
-            paused = 0;
-            sound_bump.play(2);
-            titleScreenMode = 1;
-            ++titleModeStartCount;
-            gameStart();
-        }
-        inputUpdatePost();
     }
 
     // update time keeping
@@ -370,14 +370,13 @@ function updateCamera()
 ///////////////////////////////////////
 // save data
 
-const saveDataKey = 'DR1V3N';
-let bestTime     = localStorage[saveDataKey+1]*1 || 0;
-let bestDistance = localStorage[saveDataKey+2]*1 || 0;
+let bestTime     = localStorage[gameName]*1   || 0;
+let bestDistance = localStorage[gameName+1]*1 || 0;
 
 function writeSaveData()
 {
-    localStorage[saveDataKey+1] = bestTime;
-    localStorage[saveDataKey+2] = bestDistance;
+    localStorage[gameName]   = bestTime;
+    localStorage[gameName+1] = bestDistance;
 }
 
 ///////////////////////////////////////
