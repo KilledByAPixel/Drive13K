@@ -42,7 +42,7 @@ function initLevelInfos()
     LI.sceneryListBias = 9;
     LI.skyColorTop = WHITE;
     LI.skyColorBottom = hsl(.5,.3,.5);
-    LI.roadColor = hsl(.1,.2,.3);
+    LI.roadColor = hsl(.05,.4,.2);
     LI.groundColor = hsl(.2,.4,.4);
     LI.cloudColor = hsl(0,0,1,.3);
     LI.cloudHeight = .2;
@@ -107,11 +107,11 @@ function initLevelInfos()
     LI.trackSideRate = 30;
     LI.skyColorTop = hsl(.5,.2,.4);
     LI.skyColorBottom = WHITE;
-    LI.roadColor = hsl(.5,.1,.4,.3);
-    LI.groundColor = hsl(.5,.1,.9);
+    LI.roadColor = hsl(0,0,.5,.3);
+    LI.groundColor = hsl(.6,.3,.9);
     LI.cloudColor = hsl(0,0,.8,.5);
     LI.horizonSpriteSize = 3;
-    LI.lineColor = hsl(.15,1,.95);
+    LI.lineColor = hsl(0,0,1,.5);
     LI.sunHeight = .7;
     LI.hazardType = trackSprites.hazard_rocks;
     LI.hazardChance = .003;
@@ -247,7 +247,7 @@ function initLevelInfos()
     LI.skyColorTop = hsl(0,1,.8);
     LI.skyColorBottom = hsl(.6,1,.6);
     LI.lineColor = hsl(0,0,0,0);
-    LI.roadColor = hsl(.05,.5,.3);
+    LI.roadColor = hsl(0,.6,.2,.8);
     LI.groundColor = hsl(.1,.5,.4);
     LI.waterSide = 1;
     LI.trackSideForce = -1;
