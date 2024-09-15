@@ -17,7 +17,7 @@ function drawHUD()
         {
             // draw logo
             const text = j?'DR1V3N':'WILD';
-            const pos = vec3(.47,.3-j*.15).multiply(mainCanvasSize);
+            const pos = vec3(.5,.3-j*.15).multiply(mainCanvasSize);
             const size = mainCanvasSize.y/9;
             const weight = 900;
             const style = 'italic';
