@@ -644,7 +644,7 @@ bumpy with turns
                 {
                     const trackSideForce = levelInfo.trackSideForce;
                     const side = trackSideForce || (i%(trackSideRate*2)<trackSideRate?1:-1);
-                    t.addSprite(levelInfo.trackSideSprite, side*(t.width+random.float(500,800)));
+                    t.addSprite(levelInfo.trackSideSprite, side*(t.width+random.float(700,1e3)));
                     continue;
                 }
             }
