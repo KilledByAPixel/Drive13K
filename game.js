@@ -200,7 +200,7 @@ function gameUpdateInternal()
 
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20 && !testDrive;
-    const trafficPosOffset = playerIsSlow? 0 : 3e5; // check in front/behind
+    const trafficPosOffset = playerIsSlow? 0 : 2e5; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
@@ -212,12 +212,12 @@ function gameUpdateInternal()
         {
             // spawn behind
             spawnVehicle(playerVehicle.pos.z-1300);
-            vehicleSpawnTimer.set(rand(2,4)/trafficDensity);
+            vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
         }
         else if (trafficDensity)
         {
             spawnVehicle(playerVehicle.pos.z + rand(5e4,6e4));
-            vehicleSpawnTimer.set(rand(2,4)/trafficDensity);
+            vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
         }
     }
 

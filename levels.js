@@ -186,7 +186,7 @@ function initLevelInfos()
     LI.sunColor = hsl(.15,1,.8);
     LI.sideStreets = 1;
     LI.laneCount = 5;
-    LI.trafficDensity = 3; // extra traffic in city
+    LI.trafficDensity = 2; // extra traffic in city
 
     // in front of city
     LI.turnChance = .3;
@@ -218,7 +218,7 @@ function initLevelInfos()
     LI.horizonSpriteSize = 4;
     LI.sunHeight = 1.5;
     LI.laneCount = 3;
-    LI.trafficDensity = .2;
+    LI.trafficDensity = .5;
     LI.trackSideChance = 1; // more trees
     LI.trackSideRate = 50;
 
@@ -259,7 +259,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
     LI.hazardType = trackSprites.rock_big;
-    LI.hazardChance = .008;
+    LI.hazardChance = .007;
     LI.trafficDensity = 0;  // no other cars in jungle
 
     // bumpy jungle road 

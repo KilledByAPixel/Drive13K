@@ -100,14 +100,17 @@ class Vehicle
             this.pos.x = lanePos;
         }
         
-        // remove if too close to other vehicles
+        // slow down if too close to other vehicles
         for(const v of vehicles)
         {
             // collision slow down
             if (!v.isPlayer)
             if (this.pos.z < v.pos.z)
-            if (this.vehicleCollisionCheck(v, 800))
+            if (this.vehicleCollisionCheck(v, 1e3))
+            {
                 this.velocity.z = v.velocity.z *.9;
+                ++v.velocity.z; // other car moves ahead
+            }
         }
 
         // update physics
