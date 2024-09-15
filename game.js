@@ -108,7 +108,7 @@ function gameStart()
     if (titleScreenMode)
     {
         const level = titleModeStartCount*2%9;
-        playerVehicle.pos.z = 7e4+level*checkpointDistance;
+        playerVehicle.pos.z = 5e4+level*checkpointDistance;
     }
 }
 
