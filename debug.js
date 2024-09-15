@@ -46,6 +46,8 @@ function debugUpdate()
         debugCapture = 1;
     if (keyWasPressed('Digit6'))
         checkpointTimeLeft=1
+    if (keyWasPressed('Backquote'))
+        debugInfo = !debugInfo;
     if (keyWasPressed('KeyM')) // toggle mute
         soundVolume = soundVolume ? 0 : .3;
         
@@ -73,7 +75,7 @@ function debugUpdate()
 function debugDraw()
 {
     if (debugInfo && !debugCapture)
-        drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls, vec3(.95,.1),.03,undefined,undefined,undefined,'right');
+        drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls + ' / ' + vehicles.length, vec3(.98,.1),.03, undefined, 'monospace','right');
 
     const c = mainCanvas;
     const context = mainContext;
