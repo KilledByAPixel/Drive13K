@@ -46,7 +46,7 @@ function drawHUD()
                 for(let f = 2;f--;)
                 {
                     const o = f*mainCanvasSize.y/99;
-                    context.fillStyle = hsl(.15+p/9,1,f?0:.75+p*.25);
+                    context.fillStyle = hsl(.15-p/9,1,f?0:.75-p*.25);
                     context.fillText(c, x+o, pos.y+o);
                 }
                 pos.x += w;
@@ -102,11 +102,11 @@ function drawHUD()
         {
             // current time
             const timeString = formatTimeString(raceTime);
-            drawHUDText(timeString, vec3(.02,.07), .05, undefined, 'monospace','left');
+            drawHUDText(timeString, vec3(.01,.05), .05, undefined, 'monospace','left');
 
             // current stage
             const level = debug&&testLevelInfo ? testLevelInfo.level+1 :playerLevel+1;
-            drawHUDText('STAGE '+level, vec3(.98,.07), .05, undefined, 'monospace','right');
+            drawHUDText('STAGE '+level, vec3(.99,.05), .05, undefined, 'monospace','right');
         }
     }
 
