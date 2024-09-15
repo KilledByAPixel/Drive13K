@@ -195,7 +195,7 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
         const cullScale = 100;
         if (cullScale*scale.y < pos.z)
             return; // cull out small sprites
-        if (abs(pos.x)-abs(scale.x) > pos.z*4)
+        if (abs(pos.x)-abs(scale.x) > pos.z*4+1e3)
             return; // out of view
         if (pos.z < 0)
             return; // behind camera
