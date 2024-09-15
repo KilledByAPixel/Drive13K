@@ -163,15 +163,13 @@ function gameUpdateInternal()
             gameStart();
         }*/
         
-        freeRide |= keyWasPressed('KeyF'); // enable free ride mode
-
-        if (!startCountdown && !gameOverTimer.isSet())
+        if (freeRide |= keyWasPressed('KeyF'))  // enable free ride mode
+            startCountdown = 0;
+        else if (!startCountdown && !freeRide && !gameOverTimer.isSet())
         {
             raceTime += timeDelta;
-
             const lastCheckpointTimeLeft = checkpointTimeLeft;
             checkpointTimeLeft -= timeDelta;
-
             if (checkpointTimeLeft < 3)
             if ((lastCheckpointTimeLeft|0) != (checkpointTimeLeft|0))
             {
@@ -179,26 +177,23 @@ function gameUpdateInternal()
                 sound_beep.play(1,3);
             }
 
-            if (!freeRide)
-            {    
-                const playerDistance = playerVehicle.pos.z;
-                if (playerDistance > bestDistance && playerDistance > 5e3)
-                {
-                    if (!playerNewRecord && bestDistance)
-                        sound_win.play(1,2);// new record!
-                    bestDistance = playerDistance;
-                    writeSaveData();
-                    //speak('NEW RECORD');
-                    playerNewRecord = 1;
-                }
+            const playerDistance = playerVehicle.pos.z;
+            if (playerDistance > bestDistance && playerDistance > 5e3)
+            {
+                if (!playerNewRecord && bestDistance)
+                    sound_win.play(1,2);// new record!
+                bestDistance = playerDistance;
+                writeSaveData();
+                //speak('NEW RECORD');
+                playerNewRecord = 1;
+            }
 
-                if (checkpointTimeLeft <= 0)
-                {
-                    checkpointTimeLeft = 0;
-                    //speak('GAME OVER');
-                    gameOverTimer.set();
-                    sound_lose.play();
-                }
+            if (checkpointTimeLeft <= 0)
+            {
+                checkpointTimeLeft = 0;
+                //speak('GAME OVER');
+                gameOverTimer.set();
+                sound_lose.play();
             }
         }
     }
@@ -272,7 +267,7 @@ function gameUpdate(frameTimeMS=0)
         // hack: special input handling when paused
         inputUpdate();
         if (keyWasPressed('Space') || keyWasPressed('KeyP') 
-            || mouseWasPressed(0) || isUsingGamepad && gamepadWasPressed(9))
+            || mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
         {
             paused = 0;
             sound_checkpoint_outrun.play();

@@ -309,7 +309,7 @@ function initLevelInfos()
         trackSprites.rock_huge2,
         trackSprites.rock_huge,
     ], trackSprites.tree_pink, trackSprites.horizon_mountains);
-    LI.trackSideRate = 50;
+    LI.trackSideRate = 30;
     LI.skyColorTop = hsl(.2,1,.9);
     LI.skyColorBottom = hsl(.55,1,.5);
     LI.roadColor = hsl(0,0,.1);

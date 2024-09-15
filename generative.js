@@ -985,9 +985,9 @@ function generateTetures()
         color(c,1);
         const y = .37;
         circle(.5,y,.32);
-        text('AVALANCHE',.5,.8,.13,.9,.01);
+        text('AVALANCHE',.5,.8,.13,.9,.005);
         color(WHITE);
-        triangle(.5, y, .25);
+        triangle(.5, y, .23);
         const r = .15;
         const ry = .26;//r*Math.sin(PI/3)*2;
         const x = .47;

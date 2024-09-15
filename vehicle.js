@@ -490,8 +490,7 @@ class PlayerVehicle extends Vehicle
             let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn * playerTurnControl;
             if (testDrive)
             {
-                desiredPlayerTurn = -this.pos.x/2e3;
-                desiredPlayerTurn = clamp(desiredPlayerTurn, -1, 1);
+                desiredPlayerTurn = clamp(-this.pos.x/2e3, -1, 1);
                 this.pos.x = clamp(this.pos.x, -playerTrackInfo.width, playerTrackInfo.width);
             }
 
@@ -499,7 +498,7 @@ class PlayerVehicle extends Vehicle
             const turnVisualRamp = clamp(this.velocity.z/playerMaxTurnStart);
             this.wheelTurn = lerp(.1, this.wheelTurn, 1.5*desiredPlayerTurn);
             this.playerTurn = lerp(.05, this.playerTurn, desiredPlayerTurn);
-            this.drawTurn = this.playerTurn*turnVisualRamp;
+            this.drawTurn = lerp(turnVisualRamp*turnVisualRamp,this.drawTurn,this.playerTurn);
 
             // fade off turn at top speed
             const turnStrength = 1.8;
