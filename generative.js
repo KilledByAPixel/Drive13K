@@ -410,16 +410,15 @@ function generateTetures()
             drawRock(x,random.float(.03),random.float(.05),.005,.4,.3,.3,y,z,500,cHSL,.4);
         }
         setupContext(5,4);
-        random.setSeed(500);
-        for(let i=200; i--;) // water
+        random.setSeed(8);
+        for(let i=500; i--;) // water
         {
-            const p = i/200;
-            const x = lerp(p,.06,.95)+random.floatSign(.05);
-            const y = .04;
+            const p = i/500;
+            const x = lerp(p,.1,.9)+random.floatSign(.1);
             const w = .01;
-            const h = Math.sin(p*PI)*.05;
+            const h = .02;
             const cHSL = vec3(.56,1,1);
-            drawRock(x,w,h,.02,.3,.5,.6,y,.01,500,cHSL,.8-p*.6);
+            drawRock(x,w,h,.02,.3,.5,.6,0,.01,500,cHSL,.8-p*.6);
         }
         setupContext(6,4);
         {
