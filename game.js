@@ -123,7 +123,7 @@ function gameUpdateInternal()
             sound_bump.play(2,2);
             gameStart();
         }
-        if (time > 90)
+        if (time > 30)
         {
             // restart
             ++titleModeStartCount;
