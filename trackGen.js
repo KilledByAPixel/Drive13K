@@ -268,8 +268,7 @@ class TrackSegment
             || segmentIndex%checkpointTrackSegments > checkpointTrackSegments-10;
         const recordPoint = bestDistance/trackSegmentLength;
         const recordPointLine = segmentIndex>>3 == recordPoint>>3;
-
-        this.sideStreet = levelInfo.sideStreets && ((segmentIndex%checkpointTrackSegments)%500<30);
+        this.sideStreet = levelInfo.sideStreets && ((segmentIndex%checkpointTrackSegments)%495<36);
 
         {
             // setup colors

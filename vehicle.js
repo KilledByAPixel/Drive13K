@@ -244,7 +244,7 @@ class Vehicle
         const isBraking = this.isBraking;
         for(let i=2;i--;)
         {
-            const color = isBraking ? hsl(0,1,.5) : hsl(0,.9,.3);
+            const color = isBraking ? hsl(0,1,.5) : hsl(0,1,.2);
             glEnableLighting = !isBraking; // make it full bright when braking
             cubeMesh.render(m1.multiply(buildMatrix(vec3((i?1:-1)*180,bumperY-25,bumperZ-10), 0, vec3(40,25,5))), color);
             glEnableLighting = 1;
