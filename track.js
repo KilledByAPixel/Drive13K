@@ -135,7 +135,7 @@ function drawTrackScenery()
                 const o2 = w+6e3+random.float(6e4);
                 const o = trackSpriteSide * o2;
                 // raise up as it goes father away to cover horizon
-                const h = percent(trackSegment.pos.z,5e3,1e5)*2e3;
+                const h = percent(trackSegment.pos.z,5e3,1e5)*1e3;
                 const wave = segmentIndex/40+time;
                 const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),h));
                 const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive

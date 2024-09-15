@@ -20,7 +20,7 @@ function initTrackSprites()
     trackSprites.tree_bush   = new TrackSprite(vec3(5,1),1e3,.5,.1,.05);
     trackSprites.tree_fall   = new TrackSprite(vec3(6,1),1500,.3,.1,.1);
     //TB(trackSprites.tree_flower = new TrackSprite(vec3(7,1),2e3,.3,.05,200));
-    trackSprites.tree_snow      = new TrackSprite(vec3(4,3),1e3,.3,.05,.1)
+    trackSprites.tree_snow      = new TrackSprite(vec3(4,3),1300,.3,.05,.1)
     trackSprites.tree_yellow    = new TrackSprite(vec3(5,3),1e3,.3,.05,.1)
     trackSprites.tree_huge    = new TrackSprite(vec3(3,1),1e4,.5,.1,.1)
     trackSprites.tree_huge.colorHSL = vec3(.8, 0, .5);
@@ -123,7 +123,7 @@ function initTrackSprites()
 
     // special sprites
     trackSprites.water            = new TrackSprite(vec3(5,4),3e3,.2,1);
-    trackSprites.water.spriteYOffset = -.1;
+    trackSprites.water.spriteYOffset = -.06;
     trackSprites.sign_start       = new TrackSprite(vec3(5,0),2300,0,.01,0,0);
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);
