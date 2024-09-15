@@ -5,7 +5,6 @@ let glBatchCount, glBatchCountTotal, glDrawCalls;
 let glEnableFog = 1;
 let glEnableLighting = 0;
 const glMaxBatchWarning = 0;
-const glAntialias = 0;
 const glEnableTexture = 1;
 const glRenderScale = 100;
 
@@ -16,7 +15,8 @@ function glInit()
 {
     // create the canvas
     document.body.appendChild(glCanvas = document.createElement('canvas'));
-    glContext = glCanvas.getContext('webgl2', {antialias:!!glAntialias});
+    glContext = glCanvas.getContext('webgl2', {antialias:false});
+    // anti-aliasing causes thin dark lines on some devices
 
     // setup vertex and fragment shaders
     glShader = glCreateProgram(
@@ -40,8 +40,9 @@ function glInit()
         'out vec4 c;'+            // out color
         'void main(){'+           // shader entry point
         'c=v.z>0.?d:texture(s,v.xy)*d;'+ // color or texture
-        'v.w>0.?c:c=vec4(mix(c.xyz,q.xyz,pow(clamp(gl_FragCoord.z/gl_FragCoord.w/1e5,0.,1.),2.)),'+
-        'c.a*=clamp(4.-gl_FragCoord.z/gl_FragCoord.w/2e4,0.,1.));'+ // fog alpha
+        'float f=clamp(gl_FragCoord.z/gl_FragCoord.w/1e5,0.,1.);'+     // fog depth
+        'v.w>0.?c:c=vec4(mix(c.xyz,q.xyz,f*f),'+                       // fog color
+            'c.a*clamp(4.-gl_FragCoord.z/gl_FragCoord.w/2e4,0.,1.));'+ // fog alpha
         //'c.w);'+                   // disable fog alpha
         //'if (c.a == 0.) discard;'+ // discard if no alpha
         '}'                          // end of shader

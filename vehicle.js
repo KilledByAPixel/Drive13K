@@ -386,9 +386,8 @@ class PlayerVehicle extends Vehicle
         if (mouseControl || mouseIsDown(0))
         {
             mouseControl = 1;
-            const steerCenter = this.pos.x/1e4;
             playerInput.y = mouseIsDown(2) ? -1 : mouseIsDown(0);
-            playerInput.x = clamp(3*(mousePos.x-.5-steerCenter),-1,1);
+            playerInput.x = clamp(10*(mousePos.x-.5),-1,1);
 
             if (isTouchDevice && mouseIsDown(0))
             {
@@ -420,7 +419,7 @@ class PlayerVehicle extends Vehicle
         const gravity = -3;           // gravity to apply in y axis
         const lateralDamping = .5;    // dampen player x speed
         const playerAccel = 1;        // player acceleration
-        const playerBrake = 3;        // player acceleration when breaking
+        const playerBrake = 4;        // player acceleration when breaking
         const playerMaxSpeed = 200;   // limit max player speed
         const speedPercent = clamp(this.velocity.z/playerMaxSpeed);
 
@@ -437,18 +436,17 @@ class PlayerVehicle extends Vehicle
         this.pos.x = clamp(this.pos.x, -maxPlayerX, maxPlayerX); 
 
         // check if on ground
-        let onGround = 0;
-
-        // bounce elasticity (2 is full bounce, 1 is none)
-        const elasticity = 1.2;            
-        if (this.pos.y < playerTrackInfo.offset.y)
+        const onGround = this.pos.y < playerTrackInfo.offset.y;
+        if (onGround)
         {
-            onGround = 1;
             this.pos.y = playerTrackInfo.offset.y;
             const trackPitch = playerTrackInfo.pitch;
             this.drawPitch = lerp(.2,this.drawPitch, trackPitch);
             if (!gameOverTimer.isSet())
             {
+                // bounce elasticity (2 is full bounce, 1 is none)
+                const elasticity = 1.2;            
+                
                 // bounce off track
                 // todo use vector math
                 const reflectVelocity = vec3(0, Math.cos(trackPitch), Math.sin(trackPitch))
@@ -459,11 +457,20 @@ class PlayerVehicle extends Vehicle
 
             if (abs(this.pos.x) > playerTrackInfo.width - this.collisionSize.x && !testDrive)
             {
-                // offroad
-                bump();
+                bump(); // offroad
             }
-            
-            if (this.velocity.z < 10)
+
+            // update velocity
+            if (playerInput.y>0)
+            {
+                const accel = playerInput.y*playerAccel*lerp(speedPercent, 1, .45);
+                // extra boost at low speeds
+                const lowSpeedPercent = (1-percent(this.velocity.z, 0, 100))**2;
+                this.velocity.z += accel * lerp(lowSpeedPercent, 1, 6);
+            }
+            else if (this.isBraking)
+                this.velocity.z += playerInput.y*playerBrake;
+            else if (this.velocity.z < 10)
                 this.velocity.z *= .95; // slow to stop
         }
         else
@@ -473,14 +480,13 @@ class PlayerVehicle extends Vehicle
         }
 
         {
-            // prevent negative z velocity
-            this.velocity.z = max(0,this.velocity.z);
+            // dampen z velocity
+            this.velocity.z = max(0, forwardDamping*this.velocity.z);
 
             // turning
             let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInput.x * playerTurnControl;
             if (testDrive)
             {
-                ASSERT(playerTrackInfo);
                 desiredPlayerTurn = -this.pos.x/2e3;
                 desiredPlayerTurn = clamp(desiredPlayerTurn, -1, 1);
                 this.pos.x = clamp(this.pos.x, -playerTrackInfo.width, playerTrackInfo.width);
@@ -506,26 +512,10 @@ class PlayerVehicle extends Vehicle
 
         if (playerWin)
             this.drawTurn = lerp(gameOverTimer.get(), this.drawTurn, -1);
-        
-        // update velocity
-        if (onGround)
-        {
-            // engine
-            if (playerInput.y>0)
-            {
-                const accel = playerInput.y*playerAccel*lerp(speedPercent, 1, .45);
-                // extra boost at low speeds
-                const lowSpeedPercent = (1-percent(this.velocity.z, 0, 100))**2;
-                this.velocity.z += accel * lerp(lowSpeedPercent, 1, 6);
-            }
-            else if (this.isBraking)
-                this.velocity.z += playerInput.y*playerBrake;
-        }
         if (startCountdown > 0)
             this.velocity.z = 0; // wait to start
         if (gameOverTimer.isSet())
             this.velocity = this.velocity.scale(.95);
-        this.velocity.z = max(0, forwardDamping*this.velocity.z);
    
         if (!testDrive)
         {
@@ -556,25 +546,27 @@ class PlayerVehicle extends Vehicle
 
                     if (trackObject.sprite.isBump)
                     {
-                        bump(.93);
-                        break;
+                        trackObject.collideSize = 0; // prevent colliding again
+                        bump(.93); // hit a bump
                     }
-                    if (trackObject.sprite.isSlow)
+                    else if (trackObject.sprite.isSlow)
                     {
+                        trackObject.collideSize = 0; // prevent colliding again
+                        sound_bump.play(2,.2);
                         // just slow down the player
                         this.velocity = this.velocity.scale(.95);
-                        sound_bump.play(2,.2);
-                        break;
                     }
+                    else
+                    {
+                        // push player away
+                        const pushDirection = abs(pos.x)+cs+200 > playerTrackInfo.width ? 
+                            sign(pos.x) : // push towards center
+                            sign(-dx);    // push away from object
 
-                    const pushDirection = abs(pos.x)+cs+200 > playerTrackInfo.width ? 
-                        sign(pos.x) : // push towards center
-                        sign(-dx);    // push away from object
-
-                    this.velocity.x = -99*pushDirection;
-                    this.velocity.z *= .9;
-                    playHitSound();
-                    break;
+                        this.velocity.x = -99*pushDirection;
+                        this.velocity.z *= .9;
+                        playHitSound();
+                    }
                 }
             }
         }

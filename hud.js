@@ -1,12 +1,6 @@
 'use strict';
 
-let radioMusic = -1;
 const showTitle = 1;
-
-function initHUD()
-{
-
-}
 
 function drawHUD()
 {
@@ -57,23 +51,18 @@ function drawHUD()
         if (bestTime)
         {
             const timeString = formatTimeString(bestTime);
-            drawHUDText('BEST TIME', vec3(.5,.87), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
-            drawHUDText(timeString, vec3(.5,.94), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
+            drawHUDText('BEST TIME', vec3(.5,.87), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            drawHUDText(timeString, vec3(.5,.94), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
-        /*else
-        {
-            const t = 'Click to Play';
-            const a = 1 - abs(Math.sin(time*2))/2;
-            drawHUDText(t, vec3(.5,.95), .06, hsl(.1,1,a), undefined,undefined,undefined,900,undefined,undefined,0,undefined,3);
-        }*/
 
-        // do not draw hud when in title mode
+        // do not draw normal hud when in title mode
         return;
     }
 
     if (debug && paused)
     {
-        drawHUDText('-PAUSE-', vec3(.5,.87), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
+        // paused
+        drawHUDText('-PAUSE-', vec3(.5,.87), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
     }
 
     if (startCountdownTimer.active() || startCountdown)
@@ -83,80 +72,63 @@ function drawHUD()
         const t = !startCountdown && startCountdownTimer.active() ? 'GO!' : startCountdown|0;
         const c = (startCountdown?RED:GREEN).copy();
         c.a = a;
-        drawHUDText(t, vec3(.5,.15), .25-a*.1, c, undefined,undefined,undefined,900,undefined,undefined,0,.03);
+        drawHUDText(t, vec3(.5,.15), .25-a*.1, c, undefined,undefined,900,undefined,undefined,.03);
     }
-    
-    if (!startCountdown)
+    else
     {
+        // win screen
         const wave1 = .04*(1 - abs(Math.sin(time*2)));
         const win = playerWin, newRecord = playerNewRecord;
         if (gameOverTimer.isSet())
         {
             const c = win?YELLOW:WHITE;
             const wave2 = .04*(1 - abs(Math.sin(time*2+PI/2)));
-            drawHUDText(win?'YOU':'GAME', vec3(.5,.15), .1+wave1, c, undefined,undefined,undefined,900,'italic',.5,0,undefined,4);
-            drawHUDText(win?'WIN!':'OVER!', vec3(.5,.25), .1+wave2, c, undefined,undefined,undefined,900,'italic',.5,0,undefined,4);
+            drawHUDText(win?'YOU':'GAME', vec3(.5,.15), .1+wave1, c, undefined,undefined,900,'italic',.5,undefined,4);
+            drawHUDText(win?'WIN!':'OVER!', vec3(.5,.25), .1+wave2, c, undefined,undefined,900,'italic',.5,undefined,4);
 
             if (!win && newRecord && !bestTime)
-                drawHUDText('NEW BEST!', vec3(.5,.54), .08+wave1/4, RED, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
+                drawHUDText('NEW BEST!', vec3(.5,.54), .08+wave1/4, RED, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
         else if (!startCountdownTimer.active() && !freeRide)
         {
             // big center checkpoint time
             const c = checkpointTimeLeft < 3 ? RED : checkpointTimeLeft < 10 ? YELLOW : WHITE;
             const t = checkpointTimeLeft|0;
-            drawHUDText(t, vec3(.5,.09), .14, c, undefined,undefined,undefined,900,undefined,undefined,0,.04);
+            drawHUDText(t, vec3(.5,.09), .14, c, undefined,undefined,900,undefined,undefined,.04);
         }
 
         if (win)
         {
             // current time
             const timeString = formatTimeString(raceTime);
-            drawHUDText('TIME', vec3(.5,.4), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
-            drawHUDText(timeString, vec3(.5,.47), .08, WHITE, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
-            newRecord && drawHUDText('NEW RECORD!', vec3(.5,.54), .08+wave1/4, RED, undefined,'monospace',undefined,900,undefined,undefined,0,undefined,3);
+            drawHUDText('TIME', vec3(.5,.4), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            drawHUDText(timeString, vec3(.5,.47), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            newRecord && drawHUDText('NEW RECORD!', vec3(.5,.54), .08+wave1/4, RED, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
         else if (!freeRide)
         {
             // current time
             const timeString = formatTimeString(raceTime);
-            drawHUDText(timeString, vec3(.13,.04), .05, WHITE, undefined,'monospace');
+            drawHUDText(timeString, vec3(.02,.04), .05, undefined, 'monospace','left');
 
             // current stage
             const level = debug&&testLevelInfo ? testLevelInfo.level+1 :playerLevel+1;
-            drawHUDText('STAGE '+level, vec3(.87,.04), .05, WHITE, undefined,'monospace');
+            drawHUDText('STAGE '+level, vec3(.98,.04), .05, undefined, 'monospace','right');
         }
     }
 
-    //const mph = playerVehicle.velocity.z>>1;
-    //const mphPos = vec3(.01,.95);
-    //drawHUDText(mph+' MPH', mphPos, .08, RED, WHITE,undefined,'left',900,'italic');
-    
-    /*
-    if (enableMusic && radioMusic>=0)
+    if (0) // mph
     {
-        let size = .034 + .002*Math.sin(time*4);
-        drawHUDText('𝅘𝅥𝅮 '+musicTrackNames[radioMusic], vec3(.83,.89), size, WHITE, BLACK,undefined,undefined,undefined,'italic');
+        const mph = playerVehicle.velocity.z>>1;
+        const mphPos = vec3(.01,.95);
+        drawHUDText(mph+' MPH', mphPos, .08, undefined,undefined,'left',900,'italic');
     }
-    */
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function HUDstickToSides(pos)
+function drawHUDText(text, pos, size=.1, color=WHITE, font='arial', textAlign='center', weight=400, style='', width, shadowScale=.07, outline)
 {
-    pos = pos.copy();
-    if (pos.x < .5)
-        pos.x = pos.x * mainCanvasSize.y/mainCanvasSize.x;
-    else
-        pos.x = 1 - (1-pos.x) * mainCanvasSize.y/mainCanvasSize.x;
-    return pos;
-}
-
-function drawHUDText(text, pos, size=.1, color=WHITE, shadowColor=BLACK, font='arial', textAlign='center', weight=400, style='', width, stickToSides=1, shadowScale=.07, outline)
-{
-    if (stickToSides)
-        pos = HUDstickToSides(pos);
     size *= mainCanvasSize.y;
     if (width)
         width *= mainCanvasSize.y;
@@ -171,9 +143,7 @@ function drawHUDText(text, pos, size=.1, color=WHITE, shadowColor=BLACK, font='a
     const shadowOffset = size*shadowScale;
     if (shadowOffset)
     {
-        let c = shadowColor.copy();
-        c.a = color.a;
-        context.fillStyle = c;
+        context.fillStyle = rgb(0,0,0,color.a);
         context.fillText(text, pos.x+shadowOffset, pos.y+shadowOffset, width);
     }
 

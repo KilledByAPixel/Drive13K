@@ -39,7 +39,7 @@ const playerStartZ = 2e3;
 const optimizedCulling = 1;
 const turnWorldScale = 2e4;
 
-let mainCanvasSize = pixelate ? vec3(640, 420) : vec3(1280, 720);
+let mainCanvasSize;// = pixelate ? vec3(640, 420) : vec3(1280, 720);
 let mainCanvas, mainContext;
 let time, frame, frameTimeLastMS, averageFPS, frameTimeBufferMS;
 let vehicleSpawnTimer;
@@ -75,20 +75,12 @@ function gameInit()
     const styleCanvas = 'position:absolute;' +             // position
         'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
         (pixelate?' image-rendering: pixelated':'');
-    mainCanvas.style.cssText = styleCanvas;
-
-    const styleWebglCanvas = 'position:absolute;' +             // position
-        'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
-        'background:#000;'+
-        (pixelate?' image-rendering: pixelated':'');
-    glCanvas.style.cssText = styleWebglCanvas;
-    //glCanvas.style.backgroundColor = '#000';
+    glCanvas.style.cssText = mainCanvas.style.cssText = styleCanvas;
+    glCanvas.style.backgroundColor = '#000';
 
     drawInit();
     inputInit()
-    initSounds()
     initGenerative();
-    initHUD();
     initTrackSprites();
     initLevelInfos();
     gameStart();
@@ -144,8 +136,7 @@ function gameUpdateInternal()
         if (startCountdown > 0 && !startCountdownTimer.active())
         {
             --startCountdown;
-            if (startCountdown < 3)
-                sound_beep.play(1,startCountdown?1:2);
+            sound_beep.play(1,startCountdown?1:2);
             //speak(startCountdown || 'GO!' );
             startCountdownTimer.set(1);
         }
@@ -172,8 +163,7 @@ function gameUpdateInternal()
             gameStart();
         }*/
         
-        if (keyWasPressed('KeyF'))
-            freeRide = 1;
+        freeRide |= keyWasPressed('KeyF'); // enable free ride mode
 
         if (!startCountdown && !gameOverTimer.isSet())
         {
@@ -220,7 +210,6 @@ function gameUpdateInternal()
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
     const maxVehicleCount = 10*trafficDensity;
-
     if (vehicles.length<maxVehicleCount && !gameOverTimer.isSet() && !vehicleSpawnTimer.active())
     {
         // todo prevent vehicles being spawned too close to each other
@@ -317,6 +306,7 @@ function gameUpdate(frameTimeMS=0)
     {
         // force at least one update each frame since it is waiting for refresh
         // the flux capacitor is what makes time travel possible
+        // -9 needed to prevent fast speeds on > 60fps monitors
         fluxCapacitor = frameTimeBufferMS;
         frameTimeBufferMS = 0;
     }
@@ -379,14 +369,14 @@ function updateCamera()
 ///////////////////////////////////////
 // save data
 
-const saveDataKey = 'ffd';
-let bestTime     = localStorage[saveDataKey+'a']*1 || 0;
-let bestDistance = localStorage[saveDataKey+'b']*1 || 0;
+const saveDataKey = 'DR1V3N';
+let bestTime     = localStorage[saveDataKey+1]*1 || 0;
+let bestDistance = localStorage[saveDataKey+2]*1 || 0;
 
 function writeSaveData()
 {
-    localStorage[saveDataKey+'a'] = bestTime;
-    localStorage[saveDataKey+'b'] = bestDistance;
+    localStorage[saveDataKey+1] = bestTime;
+    localStorage[saveDataKey+2] = bestDistance;
 }
 
 ///////////////////////////////////////

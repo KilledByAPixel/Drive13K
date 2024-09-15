@@ -214,6 +214,5 @@ function pushShadow(pos, xSize, zSize)
     const mesh = shadowMesh;
     const points = mesh.points.map(p=>vec3(p.x*size.x+pos.x,pos.y,p.z*size.z+pos.z));
     const uvs = mesh.uvs.map(uv=>uv.multiply(tile.size).add(tile.pos));
-    
     glPushVertsCapped(points, 0, color, uvs);
 }

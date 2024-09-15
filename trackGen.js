@@ -340,7 +340,7 @@ class TrackSegment
         const noiseScale = 3e3;
         const windSpeed = time;
         const noisePos = offset.scale(noiseScale);
-        return .5*Math.sin(windSpeed+noisePos.x+noisePos.z);
+        return Math.sin(windSpeed+noisePos.x+noisePos.z)/2;
     }
 
     addSprite(sprite,x=0,y=0)
@@ -560,18 +560,17 @@ bumpy with turns
             }
         }
 
+        // spawn road signs
         const roadSignRate = 10;
-        const signSide = sign(rightTurns - leftTurns);
+        const turnWarning = 0.4;
+        let signSide;
         if (i < levelGoal*checkpointTrackSegments) // end of level
         if (i%roadSignRate == 0)
+        if (rightTurns > turnWarning || leftTurns > turnWarning)
         {
-            // spawn road signs
-            const turnWarning = 0.4;
-            if (rightTurns > turnWarning || leftTurns > turnWarning)
-            {
-                // turn
-                t.addSprite(trackSprites.sign_turn,signSide*(t.width+500));
-            }
+            // turn
+            signSide = sign(rightTurns - leftTurns);
+            t.addSprite(trackSprites.sign_turn,signSide*(t.width+500));
         }
 
         // todo prevent sprites from spawning near road signs?
@@ -623,9 +622,7 @@ bumpy with turns
                 const width = t.width;
                 const count = trackSprites.billboards.length;
                 const billboardSprite = trackSprites.billboards[random.int(count)];
-                let billboardSide = random.sign();
-                if (signSide)
-                    billboardSide = -signSide;
+                const billboardSide = signSide ? -signSide : random.sign();
                 t.addSprite(billboardSprite,billboardSide*random.float(width+600,width+800));
                 continue;
             }
@@ -634,12 +631,10 @@ bumpy with turns
                 // vary how often side objects spawn
                 if (random.bool(.001))
                 {
-                    if (random.bool(.4)) // normal to spawn often
-                        trackSideChanceScale = 1;
-                    else if (random.bool(.1)) // small chance of none
-                        trackSideChanceScale = 0;
-                    else
-                        trackSideChanceScale = random.float();
+                    trackSideChanceScale = 
+                        random.bool(.4) ? 1 : // normal to spawn often
+                        random.bool(.1) ? 0 : // small chance of none
+                        random.float();       // random scale
                 }
 
                 // track side objects

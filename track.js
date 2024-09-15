@@ -17,7 +17,7 @@ function trackPreUpdate()
         // create track world position
         const s = i < 1 ? 1-cameraTrackSegmentPercent : 1;
         track[j].pos = track[j].offset.copy();
-        track[j].pos.x = x+=v+=turnScale*s*track[j].pos.x;
+        track[j].pos.x = x += v += turnScale*s*track[j].pos.x;
         track[j].pos.z -= cameraOffset;
     }
 }
@@ -103,7 +103,8 @@ function drawRoad(zwrite = 0)
 function drawTrackScenery()
 {
     // this is last pass from back to front so do do not write to depth
-    glSetDepthTest(1, glEnableLighting = 0);
+    glSetDepthTest(1, 0);
+    glEnableLighting = 0;
 
     const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
     const cameraTrackSegment = cameraTrackInfo.segmentIndex;
@@ -133,13 +134,13 @@ function drawTrackScenery()
                 const s = sprite.size*sprite.getRandomSpriteScale();
                 const o2 = w+6e3+random.float(6e4);
                 const o = trackSpriteSide * o2;
-                // raise up as it goes father away
+                // raise up as it goes father away to cover horizon
                 const h = percent(trackSegment.pos.z,5e3,1e5)*2e3;
                 const wave = segmentIndex/40+time;
                 const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),h));
                 const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive
                 const c = hsl(0,random.float(.9,1),random.float(.9,1));
-                pushTrackObject(p, vec3(trackSpriteSide*s*random.float(1,1.5),s,s), c, sprite, waveWind);
+                pushTrackObject(p, vec3(trackSpriteSide*s,s), c, sprite, waveWind);
             }
             else
             {
@@ -173,8 +174,10 @@ function drawTrackScenery()
     }
 
     glRender();
-    glSetDepthTest();
-    glEnableLighting = 1;
+
+    // this is the final thing renderd
+    //glSetDepthTest();
+    //glEnableLighting = 1;
 }
 
 function drawTrack()

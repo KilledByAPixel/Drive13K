@@ -6,9 +6,9 @@ const inputWASDEmulateDirection = debug;
 const gamepadDirectionEmulateStick = 1;
 const isTouchDevice = allowTouch && window.ontouchstart !== undefined;
 
-let mousePos = vec3();
+let mousePos;
 let inputData = [];
-let isUsingGamepad = 0;
+let isUsingGamepad;
 
 function inputUpdate()
 {
@@ -28,12 +28,18 @@ function inputUpdatePost()
 // Input functions
 
 const keyIsDown = (key) => inputData[key] & 1; 
-const keyWasPressed = (key) => (inputData[key]>>1) & 1; 
-const keyWasReleased = (key) => (inputData[key]>>2) & 1; 
+const keyWasPressed = (key) => inputData[key] & 2 ? 1 : 0;
+const keyWasReleased = (key) => inputData[key] & 4 ? 1 : 0;
 const clearInput = () => inputData = [];
 const mouseIsDown = keyIsDown;
 const mouseWasPressed = keyWasPressed;
 const mouseWasReleased = keyWasReleased;
+
+const gamepadIsDown = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 1); 
+const gamepadWasPressed = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 2); 
+const gamepadWasReleased = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 4); 
+const gamepadStick = (stick, gamepad=0) =>
+    stickData[gamepad] ? stickData[gamepad][stick] || vec3() : vec3();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input event handlers
@@ -152,12 +158,6 @@ function inputInit()
 
 // gamepad internal variables
 let gamepadData, stickData;
-
-const gamepadIsDown = (key, gamepad=0) => gamepadData[gamepad][key] & 1; 
-const gamepadWasPressed = (key, gamepad=0) => (gamepadData[gamepad][key]>>1) & 1; 
-const gamepadWasReleased = (key, gamepad=0) => (gamepadData[gamepad][key]>>2) & 1; 
-const gamepadStick = (stick, gamepad=0) =>
-    stickData[gamepad] ? stickData[gamepad][stick] || vec3() : vec3();
 
 // gamepads are updated by engine every frame automatically
 function gamepadsUpdate()

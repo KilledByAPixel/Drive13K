@@ -901,7 +901,7 @@ function generateTetures()
 
         for(let j=12; j--;)
         {
-            const v = .3, a = j/12*PI*2
+            const v = .3, a = j/12*2*PI
             const vx = Math.sin(a) * v, vy = Math.cos(a) * v;
             const p = new Particle(.3,.23,vx,vy-.1,.2,.05,.005);
             p.style = 1;
@@ -1079,6 +1079,6 @@ function generateTetures()
         color(hsl(0,0,.8))
         rect();
         color(hsl(.7, .9, .25),1);
-        text('OUTASPACE',.5,.6,.9,.9,.03,'monospace');
+        text('JS-13K',.5,.6,1,.9,.03,'monospace');
     }
 }

@@ -14,14 +14,9 @@ class Sound
     {
         if (!soundEnable) return;
 
-        this.randomness = 0;
-        if (zzfxSound)
-        {
-            // generate zzfx sound now for fast playback
-            this.randomness = zzfxSound[1] || 0;
-            zzfxSound[1] = 0; // generate without randomness
-            this.samples = zzfxG(...zzfxSound);
-        }
+        // generate zzfx sound now for fast playback
+        this.randomness = zzfxSound[1] || 0;
+        this.samples = zzfxG(...zzfxSound);
     }
 
     play(volume=1, pitch=1, randomnessScale=1)
@@ -29,7 +24,7 @@ class Sound
         if (!soundEnable) return;
 
         // play the sound
-        const playbackRate = pitch + pitch * this.randomness*randomnessScale*rand(-1,1);
+        const playbackRate = pitch + this.randomness*randomnessScale*rand(-pitch,pitch);
         return playSamples(this.samples, volume, playbackRate);
     }
 
@@ -90,7 +85,7 @@ const zzfxR = 44100;
 function zzfxG
 (
     // parameters
-    volume = 1, randomness = .05, frequency = 220, attack = 0, sustain = 0,
+    volume = 1, randomness, frequency = 220, attack = 0, sustain = 0,
     release = .1, shape = 0, shapeCurve = 1, slide = 0, deltaSlide = 0,
     pitchJump = 0, pitchJumpTime = 0, repeatTime = 0, noise = 0, modulation = 0,
     bitCrush = 0, delay = 0, sustainVolume = 1, decay = 0, tremolo = 0, filter = 0
@@ -99,8 +94,8 @@ function zzfxG
     // init parameters
     let PI2 = PI*2, sampleRate = zzfxR,
         startSlide = slide *= 500 * PI2 / sampleRate / sampleRate,
-        startFrequency = frequency *= 
-            rand(1 + randomness, 1-randomness) * PI2 / sampleRate,
+        startFrequency = frequency *= PI2 / sampleRate, // no randomness
+            // rand(1 + randomness, 1-randomness) * PI2 / sampleRate,
         b = [], t = 0, tm = 0, i = 0, j = 1, r = 0, c = 0, s = 0, f, length,
 
         // biquad LP/HP filter
