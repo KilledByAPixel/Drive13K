@@ -13,8 +13,8 @@ const clamp = (value, min=0, max=1) => value < min ? min : value > max ? max : v
 const clampAngle = (value) => ((value+PI) % (2*PI) + 2*PI) % (2*PI) - PI;
 const percent = (value, valueA, valueB) => (valueB-=valueA) ? clamp((value-valueA)/valueB) : 0;
 const lerp = (percent, valueA, valueB) => valueA + clamp(percent) * (valueB-valueA);
-const rand = (valueA=1, valueB=0) => valueB + Math.random() * (valueA-valueB);
-const randInt = (valueA, valueB=0) => Math.floor(rand(valueA,valueB));
+const rand = (valueA=1, valueB=0) => lerp(Math.random(), valueA, valueB);
+const randInt = (valueA, valueB=0) => rand(valueA, valueB)|0;
 const smoothStep = (p) => p * p * (3 - 2 * p);
 const isOverlapping = (posA, sizeA, posB, sizeB=vec3()) =>
     abs(posA.x - posB.x)*2 < sizeA.x + sizeB.x && abs(posA.y - posB.y)*2 < sizeA.y + sizeB.y;

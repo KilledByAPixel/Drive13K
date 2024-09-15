@@ -563,12 +563,12 @@ bumpy with turns
         const turnWarning = 0.4;
         let signSide;
         if (i < levelGoal*checkpointTrackSegments) // end of level
-        if (i%roadSignRate == 0)
         if (rightTurns > turnWarning || leftTurns > turnWarning)
         {
             // turn
             signSide = sign(rightTurns - leftTurns);
-            t.addSprite(trackSprites.sign_turn,signSide*(t.width+500));
+            if (i%roadSignRate == 0)
+                t.addSprite(trackSprites.sign_turn,signSide*(t.width+500));
         }
 
         // todo prevent sprites from spawning near road signs?
