@@ -186,7 +186,7 @@ function initLevelInfos()
     LI.sunColor = hsl(.15,1,.8);
     LI.sideStreets = 1;
     LI.laneCount = 5;
-    LI.trafficDensity = 2; // extra traffic in city
+    LI.trafficDensity = 3; // extra traffic in city
 
     // in front of city
     LI.turnChance = .3;
