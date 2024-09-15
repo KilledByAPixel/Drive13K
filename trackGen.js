@@ -86,10 +86,10 @@ function initTrackSprites()
     // rocks
     trackSprites.rock_tall     = new TrackSprite(vec3(1,4),1e3,.3,0,.8,0);
     trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.3,0,.8,0);
-    trackSprites.rock_huge     = new TrackSprite(vec3(1,4),4e3,.3,0,.8,0);
+    trackSprites.rock_huge     = new TrackSprite(vec3(1,4),5e3,.3,0,.8,0);
     trackSprites.rock_huge.colorHSL  = vec3(.08, 1, .8);
     trackSprites.rock_huge.hueRandomness = .01;
-    trackSprites.rock_huge2     = new TrackSprite(vec3(2,4),8e3,.3,0,.25,0);
+    trackSprites.rock_huge2     = new TrackSprite(vec3(2,4),8e3,.5,0,.25,0);
     trackSprites.rock_huge2.colorHSL  = vec3(.05, 1, .8);
     trackSprites.rock_huge2.hueRandomness = .01;
     trackSprites.rock_huge3     = new TrackSprite(vec3(2,4),8e3,.7,0,.5,0);
@@ -102,8 +102,10 @@ function initTrackSprites()
     trackSprites.rock_weird2.colorHSL  = vec3(0, 0, .2);
     trackSprites.tunnel1     = new TrackSprite(vec3(6,4),1e4,.0,0,0,0);
     trackSprites.tunnel1.colorHSL  = vec3(.05, 1, .8);
+    trackSprites.tunnel1.tunnelArch = 1;
     trackSprites.tunnel2     = new TrackSprite(vec3(7,4),5e3,0,0,0,0);
     trackSprites.tunnel2.colorHSL  = vec3(0, 0, .1);
+    trackSprites.tunnel2.tunnelLong = 1;
     trackSprites.tunnel2Front     = new TrackSprite(vec3(7,4),5e3,0,0,0,0);
     trackSprites.tunnel2Front.colorHSL  = vec3(0,0,.8);
     //trackSprites.tunnel2_rock         = new TrackSprite(vec3(6,6),1e4,.2,0,.5,0);
@@ -522,8 +524,6 @@ bumpy with turns
         const t = track[i];
         const levelInfo = getLevelInfo(t.level);
         ASSERT(t.level == levelInfo.level || t.level > levelGoal); 
-        const isDesert = levelInfo.level == 2;
-        const isMountains = levelInfo.level == 9;
         
         const previous = track[i-1];
         if (previous)
@@ -577,6 +577,8 @@ bumpy with turns
         //levelInfo.tunnel = trackSprites.tunnel2; // test tuns
         if (levelInfo.tunnel)
         {
+            const isRockArch   = levelInfo.tunnel.tunnelArch;
+            const isLongTunnel = levelInfo.tunnel.tunnelLong;
             if (iCheckpoint > 100 && iCheckpoint < checkpointTrackSegments - 100)
             {
                 const wasOn = tunnelOn;
@@ -584,18 +586,18 @@ bumpy with turns
                 {
                     tunnelOn = !tunnelOn;
                     tunnelTime = tunnelOn? 
-                        isMountains ? 10 : random.int(200,600) :
+                        isRockArch ? 10 : random.int(200,600) :
                         tunnelTime = random.int(300,600); // longer when off
                 }
 
                 if (tunnelOn)
                 {
                     // brighter front of tunnel
-                    const sprite = isDesert && !wasOn ?
+                    const sprite = isLongTunnel && !wasOn ?
                         trackSprites.tunnel2Front : levelInfo.tunnel;
                     t.addSprite(sprite, 0);
 
-                    if (isDesert && i%50==0)
+                    if (isLongTunnel && i%50==0)
                     {
                         // lights on top of tunnel
                         const lightSprite = trackSprites.light_tunnel;

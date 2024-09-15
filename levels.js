@@ -133,12 +133,13 @@ function initLevelInfos()
     LI = new LevelInfo(level++, [
         trackSprites.grass_dead,
         trackSprites.tree_fall,
-        trackSprites.tree_dead,
-        trackSprites.tree_stump,
-        trackSprites.rock_huge2,
-        trackSprites.rock_big,
         trackSprites.rock_huge,
+        trackSprites.tree_dead,
+        trackSprites.rock_huge2,
+        trackSprites.tree_stump,
+        trackSprites.rock_big,
     ], trackSprites.tree_fall,trackSprites.horizon_brownMountains);
+    LI.sceneryListBias = 9;
     LI.trackSideRate = 20;
     LI.skyColorTop = hsl(.7,1,.7);
     LI.skyColorBottom = hsl(.2,1,.9);
@@ -243,7 +244,7 @@ function initLevelInfos()
         trackSprites.rock_big,
         trackSprites.rock_huge2,
     ], trackSprites.tree_palm, trackSprites.horizon_redMountains);
-    LI.sceneryListBias=9
+    LI.sceneryListBias = 9;
     LI.trackSideRate = 9;
     LI.skyColorTop = hsl(0,1,.8);
     LI.skyColorBottom = hsl(.6,1,.6);
@@ -399,7 +400,6 @@ class LevelInfo
         this.bumpFreqMax =  1;   // more often bumps
         this.bumpScaleMin = 50;  // rapid bumps
         this.bumpScaleMax = 150; // largest hills
-
 
         // test level with color
         //this.groundColorHSL = vec3(level/9,1,.5);

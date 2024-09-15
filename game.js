@@ -48,7 +48,7 @@ let checkpointTimeLeft, startCountdown, startCountdownTimer, gameOverTimer, next
 let raceTime, playerLevel, playerWin, playerNewRecord;
 let titleScreenMode = 1;
 let titleModeStartCount = 0;
-const trackSeed = 1331;
+let trackSeed = 1331;
 
 let checkpointSoundCount, checkpointSoundTimer;
 

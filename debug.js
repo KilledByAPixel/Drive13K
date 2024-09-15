@@ -43,9 +43,27 @@ function debugUpdate()
 
     }
     if (keyWasPressed('Digit5'))
-        debugCapture = 1;
-    if (keyWasPressed('Digit6'))
         checkpointTimeLeft=1
+    if (keyWasPressed('Digit6'))
+    {
+        // randomize track
+        trackSeed = randInt(1e9);
+        const endLevel = levelInfoList.pop();
+        shuffle(endLevel.scenery);
+        shuffle(levelInfoList);
+        for(let i=levelInfoList.length; i--;)
+        {
+            const info = levelInfoList[i];
+            info.level = i;
+            shuffle(info.scenery);
+            info.sceneryListBias = random.float(1,29);
+        }
+        levelInfoList.push(endLevel);
+        buildTrack();
+        gameStart();
+    }
+    if (keyWasPressed('Digit0'))
+        debugCapture = 1;
     if (keyWasPressed('Backquote'))
         debugInfo = !debugInfo;
     if (keyWasPressed('KeyM')) // toggle mute
