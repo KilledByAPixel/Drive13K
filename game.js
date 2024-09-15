@@ -72,11 +72,10 @@ function gameInit()
     document.body.appendChild(mainCanvas = document.createElement('canvas'));
     mainContext = mainCanvas.getContext('2d');
 
-    const styleCanvas = 'position:absolute;' +             // position
+    const styleCanvas = 'position:absolute;' +               // position
         'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
-        (pixelate?' image-rendering: pixelated':'');
+        (pixelate?' image-rendering: pixelated':'');         // pixelated
     glCanvas.style.cssText = mainCanvas.style.cssText = styleCanvas;
-    glCanvas.style.backgroundColor = '#000';
 
     drawInit();
     inputInit()

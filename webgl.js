@@ -15,7 +15,7 @@ function glInit()
 {
     // create the canvas
     document.body.appendChild(glCanvas = document.createElement('canvas'));
-    glContext = glCanvas.getContext('webgl2', {antialias:false});
+    glContext = glCanvas.getContext('webgl2', {alpha: false, antialias:false});
     // anti-aliasing causes thin dark lines on some devices
 
     // setup vertex and fragment shaders
