@@ -1,59 +1,10 @@
 'use strict';
 
-/*
-
-trees
-cactus
-grass
-signs
-girders
-fences
-billboards
-buildings
-telepone poles
-wind turbines
-water towers
-tunnels
-lights
-side streets
-flowers
-plants
-
-
-distance
-- mountains
-- buildings
-- sun
-
-
-0  shapes
-1  trees
-2  plants
-3  rocks
-4  structures
-5  signs
-6  misc
-7  background
-8
-9
-10
-11
-12
-13
-14
-15
-
-
-
-*/
-
 const hardAlpha = 1;
 const generativeTileSize = 512;
 const generativeCanvasSize = vec3(generativeTileSize*8,generativeTileSize*8,1);
 const generativeTileSizeVec = vec3(generativeTileSize,generativeTileSize);
 const fixFirefoxFontBug = 1;
-
-const getSpriteTile = (pos)=> new Tile(pos.scale(generativeTileSize), generativeTileSizeVec);
     
 function initGenerative()
 {

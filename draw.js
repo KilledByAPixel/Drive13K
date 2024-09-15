@@ -14,6 +14,8 @@ const BLUE   = rgb(0,0,1);
 const MAGENTA= rgb(1,0,1);
 const GRAY   = rgb(.5,.5,.5);
 
+const getSpriteTile = (pos)=> new Tile(pos.scale(generativeTileSize), generativeTileSizeVec);
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function drawInit()
