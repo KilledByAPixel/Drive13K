@@ -110,8 +110,8 @@ function initTrackSprites()
     //trackSprites.tunnel2_rock.colorHSL = vec3(.15, .5, .8);
 
     // hazards
-    trackSprites.hazard_rocks      = new TrackSprite(vec3(3,4),800,.2,0,.8);
-    trackSprites.hazard_sand      = new TrackSprite(vec3(4,4),800,.2,0,.8);
+    trackSprites.hazard_rocks      = new TrackSprite(vec3(3,4),1e3,.2,0,.9);
+    trackSprites.hazard_sand      = new TrackSprite(vec3(4,4),1e3,.2,0,.9);
     trackSprites.hazard_rocks.isBump = 
     trackSprites.hazard_sand.isSlow = 1;
     trackSprites.hazard_rocks.spriteYOffset =

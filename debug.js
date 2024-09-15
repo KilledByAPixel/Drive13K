@@ -18,7 +18,7 @@ function debugInit()
 
 function debugUpdate()
 {
-    if (keyWasPressed('Digit1') || keyIsDown('Digit2'))
+    if (keyWasPressed('Digit1') || keyWasPressed('Digit2'))
     {
         const d = keyWasPressed('Digit1') ? 1 : -1;
         playerVehicle.pos.z += d * checkpointDistance;
@@ -79,7 +79,7 @@ function debugDraw()
     const context = mainContext;
 
     if (testDrive)
-        drawHUDText('AUTO', vec3(.1,.95),.05,RED);
+        drawHUDText('AUTO', vec3(.5,.95),.05,RED);
 
     if (showMap)
     {

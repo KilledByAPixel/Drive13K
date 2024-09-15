@@ -117,12 +117,12 @@ function drawHUD()
         }
     }
 
-    if (0) // mph
+    /*if (debug) // mph
     {
         const mph = playerVehicle.velocity.z>>1;
         const mphPos = vec3(.01,.95);
         drawHUDText(mph+' MPH', mphPos, .08, undefined,undefined,'left',900,'italic');
-    }
+    }*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

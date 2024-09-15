@@ -245,11 +245,11 @@ class Vehicle
         {
             // shadow
             glSetDepthTest(1,0);
-            glPolygonOffset(this.isPlayer?150:30);
-            const lightOffset = vec3(0,0,-50).rotateY(worldHeading);
+            glPolygonOffset(this.isPlayer?300:30);
+            const lightOffset = vec3(0,0,-60).rotateY(worldHeading);
             const shadowColor = rgb(0,0,0,.5);
             const shadowPosBase = vec3(p.x,trackInfo.pos.y,p.z).add(lightOffset);
-            const shadowSize = vec3(-580,200,670); // why x negative?
+            const shadowSize = vec3(-720,200,600); // why x negative?
             
             const m2 = buildMatrix(shadowPosBase, vec3(trackPitch,0)).multiply(mHeading);
             const mshadow = m2.multiply(buildMatrix(0, 0, shadowSize));
@@ -360,19 +360,18 @@ class PlayerVehicle extends Vehicle
         }
 
         // get player input
-        let playerInput = vec3(
-            keyIsDown('ArrowRight') - keyIsDown('ArrowLeft'),
-            keyIsDown('Space') ? -1 : keyIsDown('ArrowUp')    - keyIsDown('ArrowDown'));
-
+        let playerInputTurn = keyIsDown('ArrowRight') - keyIsDown('ArrowLeft');
+        let playerInputGas = keyIsDown('ArrowUp');
+        let playerInputBrake = keyIsDown('Space') || keyIsDown('ArrowDown');
+    
         if (isUsingGamepad)
         {
-            playerInput.x = gamepadStick(0).x;
-            const gasing = gamepadIsDown(0) || gamepadIsDown(7);
-            const breaking = gamepadIsDown(1) || gamepadIsDown(2) || gamepadIsDown(3) || gamepadIsDown(6);
-            playerInput.y = gasing ? 1 : breaking ? -1 : 0;
+            playerInputTurn = gamepadStick(0).x;
+            playerInputGas = gamepadIsDown(0) || gamepadIsDown(7);
+            playerInputBrake = gamepadIsDown(1) || gamepadIsDown(2) || gamepadIsDown(3) || gamepadIsDown(6);
         }
 
-        if (playerInput.y)
+        if (playerInputGas)
             mouseControl = 0;
         if (debug && (mouseWasPressed(0) || mouseWasPressed(2)))
             testDrive = 0;
@@ -386,25 +385,25 @@ class PlayerVehicle extends Vehicle
         if (mouseControl || mouseIsDown(0))
         {
             mouseControl = 1;
-            playerInput.y = mouseIsDown(2) ? -1 : mouseIsDown(0);
-            playerInput.x = clamp(10*(mousePos.x-.5),-1,1);
+            playerInputTurn = clamp(10*(mousePos.x-.5),-1,1);
+            playerInputGas = mouseIsDown(0);
+            playerInputBrake = mouseIsDown(2);
 
             if (isTouchDevice && mouseIsDown(0))
             {
-                playerInput.y = 1.8 - 2*mousePos.y;
-                if (playerInput.y < 0)
-                    playerInput.y = -1;
-                if (playerInput.y > 0)
-                    playerInput.y = percent(playerInput.y, .1, .2);
+                const touch = 1.8 - 2*mousePos.y;
+                playerInputGas = percent(touch, .1, .2);
+                playerInputBrake = touch < 0;
+                playerInputTurn = clamp(3*(mousePos.x-.5),-1,1);
             }
         }
         if (testDrive)
-            playerInput = vec3(0,1);
+            playerInputGas = 1, playerInputTurn=0;
         if (gameOverTimer.isSet())
-            playerInput = vec3();
-        this.isBraking = playerInput.y<0;
+            playerInputGas =  playerInputTurn = playerInputBrake = 0;
+        this.isBraking = playerInputBrake;
 
-        const sound_velocity = max(20+playerInput.y*50,this.velocity.z);
+        const sound_velocity = max(20+playerInputGas*50,this.velocity.z);
         this.engineTime += sound_velocity*.01;
         if (this.engineTime > 1)
         {
@@ -461,15 +460,15 @@ class PlayerVehicle extends Vehicle
             }
 
             // update velocity
-            if (playerInput.y>0)
+            if (playerInputBrake)
+                this.velocity.z -= playerBrake;
+            else if (playerInputGas)
             {
-                const accel = playerInput.y*playerAccel*lerp(speedPercent, 1, .45);
+                const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .45);
                 // extra boost at low speeds
                 const lowSpeedPercent = (1-percent(this.velocity.z, 0, 100))**2;
                 this.velocity.z += accel * lerp(lowSpeedPercent, 1, 6);
             }
-            else if (this.isBraking)
-                this.velocity.z += playerInput.y*playerBrake;
             else if (this.velocity.z < 10)
                 this.velocity.z *= .95; // slow to stop
         }
@@ -484,7 +483,7 @@ class PlayerVehicle extends Vehicle
             this.velocity.z = max(0, forwardDamping*this.velocity.z);
 
             // turning
-            let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInput.x * playerTurnControl;
+            let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn * playerTurnControl;
             if (testDrive)
             {
                 desiredPlayerTurn = -this.pos.x/2e3;
@@ -547,14 +546,14 @@ class PlayerVehicle extends Vehicle
                     if (trackObject.sprite.isBump)
                     {
                         trackObject.collideSize = 0; // prevent colliding again
-                        bump(.93); // hit a bump
+                        bump(.75); // hit a bump
                     }
                     else if (trackObject.sprite.isSlow)
                     {
                         trackObject.collideSize = 0; // prevent colliding again
-                        sound_bump.play(2,.2);
+                        sound_bump.play(percent(this.velocity.z, 0, 50)*3,.2);
                         // just slow down the player
-                        this.velocity = this.velocity.scale(.95);
+                        this.velocity = this.velocity.scale(.8);
                     }
                     else
                     {
@@ -564,7 +563,7 @@ class PlayerVehicle extends Vehicle
                             sign(-dx);    // push away from object
 
                         this.velocity.x = -99*pushDirection;
-                        this.velocity.z *= .9;
+                        this.velocity.z *= .8;
                         playHitSound();
                     }
                 }
