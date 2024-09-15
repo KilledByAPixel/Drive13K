@@ -39,7 +39,7 @@ function initTrackSprites()
     trackSprites.tree_fall.shadowScale =
     trackSprites.tree_snow.shadowScale =
     trackSprites.tree_yellow.shadowScale =
-    trackSprites.tree_huge.shadowScale = .5;
+    trackSprites.tree_huge.shadowScale = .7;
 
     // grass and flowers
     trackSprites.grasses = [];
@@ -190,7 +190,7 @@ class TrackSprite
         this.canMirror = canMirror; // allow mirroring
         this.trackFace =          // face track if close
         this.spriteYOffset = 0;     // how much to offset the sprite from the ground
-        this.shadowScale = 1;
+        this.shadowScale = 1.2;
 
         // color
         this.colorHSL = vec3(0,0,1);
