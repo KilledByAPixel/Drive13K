@@ -122,7 +122,7 @@ function initTrackSprites()
     //trackSprites.hazard_snow.isSlow = 1;
 
     // special sprites
-    trackSprites.water            = new TrackSprite(vec3(5,4),3e3,.2,1);
+    trackSprites.water            = new TrackSprite(vec3(5,4),6e3,.2,1);
     trackSprites.sign_start       = new TrackSprite(vec3(5,0),2300,0,.01,0,0);
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);

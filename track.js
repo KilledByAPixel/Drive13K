@@ -56,12 +56,15 @@ function drawRoad(zwrite = 0)
             color.a && glPushVertsCapped(poly, normals, color);
         }
 
-        if (zwrite)
         {
             // ground
             const color = segment1.colorGround;
             const width = 1e5; // fill the width of the screen
             pushRoadVerts(width, color);
+        }
+
+        if (zwrite)
+        {
             segment2 = segment1;
             continue;
         }
@@ -128,16 +131,16 @@ function drawTrackScenery()
             {
                 // water
                 const sprite = trackSprites.water;
-                const s = 2*sprite.size*sprite.getRandomSpriteScale();
-                const o2 = w+8e3+random.float(6e4);
+                const s = sprite.size*sprite.getRandomSpriteScale();
+                const o2 = w+random.float(1e4,8e4);
                 const o = trackSpriteSide * o2;
                 // raise up as it goes father away to cover horizon
-                const h = percent(trackSegment.pos.z,5e3,1e5)*2e3;
+                const h = lerp(percent(trackSegment.pos.z,2e3,5e4), .3, 2);
                 const wave = segmentIndex/40+time;
-                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),h));
+                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),0));
                 const waveWind = 3*Math.cos(wave); // fake wind to make wave seam more alive
                 const c = hsl(0,random.float(.9,1),random.float(.9,1));
-                pushTrackObject(p, vec3(trackSpriteSide*s,s/2,s), c, sprite, waveWind);
+                pushTrackObject(p, vec3(trackSpriteSide*s,s*h,s), c, sprite, waveWind);
             }
             else
             {
