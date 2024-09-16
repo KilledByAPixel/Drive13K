@@ -28,12 +28,12 @@ Created by Frank Force for JS13k 2024
 - Procedural art (trees, rocks, scenery)
 - Track generator
 - Arcade style driving physics
-- AI vehicles
-- Parallax horizon
+- 2 types of AI vehicles
+- Parallax horizon and sky
 - ZZFX sounds
 - Persistent save data
 - Keyboard or mouse input
-- Written from scratch in vanilla JS
+- All written from scratch in vanilla JS
 
 ## Enhanced Features
 
