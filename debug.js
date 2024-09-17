@@ -3,6 +3,7 @@
 let debug=1, downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
 let showMap=0, debugGenerativeCanvas=0, debugInfo=1, debugSkipped=0;
 let debugGenerativeCanvasCached;
+const pauseOnNoFocus = 1;
 
 function ASSERT(assert, output) 
 { output ? console.assert(assert, output) : console.assert(assert); }
@@ -18,9 +19,12 @@ function debugInit()
 
 function debugUpdate()
 {
+    if (pauseOnNoFocus && !document.hasFocus() && !titleScreenMode)
+        paused = 1;
+
     if (keyWasPressed('Digit1') || keyWasPressed('Digit2'))
     {
-        const d = keyWasPressed('Digit1') ? 1 : -1;
+        const d = keyWasPressed('Digit2') ? 1 : -1;
         playerVehicle.pos.z += d * checkpointDistance;
         playerVehicle.pos.z = max(playerVehicle.pos.z, 0);
         checkpointTimeLeft = 40;
@@ -28,7 +32,7 @@ function debugUpdate()
     }
     if (keyIsDown('Digit3') || keyIsDown('Digit4'))
     {
-        const v = keyIsDown('Digit3') ? 1e3 : -1e3;
+        const v = keyIsDown('Digit4') ? 1e3 : -1e3;
         playerVehicle.pos.z += v;
         playerVehicle.pos.z = max(playerVehicle.pos.z, 0);
 
@@ -40,7 +44,6 @@ function debugUpdate()
         const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
         worldHeading += v*cameraTrackInfo.offset.x/turnWorldScale;
         debugSkipped = 1;
-
     }
     if (keyWasPressed('Digit5'))
         checkpointTimeLeft=1
@@ -62,12 +65,20 @@ function debugUpdate()
         buildTrack();
         gameStart();
     }
+    if (keyWasPressed('Digit7'))
+        debugGenerativeCanvas = !debugGenerativeCanvas;
     if (keyWasPressed('Digit0'))
         debugCapture = 1;
     if (keyWasPressed('KeyI'))
         debugInfo = !debugInfo;
     if (keyWasPressed('KeyM')) // toggle mute
+    {
+        if (soundVolume)
+            sound_bump.play(.4,3);
         soundVolume = soundVolume ? 0 : .3;
+        if (soundVolume)
+            sound_bump.play();
+    }
         
     if (keyWasPressed('KeyQ'))
         testDrive = !testDrive
@@ -98,7 +109,7 @@ function debugDraw()
     const c = mainCanvas;
     const context = mainContext;
 
-    if (testDrive)
+    if (testDrive && !titleScreenMode)
         drawHUDText('AUTO', vec3(.5,.95),.05,RED);
 
     if (showMap)

@@ -43,7 +43,7 @@ function drawSky()
     const circleSpriteTile = getSpriteTile(vec3());
     const dotSpriteTile = getSpriteTile(vec3(1,0));
     { 
-        // sun / moon
+        // sun
         const sunSize = 1e2;
         const sunHeight = skyTop*lerp(levelLerpPercent, levelInfoLast.sunHeight, levelInfo.sunHeight);
         const sunColor = levelInfoLast.sunColor.lerp(levelInfo.sunColor, levelLerpPercent);
@@ -51,7 +51,7 @@ function drawSky()
         for(let i=0;i<1;i+=.05)
         {
             const c = sunColor.copy();
-            c.a = i?(1-i)**2/5:1;
+            c.a = i?(1-i)**7:1;
             pushSprite(cameraPos.add(vec3( x*headingScale, sunHeight, skyZ)), vec3(sunSize*(1+i*30)), c, i?dotSpriteTile:circleSpriteTile);
         }
     }
@@ -81,10 +81,8 @@ function drawSky()
         const p = i/99;
         const ltp = lerp(p,1,2);
         const ltt = .1;
-        let levelTransition = levelPercent < ltt ? (levelPercent/ltt)**ltp : 
+        const levelTransition = levelFloat<.5 ? 1 : levelPercent < ltt ? (levelPercent/ltt)**ltp : 
                 levelPercent > 1-ltt ? 1-((levelPercent-1)/ltt+1)**ltp : 1;
-        if (levelFloat<.5)
-            levelTransition = 1; // dont transition out of last level
             
         const parallax = lerp(p, 1.01, 1.07);
         const s = random.float(1e2,2e2)*horizonSpriteSize;

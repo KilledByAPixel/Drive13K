@@ -59,7 +59,7 @@ function drawRoad(zwrite = 0)
         {
             // ground
             const color = segment1.colorGround;
-            const width = 1e5; // fill the width of the screen
+            const width = 4e3+p1.z*5; // fill the width of the screen
             pushRoadVerts(width, color);
         }
 
@@ -132,12 +132,12 @@ function drawTrackScenery()
                 // water
                 const sprite = trackSprites.water;
                 const s = sprite.size*sprite.getRandomSpriteScale();
-                const o2 = w+random.float(1e4,8e4);
+                const o2 = w+random.float(12e3,8e4);
                 const o = trackSpriteSide * o2;
                 // get taller in distance to cover horizon
-                const h = lerp(percent(trackSegment.pos.z,2e3,5e4), .05, .13);
-                const wave = segmentIndex/40+time;
-                const p = trackSegment.pos.add(vec3(o+500*Math.sin(wave),0));
+                const h = .4;
+                const wave = time-segmentIndex/70;
+                const p = trackSegment.pos.add(vec3(o+2e3*Math.sin(wave),0));
                 const waveWind = 9*Math.cos(wave); // fake wind to make wave seam more alive
                 pushTrackObject(p, vec3(trackSpriteSide*s,s*h,s), WHITE, sprite, waveWind);
             }

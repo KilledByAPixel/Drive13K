@@ -56,8 +56,8 @@ function drawHUD()
         if (bestTime)
         {
             const timeString = formatTimeString(bestTime);
-            drawHUDText('BEST TIME', vec3(.5,.9), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
-            drawHUDText(timeString, vec3(.5,.97), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
     }
     else if (startCountdownTimer.active() || startCountdown)
@@ -81,7 +81,7 @@ function drawHUD()
             drawHUDText(playerWin?'WIN!':'OVER!', vec3(.5,.3), .1+wave2, c, undefined,undefined,900,'italic',.5,undefined,4);
 
             if (playerNewRecord || playerNewDistanceRecord && !bestTime)
-                drawHUDText(playerNewRecord ? 'NEW RECORD!' : 'NEW BEST!', vec3(.5,.6), .08+wave1/4, RED, 'monospace',undefined,900,undefined,undefined,undefined,3);
+                drawHUDText('NEW RECORD', vec3(.5,.6), .08+wave1/4, RED, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
         else if (!startCountdownTimer.active() && !freeRide)
         {
@@ -91,22 +91,26 @@ function drawHUD()
             drawHUDText(t, vec3(.5,.13), .14, c, undefined,undefined,900,undefined,undefined,.04);
         }
 
-        if (playerWin)
+        if (!freeRide)
         {
-            // current time
-            const timeString = formatTimeString(raceTime);
-            drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
-            drawHUDText(timeString, vec3(.5), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
-        }
-        else if (!freeRide)
-        {
-            // current time
-            const timeString = formatTimeString(raceTime);
-            drawHUDText(timeString, vec3(.01,.05), .05, undefined, 'monospace','left');
+            if (playerWin)
+            {
+                // current time
+                const timeString = formatTimeString(raceTime);
+                if (!js13kHacks)
+                    drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+                drawHUDText(timeString, vec3(.5), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            }
+            else
+            {
+                // current time
+                const timeString = formatTimeString(raceTime);
+                drawHUDText(timeString, vec3(.01,.05), .05, undefined, 'monospace','left');
 
-            // current stage
-            const level = debug&&testLevelInfo ? testLevelInfo.level+1 :playerLevel+1;
-            drawHUDText('STAGE '+level, vec3(.99,.05), .05, undefined, 'monospace','right');
+                // current stage
+                const level = debug&&testLevelInfo ? testLevelInfo.level+1 :playerLevel+1;
+                drawHUDText('STAGE '+level, vec3(.99,.05), .05, undefined, 'monospace','right');
+            }
         }
     }
 
@@ -133,11 +137,9 @@ function drawHUDText(text, pos, size=.1, color=WHITE, font='arial', textAlign='c
     context.textAlign = textAlign;
 
     const shadowOffset = size*shadowScale;
+    context.fillStyle = rgb(0,0,0,color.a);
     if (shadowOffset)
-    {
-        context.fillStyle = rgb(0,0,0,color.a);
         context.fillText(text, pos.x+shadowOffset, pos.y+shadowOffset, width);
-    }
 
     context.lineWidth = outline;
     outline && context.strokeText(text, pos.x, pos.y, width);

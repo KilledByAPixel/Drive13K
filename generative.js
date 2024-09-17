@@ -125,7 +125,7 @@ function generateTetures()
                 //if (p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) return;
                 if (treeOverflow++ >1e4)
                 {
-                    console.log('Tree overflow!')
+                    debug && console.log('Tree overflow!')
                     return;
                 }
                 
@@ -320,7 +320,7 @@ function generateTetures()
         setupContext(1,2);
         drawZZFXSign();
         setupContext(2,2);
-        drawGenericSign('GitHub',.3);
+        drawGitHubSign();
         setupContext(3,2);
         //drawGenericSign('GAME BY FRANK FORCE',.25,BLACK,WHITE);
         drawDoubleLineSign('FRANK FORCE','GAME BY',BLACK,0,.42,.2);
@@ -330,7 +330,8 @@ function generateTetures()
         //drawHarrisSign();
         drawDoubleLineSign('HARRIS','WALZ',hsl(.6,.9,.3));
         setupContext(5,2);
-        drawGenericSign('VOTE',.4);
+        drawOPSign();
+        //drawGenericSign('VOTE',.5,WHITE,hsl(0,.9,.4),hsl(.6,.9,.3),0,'impact');
         //setupContext(6,2);
         //drawDwitterSign();
         setupContext(7,2);
@@ -404,7 +405,7 @@ function generateTetures()
         for(let i=199; i--;) // sand
         {
             const x = .5+random.floatSign(.45)
-            const y = .04;
+            const y = .03;
             const z = random.float(.003,.006);
             const cHSL = vec3(.13,.3,.7);
             drawRock(x,random.float(.03),random.float(.05),.005,.4,.3,.3,y,z,500,cHSL,.4);
@@ -414,9 +415,9 @@ function generateTetures()
         for(let i=99; i--;) // water
         {
             const p = i/99;
-            const x = lerp(p,.05,.9);
             const w = .01;
-            const h = .3+Math.sin(p*PI-1)/4;
+            const x = lerp(p,.05,.95);
+            const h = lerp(p,.02,.13);
             const cHSL = vec3(.53,1,1);
             drawRock(x,w,h,.01,.3,.6,.5,0,.01,500,cHSL,.4-p*.2);
         }
@@ -444,7 +445,6 @@ function generateTetures()
             color(BLACK);
             triangle(.42,.5,.12,-PI/2)
             context.lineWidth=.09;
-            context.lineCap='butt';
             context.beginPath();
             context.arc(.44,.7,.2,PI*3/2,PI*2);
             context.stroke();
@@ -698,7 +698,6 @@ function generateTetures()
         context.beginPath();
         context.rect(0,0,1,1);
         context.clip();
-        context.lineCap = context.lineJoin = 'round';
     }
 
     function circle(x,y,r,a1=0,a2=9) { ellipse(x,y,r,r,0,a1,a2); }
@@ -782,6 +781,7 @@ function generateTetures()
         context.textBaseline = 'middle';
         context.textAlign = textAlign;
         context.lineWidth = lineWidth;
+        context.lineCap = context.lineJoin = 'round';
         lineWidth && context.strokeText(s, x, y, width);
         context.fillText(s, x, y, width);
 
@@ -818,7 +818,7 @@ function generateTetures()
             const p = i/icount;
             const pj = j/jcount;
             let l = random.float(.2,.5);
-            if (pj < abs(cornerX-p)*.05)
+            if (pj < abs(cornerX-p)/20)
                 l = random.float(.2); // dark on bottom
 
             if (random.bool(.05))
@@ -933,7 +933,7 @@ function generateTetures()
         color(c,1);
         const y = .37;
         circle(.5,y,.32);
-        text('AVALANCHE',.5,.8,.13,.9,.005);
+        text('AVALANCHE',.5,.8,.13,1,.003);
         color(WHITE);
         triangle(.5, y, .23);
         const r = .15;
@@ -943,11 +943,40 @@ function generateTetures()
         rectLine(x,y+.15,x+r,y+.15-ry,.07);
     }
 
-    function drawGenericSign(t,size)
+    function drawGenericSign()
     {
-        drawSignBackground(1,size+.1,WHITE,BLACK);
+        drawSignBackground(1,size+.1,c2,c1,undefined,c3);
+        color(c1,1);
+        text(t,.5,(size+.15)/2,size,.8+lineWidth*10,lineWidth,font);
+    }
+
+    function drawGitHubSign()
+    {
+        drawSignBackground(1,.4,WHITE,BLACK);
         color(BLACK,1);
-        text(t,.5,(size+.15)/2,size,.9,.01);
+        text('GitHub',.5,.22,.3,.9,.01);
+    }
+
+    function drawOPSign()
+    {
+        drawSignBackground(1,.6,WHITE,BLACK);
+        
+        const x =.28;
+        const y = .3;
+        const w = .08;
+        const h = .4
+        const x2 = .81
+        color(hsl(.65, .9, .45));
+        circle(x,y,.2);
+        rect(.58,y,w,h);
+
+        rect(.71,.14,.22,w);
+        rect(.75,y,.13,w);
+        circle(x2,.22,.12,4.7,7.9);
+
+        color(WHITE);
+        circle(x,y,.12);
+        circle(x2,.22,.04);
     }
 
     function drawZZFXSign()

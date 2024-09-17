@@ -11,8 +11,10 @@ const quickStart = 0;
 let testDrive = 0;
 let freeRide = 0;
 let testLevelInfo;
+//const testStartZ = (2*4500*100);
 const testStartZ = quickStart&&!testLevelInfo?5e3:0;
 const testLevels = 0;
+const js13kHacks = 1;
 
 ///////////////////////////////////////////////////
 
@@ -20,7 +22,7 @@ const engineName = 'js13kRace';
 const pixelate = 0;
 const canvasFixedSize = 0;
 const frameRate = 60;
-const timeDelta = 1/60;
+const timeDelta = 1/frameRate;
 const aiVehicles = 1;
 const pixelateScale = 3;
 const clampAspectRatios = debug;
@@ -91,7 +93,7 @@ function gameStart()
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart ? 0 : 4;
-    worldHeading = titleScreenMode ? rand(9) : 2;
+    worldHeading = titleScreenMode ? rand(7) : .8;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
@@ -102,13 +104,12 @@ function gameStart()
     cameraRot = vec3();
     vehicles = [];
     buildTrack();
-    playerVehicle = new PlayerVehicle(testStartZ?testStartZ:playerStartZ, hsl(0,.8,.5));
-    vehicles.push(playerVehicle);
+    vehicles.push(playerVehicle = new PlayerVehicle(testStartZ?testStartZ:playerStartZ, hsl(0,.8,.5)));
 
     if (titleScreenMode)
     {
         const level = titleModeStartCount*2%9;
-        playerVehicle.pos.z = 5e4+level*checkpointDistance;
+        playerVehicle.pos.z = 6e4+level*checkpointDistance;
     }
 }
 
@@ -120,7 +121,6 @@ function gameUpdateInternal()
         if (mouseWasPressed(0) || keyWasPressed('Space') || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
         {
             titleScreenMode = 0;
-            sound_bump.play(2,2);
             gameStart();
         }
         if (time > 60)
@@ -140,7 +140,7 @@ function gameUpdateInternal()
             startCountdownTimer.set(1);
         }
 
-        if (gameOverTimer.get() > 1 && mouseWasPressed(0) || gameOverTimer.get() > 9)
+        if (gameOverTimer.get() > 1 && (mouseWasPressed(0) || isUsingGamepad && gamepadWasPressed(0)) || gameOverTimer.get() > 9)
         {
             // go back to title screen after a while
             titleScreenMode = 1;
@@ -162,10 +162,21 @@ function gameUpdateInternal()
             gameStart();
         }*/
         
-        if (freeRide |= keyWasPressed('KeyF'))  // enable free ride mode
-            startCountdown = 0;
-        else if (!startCountdown && !freeRide && !gameOverTimer.isSet())
+        if (freeRide)
         {
+             // free ride mode
+            startCountdown = 0;
+        }
+        else if (keyWasPressed('KeyF'))
+        {
+            // enter free ride mode
+            freeRide = 1;
+            sound_lose.play(.5,3);
+        }
+        
+        if (!startCountdown && !freeRide && !gameOverTimer.isSet())
+        {
+            // race mode
             raceTime += timeDelta;
             const lastCheckpointTimeLeft = checkpointTimeLeft;
             checkpointTimeLeft -= timeDelta;
@@ -177,18 +188,27 @@ function gameUpdateInternal()
             }
 
             const playerDistance = playerVehicle.pos.z;
-            if (playerDistance > bestDistance && playerDistance > 5e3)
+            const minRecordDistance = 5e3;
+            if (bestDistance && !playerNewDistanceRecord && playerDistance > bestDistance && playerDistance > minRecordDistance)
             {
-                if (!playerNewDistanceRecord && bestDistance)
-                    sound_win.play(1,2);// new record!
-                bestDistance = playerDistance;
-                //speak('NEW RECORD');
+                // new distance record
+                sound_win.play(1,2);
                 playerNewDistanceRecord = 1;
-                writeSaveData();
+                //speak('NEW RECORD');
             }
 
             if (checkpointTimeLeft <= 0)
             {
+                if (!(debug && debugSkipped))
+                if (playerDistance > minRecordDistance)
+                if (!bestDistance || playerDistance > bestDistance)
+                {
+                    playerNewDistanceRecord = 1;
+                    bestDistance = playerDistance;
+                    writeSaveData();
+                }
+
+                // game over
                 checkpointTimeLeft = 0;
                 //speak('GAME OVER');
                 gameOverTimer.set();
@@ -198,26 +218,18 @@ function gameUpdateInternal()
     }
 
     // spawn in more vehicles
-    const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20 && !testDrive;
-    const trafficPosOffset = playerIsSlow? 0 : 2e5; // check in front/behind
+    const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
+    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
     const maxVehicleCount = 10*trafficDensity;
+    if (trafficDensity)
     if (vehicles.length<maxVehicleCount && !gameOverTimer.isSet() && !vehicleSpawnTimer.active())
     {
-        // todo prevent vehicles being spawned too close to each other
-        if (playerIsSlow)
-        {
-            // spawn behind
-            spawnVehicle(playerVehicle.pos.z-1300);
-            vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
-        }
-        else if (trafficDensity)
-        {
-            spawnVehicle(playerVehicle.pos.z + rand(5e4,6e4));
-            vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
-        }
+        const spawnOffset = playerIsSlow ? -1300 : rand(5e4,6e4);
+        spawnVehicle(playerVehicle.pos.z + spawnOffset);
+        vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
     }
 
     for(const v of vehicles)
@@ -293,9 +305,9 @@ function gameUpdate(frameTimeMS=0)
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
     const debugSpeedUp   = debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
-    const debugSpeedDown = debug && keyIsDown('Minus'); // -
+    const debugSpeedDown = debug && keyIsDown('Minus') || keyIsDown('NumpadSubtract'); // -
     if (debug) // +/- to speed/slow time
-        frameTimeDeltaMS *= debugSpeedUp ? 20 : debugSpeedDown ? .2 : 1;
+        frameTimeDeltaMS *= debugSpeedUp ? 20 : debugSpeedDown ? .1 : 1;
     averageFPS = lerp(.05, averageFPS, 1e3/(frameTimeDeltaMS||1));
     frameTimeBufferMS += paused ? 0 : frameTimeDeltaMS;
     frameTimeBufferMS = min(frameTimeBufferMS, 50); // clamp in case of slow framerate

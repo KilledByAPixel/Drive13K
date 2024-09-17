@@ -12,16 +12,16 @@ function initTrackSprites()
 
     // trees
     trackSprites.trees = [];
-    trackSprites.tree_palm   = new TrackSprite(vec3(0,1),1500,.2,.1,.03);
-    trackSprites.tree_oak    = new TrackSprite(vec3(1,1),2e3,.3,.05,.1);
-    trackSprites.tree_stump  = new TrackSprite(vec3(2,1),1e3,.6,.05);
-    trackSprites.tree_dead   = new TrackSprite(vec3(3,1),800,.3,.03,.05);
-    trackSprites.tree_pink   = new TrackSprite(vec3(4,1),1500,.3,.1,.03);
-    trackSprites.tree_bush   = new TrackSprite(vec3(5,1),1e3,.5,.1,.05);
+    trackSprites.tree_palm   = new TrackSprite(vec3(0,1),1500,.2,.1,.04);
+    trackSprites.tree_oak    = new TrackSprite(vec3(1,1),2e3,.5,.06,.1);
+    trackSprites.tree_stump  = new TrackSprite(vec3(2,1),1e3,.6,.04);
+    trackSprites.tree_dead   = new TrackSprite(vec3(3,1),800,.3,.03,.06);
+    trackSprites.tree_pink   = new TrackSprite(vec3(4,1),1500,.3,.1,.04);
+    trackSprites.tree_bush   = new TrackSprite(vec3(5,1),1e3,.5,.1,.06);
     trackSprites.tree_fall   = new TrackSprite(vec3(6,1),1500,.3,.1,.1);
     //TB(trackSprites.tree_flower = new TrackSprite(vec3(7,1),2e3,.3,.05,200));
-    trackSprites.tree_snow      = new TrackSprite(vec3(4,3),1300,.3,.05,.1)
-    trackSprites.tree_yellow    = new TrackSprite(vec3(5,3),1e3,.3,.05,.1)
+    trackSprites.tree_snow      = new TrackSprite(vec3(4,3),1300,.3,.06,.1)
+    trackSprites.tree_yellow    = new TrackSprite(vec3(5,3),1e3,.3,.06,.1)
     trackSprites.tree_huge    = new TrackSprite(vec3(3,1),1e4,.5,.1,.1)
     trackSprites.tree_huge.colorHSL = vec3(.8, 0, .5);
 
@@ -63,14 +63,14 @@ function initTrackSprites()
     // billboards 
     trackSprites.billboards = [];
     const PB = (s)=>trackSprites.billboards.push(s);
+    PB(trackSprites.sign_zzfx      = new TrackSprite(vec3(1,2),500,0,.02,.5,0));
     PB(trackSprites.sign_js13k     = new TrackSprite(vec3(0,2),600,0,.02,1,0));
-    PB(trackSprites.sign_zzfx      = new TrackSprite(vec3(1,2),650,0,.02,1,0));
-    PB(trackSprites.sign_github    = new TrackSprite(vec3(2,2),750,0,.02,1,0));
-    trackSprites.sign_frankForce   = new TrackSprite(vec3(3,2),500,0,.02,1,0)
-    PB(trackSprites.sign_vote      = new TrackSprite(vec3(5,2),600,0,.02,1,0));
-    //PB(trackSprites.sign_dwitter   = new TrackSprite(vec3(6,2),550,0,.02,1,0));
+    PB(trackSprites.sign_github    = new TrackSprite(vec3(2,2),750,0,.02,.5,0));
     PB(trackSprites.sign_avalanche = new TrackSprite(vec3(7,2),600,0,.02,1,0));
+    PB(trackSprites.sign_opGames   = new TrackSprite(vec3(5,2),600,0,.02,.5,0));
     PB(trackSprites.sign_harris    = new TrackSprite(vec3(4,2),300,0,.02,1,0));
+    trackSprites.sign_frankForce   = new TrackSprite(vec3(3,2),500,0,.02,1,0);
+    //PB(trackSprites.sign_dwitter   = new TrackSprite(vec3(6,2),550,0,.02,1,0));
     
     // signs
     trackSprites.sign_turn       = new TrackSprite(vec3(0,5),500,0,.05,.5);
@@ -82,9 +82,9 @@ function initTrackSprites()
     //trackSprites.sign_interstate = new TrackSprite(vec3(5,5),500,0,.05,50,0);
 
     // rocks
-    trackSprites.rock_tall     = new TrackSprite(vec3(1,4),1e3,.3,0,.8,0);
-    trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.3,0,.8,0);
-    trackSprites.rock_huge     = new TrackSprite(vec3(1,4),5e3,.3,0,.8,0);
+    trackSprites.rock_tall     = new TrackSprite(vec3(1,4),1e3,.3,0,.6,0);
+    trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.3,0,.6,0);
+    trackSprites.rock_huge     = new TrackSprite(vec3(1,4),5e3,.7,0,.6,0);
     trackSprites.rock_huge.colorHSL  = vec3(.08, 1, .8);
     trackSprites.rock_huge.hueRandomness = .01;
     trackSprites.rock_huge2     = new TrackSprite(vec3(2,4),8e3,.5,0,.25,0);
@@ -93,7 +93,7 @@ function initTrackSprites()
     trackSprites.rock_huge3     = new TrackSprite(vec3(2,4),8e3,.7,0,.5,0);
     trackSprites.rock_huge3.colorHSL  = vec3(.05, 1, .8);
     trackSprites.rock_huge3.hueRandomness = .01;
-    trackSprites.rock_weird      = new TrackSprite(vec3(2,4),5e3,.3,0,1,0);
+    trackSprites.rock_weird      = new TrackSprite(vec3(2,4),5e3,.5,0,1,0);
     trackSprites.rock_weird.colorHSL  = vec3(.8, 1, .8);
     trackSprites.rock_weird.hueRandomness = .2;
     trackSprites.rock_weird2     = new TrackSprite(vec3(1,4),1e3,.5,0,.5,0);
@@ -115,7 +115,7 @@ function initTrackSprites()
     trackSprites.hazard_rocks.isBump = 
     trackSprites.hazard_sand.isSlow = 1;
     trackSprites.hazard_rocks.spriteYOffset =
-    trackSprites.hazard_sand.spriteYOffset = -.04;
+    trackSprites.hazard_sand.spriteYOffset = -.02;
     //trackSprites.hazard_snow     = new TrackSprite(vec3(6,6),500,.1,0,300,0);
     //trackSprites.hazard_snow.isSlow = 1;
 
@@ -125,10 +125,10 @@ function initTrackSprites()
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);
     trackSprites.sign_checkpoint2 = new TrackSprite(vec3(7,0),1e3,0,.01,0,0);
-    trackSprites.telephonePole    = new TrackSprite(vec3(0,4),1800,0,.02,.03,0);
+    trackSprites.telephonePole    = new TrackSprite(vec3(0,4),1800,0,0,.03,0);
     //trackSprites.parts_girder  = new TrackSprite(vec3(0,6),500,0,.05,30,0);
     trackSprites.telephonePole.shadowScale = .3;
-    trackSprites.grave_stone      = new TrackSprite(vec3(2,6),500,.3,.05,.5,0);
+    trackSprites.grave_stone      = new TrackSprite(vec3(2,6),500,.4,.05,.5,0);
     trackSprites.grave_stone.lightnessRandomness = .5;
     trackSprites.light_tunnel      = new TrackSprite(vec3(0,0),200,0,0,0,0);
 
@@ -138,8 +138,6 @@ function initTrackSprites()
         trackSprites.horizon_city.lightnessRandomness = .1;
     trackSprites.horizon_city.colorHSL = vec3(1); // vary color
 
-    trackSprites.horizon_mountains      = new TrackSprite(vec3(7,6));
-    trackSprites.horizon_mountains.colorHSL = vec3(0, 0, .7);
     trackSprites.horizon_islands        = new TrackSprite(vec3(7,6));
     trackSprites.horizon_islands.colorHSL = vec3(.25, .5, .6);
     trackSprites.horizon_redMountains   = new TrackSprite(vec3(7,6));
@@ -254,8 +252,6 @@ class TrackSegment
         this.pitch = 0;
         this.normal = vec3();
 
-        //this.pitch = 0;
-        //this.normal = vec3(0,1);
         this.trackObjects = [];
         const levelFloat = segmentIndex/checkpointTrackSegments;
         const level = this.level = testLevelInfo ? testLevelInfo.level : levelFloat|0;
@@ -278,8 +274,8 @@ class TrackSegment
 
             const largeSegmentIndex = segmentIndex/9|0;
             const stripe = largeSegmentIndex% 2 ? .1: 0;
-            this.colorGround = groundColor.brighten(Math.cos(segmentIndex*2/PI)*.05);
-            this.colorRoad = roadColor.brighten(stripe?.05:0);
+            this.colorGround = groundColor.brighten(Math.cos(segmentIndex*2/PI)/20);
+            this.colorRoad = roadColor.brighten(stripe&&.05);
             if (recordPointLine)
                 this.colorRoad = hsl(0,.8,.5);
             else if (checkpointLine)
@@ -325,31 +321,32 @@ class TrackSegment
 
             // left
             const ol = -(width+100);
-            this.addSprite(trackSprites.sign_zzfx,ol,750);
+            this.addSprite(trackSprites.sign_opGames,ol,1450);
+            this.addSprite(trackSprites.sign_zzfx,ol,850);
             this.addSprite(trackSprites.sign_avalanche,ol);
-
+            
             // right
             const or = width+100;
             this.addSprite(trackSprites.sign_frankForce,or,1500);
             this.addSprite(trackSprites.sign_github,or,350);
             this.addSprite(trackSprites.sign_js13k,or);
+            if (js13kHacks)
+                random.seed = 1055752394; // hack, reset seed for js13k
         }
     }
 
     getWind()
     {
         const offset = this.offset;
-        const noiseScale = 3e3;
-        const windSpeed = time;
-        const noisePos = offset.scale(noiseScale);
-        return Math.sin(windSpeed+noisePos.x+noisePos.z)/2;
+        const noiseScale = .001;
+        return Math.sin(time+(offset.x+offset.z)*noiseScale)/2;
     }
 
-    addSprite(sprite,x=0,y=0)
+    addSprite(sprite,x=0,y=0,extraScale=1)
     {
         // add a sprite to the track as a new track object 
         const offset = vec3(x,y);
-        const sizeScale = sprite.getRandomSpriteScale();
+        const sizeScale = extraScale*sprite.getRandomSpriteScale();
         const color = sprite.getRandomSpriteColor();
         const trackObject = new TrackObject(this, sprite, offset, color, sizeScale);
         this.trackObjects.push(trackObject);
@@ -384,7 +381,6 @@ function buildTrack()
     // build the road with procedural generation
     /////////////////////////////////////////////////////////////////////////////////////
 
-    const trackEnd = levelGoal*checkpointTrackSegments+5e3;
 
     // set random seed & time
     random.setSeed(trackSeed);
@@ -400,14 +396,18 @@ function buildTrack()
     let currentNoiseScale = 1;
     
     // generate the road
+    const trackEnd = levelGoal*checkpointTrackSegments;
     const roadTransitionRange = testLevels?min(checkpointTrackSegments,500):500;
-    for(let i=0; i < trackEnd + 5e3; ++i)
+    for(let i=0; i < trackEnd + 5e4; ++i)
     {
         const levelFloat = i/checkpointTrackSegments;
         const level = levelFloat|0;
         const levelInfo = getLevelInfo(level);
         const levelInfoLast = getLevelInfo(levelFloat-1);
         const levelLerpPercent = percent(i%checkpointTrackSegments, 0, roadTransitionRange);
+
+        if (js13kHacks && i==31496)
+            random.setSeed(7); // mess with seed to randomize jungle
 
         const roadGenWidth = laneWidth/2*lerp(levelLerpPercent, levelInfoLast.laneCount, levelInfo.laneCount);
 
@@ -423,12 +423,7 @@ function buildTrack()
         isBetweenLevels |= startOfTrack; // start of track
         //const nextCheckpoint = (level+1)*checkpointTrackSegments;
 
-        if (i > trackEnd)
-        {
-            // end of the road
-            width = 0;
-        }
-        else if (isBetweenLevels)
+        if (isBetweenLevels || i > trackEnd - 500) // straight at end
         {
             // transition at start or end of level
             // reset stuff
@@ -486,9 +481,8 @@ function buildTrack()
         const noiseConstant = 20;
         height = noise1D(noisePos)*noiseConstant*noiseSize;
 
-        //turn = .7;
-        //turn =0; height = 0;// width = 5000;
-        //height = noise1D(i/9)*100;; // bumps test
+        //turn = 0; height = 0;
+        //height = noise1D(i/29)*400;turn =0; // jumps test
 
         // create track segment
         const o = vec3(turn, height, i*trackSegmentLength);
@@ -545,7 +539,7 @@ function buildTrack()
 
         // spawn road signs
         const roadSignRate = 10;
-        const turnWarning = 0.4;
+        const turnWarning = 0.5;
         let signSide;
         if (i < levelGoal*checkpointTrackSegments) // end of level
         if (rightTurns > turnWarning || leftTurns > turnWarning)
@@ -604,11 +598,12 @@ function buildTrack()
             if (i%billboardRate == 0 && random.bool(billboardChance))
             {
                 // random billboards
-                const width = t.width;
+                const extraScale = levelInfo.billboardScale; // larger in desert
+                const width = t.width*extraScale;
                 const count = trackSprites.billboards.length;
                 const billboardSprite = trackSprites.billboards[random.int(count)];
                 const billboardSide = signSide ? -signSide : random.sign();
-                t.addSprite(billboardSprite,billboardSide*random.float(width+600,width+800));
+                t.addSprite(billboardSprite,billboardSide*random.float(width+600,width+800),0,extraScale);
                 continue;
             }
             if (levelInfo.trackSideSprite)
