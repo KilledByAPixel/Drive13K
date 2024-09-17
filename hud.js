@@ -53,11 +53,16 @@ function drawHUD()
             }
         }
 
-        if (bestTime)
+        if (bestTime && (!enhancedMode || time%20<10))
         {
             const timeString = formatTimeString(bestTime);
             drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
             drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+        }
+        else if (enhancedMode)
+        {
+            const s = isTouchDevice ? 'TOUCH TO DRIVE' : 'CLICK TO PLAY';
+            drawHUDText(s, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
     }
     else if (startCountdownTimer.active() || startCountdown)
