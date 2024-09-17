@@ -1,9 +1,11 @@
 'use strict';
 
-let debug=1, downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
-let showMap=0, debugGenerativeCanvas=0, debugInfo=1, debugSkipped=0;
+const debug = 1;
+let enhancedMode = 1;
+let devMode = 1;
+let downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
+let debugGenerativeCanvas=0, debugInfo=0, debugSkipped=0;
 let debugGenerativeCanvasCached;
-const pauseOnNoFocus = 1;
 
 function ASSERT(assert, output) 
 { output ? console.assert(assert, output) : console.assert(assert); }
@@ -17,10 +19,40 @@ function debugInit()
     downloadLink = document.createElement('a');
 }
 
+function enhancedModeUpdate()
+{
+    if (!enhancedMode)
+        return;
+
+    if (!document.hasFocus() && !titleScreenMode)
+        paused = 1; // pause when losing focus
+
+    if (keyWasPressed('KeyI')) // debug info
+        debugInfo = !debugInfo;
+    if (keyWasPressed('Home')) // debug info
+        debugInfo = devMode = !devMode;
+    if (keyWasPressed('KeyM')) // toggle mute
+    {
+        if (soundVolume)
+            sound_bump.play(.4,3);
+        soundVolume = soundVolume ? 0 : .3;
+        if (soundVolume)
+            sound_bump.play();
+    }
+    if (keyWasPressed('KeyR')) // restart
+    {
+        titleScreenMode = 0;
+        sound_lose.play(1,2);
+        gameStart();
+    }
+}
+
 function debugUpdate()
 {
-    if (pauseOnNoFocus && !document.hasFocus() && !titleScreenMode)
-        paused = 1;
+    enhancedModeUpdate();
+
+    if (!devMode)
+        return;
 
     if (keyWasPressed('Digit1') || keyWasPressed('Digit2'))
     {
@@ -69,40 +101,21 @@ function debugUpdate()
         debugGenerativeCanvas = !debugGenerativeCanvas;
     if (keyWasPressed('Digit0'))
         debugCapture = 1;
-    if (keyWasPressed('KeyI'))
-        debugInfo = !debugInfo;
-    if (keyWasPressed('KeyM')) // toggle mute
-    {
-        if (soundVolume)
-            sound_bump.play(.4,3);
-        soundVolume = soundVolume ? 0 : .3;
-        if (soundVolume)
-            sound_bump.play();
-    }
-        
     if (keyWasPressed('KeyQ'))
         testDrive = !testDrive
     if (keyWasPressed('KeyE'))
-    {
-        //sound_win.play(1,2);
         sound_beep.play(1,4);
-    }
-    if (keyWasPressed('KeyR')) // restart
-    {
-        titleScreenMode = 0;
-        sound_lose.play(1,2);
-        gameStart();
-    }
-
     if (debug && keyWasPressed('KeyV'))
         spawnVehicle(playerVehicle.pos.z-1300)
-        
     //if (!document.hasFocus())
     //    testDrive = 1;
 }
 
 function debugDraw()
 {
+    if (!debug)
+        return;
+
     if (debugInfo && !debugCapture)
         drawHUDText((averageFPS|0) + 'fps / ' + glBatchCountTotal + ' / ' + glDrawCalls + ' / ' + vehicles.length, vec3(.98,.12),.03, undefined, 'monospace','right');
 
@@ -122,11 +135,11 @@ function debugDraw()
             let x=0, v=0;
             let p = vec3();
             let d = vec3(0,-.5);
-            for(let i=0; i < 500; i++)
+            for(let i=0; i < 1e3; i++)
             {   
                 let j = playerVehicle.pos.z/trackSegmentLength+i-100|0;
                 if (!track[j])
-                    break;
+                    continue;
 
                 const t = track[j];
                 const o = t.offset;

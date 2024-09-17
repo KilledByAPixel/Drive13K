@@ -1,8 +1,8 @@
 'use strict';
 
-const allowTouch = debug;
-const gamepadsEnable = debug;
-const inputWASDEmulateDirection = debug;
+const allowTouch = enhancedMode;
+const gamepadsEnable = enhancedMode;
+const inputWASDEmulateDirection = enhancedMode;
 const gamepadDirectionEmulateStick = 1;
 const isTouchDevice = allowTouch && window.ontouchstart !== undefined;
 
@@ -162,12 +162,12 @@ let gamepadData, stickData;
 // gamepads are updated by engine every frame automatically
 function gamepadsUpdate()
 {
-    // return if gamepads are disabled or not supported
-    if (!navigator || !navigator.getGamepads)
+    // only poll gamepads when focused or in debug mode (allow playing when not focused in debug)
+    if (!enhancedMode && !document.hasFocus())
         return;
 
-    // only poll gamepads when focused or in debug mode (allow playing when not focused in debug)
-    if (!debug && !document.hasFocus())
+    // return if gamepads are disabled or not supported
+    if (!navigator || !navigator.getGamepads)
         return;
 
     if (!gamepadData) // init

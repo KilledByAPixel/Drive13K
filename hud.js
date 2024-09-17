@@ -4,7 +4,7 @@ const showTitle = 1;
 
 function drawHUD()
 {
-    if (debug && paused)
+    if (enhancedMode && paused)
     {
         // paused
         drawHUDText('-PAUSE-', vec3(.5,.9), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
@@ -97,8 +97,7 @@ function drawHUD()
             {
                 // current time
                 const timeString = formatTimeString(raceTime);
-                if (!js13kHacks)
-                    drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+                drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
                 drawHUDText(timeString, vec3(.5), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
             }
             else

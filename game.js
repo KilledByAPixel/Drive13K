@@ -1,20 +1,21 @@
 'use strict';
 
-showMap = 0;
-debugInfo = 0;
+devMode = 0;
+//enhancedMode = 0;
+//showMap = 1;
 //debugInfo = 1
 //debugTile = vec3(1,3)
 //debugGenerativeCanvas = 1
-soundVolume = .3
+//soundVolume = .3
 
 const quickStart = 0;
 let testDrive = 0;
 let freeRide = 0;
 let testLevelInfo;
-//const testStartZ = (2*4500*100);
 const testStartZ = quickStart&&!testLevelInfo?5e3:0;
 const testLevels = 0;
 const js13kHacks = 1;
+const showMap = 0;
 
 ///////////////////////////////////////////////////
 
@@ -25,7 +26,7 @@ const frameRate = 60;
 const timeDelta = 1/frameRate;
 const aiVehicles = 1;
 const pixelateScale = 3;
-const clampAspectRatios = debug;
+const clampAspectRatios = enhancedMode;
 
 // track settings
 const laneWidth = 1400;            // how wide is track
@@ -273,7 +274,7 @@ function gameUpdate(frameTimeMS=0)
         mainCanvas.style.height = glCanvas.style.height = innerAspect < fixedAspect ? '' : '100%';
     }
     
-    if (debug)
+    if (enhancedMode)
     {
         document.body.style.cursor = // fun cursors!
             !mouseControl ? 'auto': mouseIsDown(2) ? 'grabbing' : mouseIsDown(0) ? 'pointer' : 'grab';
