@@ -19,6 +19,8 @@ function glInit()
     // anti-aliasing causes thin dark lines on some devices
     // there should be no alpha for the background texture
     glContext = glCanvas.getContext('webgl2', {alpha: false, antialias:false});
+    if (debug && !glContext)
+        throw 'Failed to create WebGL canvas!';
 
     // setup vertex and fragment shaders
     glShader = glCreateProgram(

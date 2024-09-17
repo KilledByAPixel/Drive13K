@@ -255,7 +255,7 @@ function gameUpdate(frameTimeMS=0)
         }
         else
         {
-            const minAspect = .5, maxAspect = 2.5;
+            const minAspect = .5, maxAspect = 3;
             const correctedWidth = innerAspect > maxAspect ? innerHeight * maxAspect :
                     innerAspect < minAspect ? innerHeight * minAspect : innerWidth;
             if (pixelate)
