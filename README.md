@@ -37,9 +37,8 @@ Created by Frank Force for JS13k 2024
 
 ## Enhanced Features
 
-This debug version has some extra features.
+This version has some extra features not included in the 13k build.
 
 - Touch support
 - Gamepad support
-- Pause button
-- Secret dev keys
+- Pause feature
