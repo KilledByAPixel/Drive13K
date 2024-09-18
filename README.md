@@ -1,4 +1,4 @@
-# DR1V3N WILD 🚗🌴
+# Dr1v3n Wild! 🚗🌴
 
 An outrun inspired drive across 10 stages, can you make it to the garden?
 
