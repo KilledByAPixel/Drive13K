@@ -228,10 +228,10 @@ function debugDraw()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function debugSaveCanvas(canvas, filename=engineName, type='image/png')
+function debugSaveCanvas(canvas, filename='screenshot', type='image/png')
 { debugSaveDataURL(canvas.toDataURL(type), filename); }
 
-function debugSaveText(text, filename=engineName, type='text/plain')
+function debugSaveText(text, filename='text', type='text/plain')
 { debugSaveDataURL(URL.createObjectURL(new Blob([text], {'type':type})), filename); }
 
 function debugSaveDataURL(dataURL, filename)

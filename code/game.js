@@ -1,34 +1,59 @@
 'use strict';
 
+/*
+
+Dr1v3n Wild by Frank Force
+A 13k game for js13kGames 2024
+
+Controls
+- Arrows or Mouse = Drive
+- Spacebar = Brake
+- F = Free Ride Mode
+- Escape = Title Screen
+
+Features
+- 10 stages with unique visuals
+- Fast custom WebGL rendering
+- Procedural art (trees, rocks, scenery)
+- Track generator
+- Arcade style driving physics
+- 2 types of AI vehicles
+- Parallax horizon and sky
+- ZZFX sounds
+- Persistent save data
+- Keyboard or mouse input
+- All written from scratch in vanilla JS
+
+*/
+
 devMode = 0;
 //enhancedMode = 0;
-//showMap = 1;
 //debugInfo = 1
-//debugTile = vec3(1,3)
+//soundVolume = 0
 //debugGenerativeCanvas = 1
-//soundVolume = .3
 
+// debug settings
 const quickStart = 0;
 let testDrive = 0;
-let freeRide = 0;
 let testLevelInfo;
 const testStartZ = quickStart&&!testLevelInfo?5e3:0;
 const testLevels = 0;
-const js13kHacks = 1;
+const js13kBuild = 1;
 const showMap = 0;
 
 ///////////////////////////////////////////////////
 
-const engineName = 'js13kRace';
+// settings
 const pixelate = 0;
 const canvasFixedSize = 0;
 const frameRate = 60;
 const timeDelta = 1/frameRate;
-const aiVehicles = 1;
 const pixelateScale = 3;
 const clampAspectRatios = enhancedMode;
+const optimizedCulling = 1;
+const aiVehicles = 1;
 
-// track settings
+// setup
 const laneWidth = 1400;            // how wide is track
 const trackSegmentLength = 100;    // length of each segment
 const drawDistance = 1e3;          // how many track segments to draw for scenery
@@ -39,21 +64,16 @@ const startCheckpointTime = 50;
 const levelLerpRange = .1;
 const levelGoal = 10;
 const playerStartZ = 2e3;
-const optimizedCulling = 1;
 const turnWorldScale = 2e4;
 
 let mainCanvasSize;// = pixelate ? vec3(640, 420) : vec3(1280, 720);
 let mainCanvas, mainContext;
-let time, frame, frameTimeLastMS, averageFPS, frameTimeBufferMS;
-let vehicleSpawnTimer;
-let paused;
+let time, frame, frameTimeLastMS, averageFPS, frameTimeBufferMS, paused;
 let checkpointTimeLeft, startCountdown, startCountdownTimer, gameOverTimer, nextCheckpointDistance;
 let raceTime, playerLevel, playerWin, playerNewDistanceRecord, playerNewRecord;
-let titleScreenMode = 1;
-let titleModeStartCount = 0;
+let checkpointSoundCount, checkpointSoundTimer, vehicleSpawnTimer;
+let titleScreenMode = 1, titleModeStartCount = 0;
 let trackSeed = 1331;
-
-let checkpointSoundCount, checkpointSoundTimer;
 
 ///////////////////////////////
 // game variables
@@ -61,6 +81,7 @@ let checkpointSoundCount, checkpointSoundTimer;
 let cameraPos, cameraRot, cameraOffset;
 let worldHeading, mouseControl;
 let track, vehicles, playerVehicle;
+let freeRide;
 
 ///////////////////////////////
 

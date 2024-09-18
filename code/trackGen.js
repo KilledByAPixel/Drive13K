@@ -330,7 +330,7 @@ class TrackSegment
             this.addSprite(trackSprites.sign_frankForce,or,1500);
             this.addSprite(trackSprites.sign_github,or,350);
             this.addSprite(trackSprites.sign_js13k,or);
-            if (js13kHacks)
+            if (js13kBuild)
                 random.seed = 1055752394; // hack, reset seed for js13k
         }
     }
@@ -406,7 +406,7 @@ function buildTrack()
         const levelInfoLast = getLevelInfo(levelFloat-1);
         const levelLerpPercent = percent(i%checkpointTrackSegments, 0, roadTransitionRange);
 
-        if (js13kHacks && i==31496)
+        if (js13kBuild && i==31496)
             random.setSeed(7); // mess with seed to randomize jungle
 
         const roadGenWidth = laneWidth/2*lerp(levelLerpPercent, levelInfoLast.laneCount, levelInfo.laneCount);
