@@ -373,7 +373,7 @@ function gameUpdate(frameTimeMS=0)
     //mainContext.imageSmoothingEnabled = !pixelate;
     //glContext.imageSmoothingEnabled = !pixelate;
 
-    glPreRender();
+    glPreRender(mainCanvasSize);
     drawScene();
     drawHUD();
     debugDraw();

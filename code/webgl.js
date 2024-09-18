@@ -1,12 +1,23 @@
 'use strict';
 
-const glEnableTexture = 1;
-const glMaxBatchWarning = 0;
-const glRenderScale = 100; // fixes floating point issues on some devices
+/*
 
-let glEnableFog, glEnableLighting;
+small and fast dynamic webgl rendering engine for dr1ven wild
+
+feaurtes
+- batch rendering
+- direct and ambient lighting
+- fog with alpha blending
+- texture mapping
+- vertex color
+
+*/
+
+const glRenderScale = 100; // fixes floating point issues on some devices
 let glCanvas, glContext, glShader, glVertexData;
 let glBatchCount, glBatchCountTotal, glDrawCalls;
+let glEnableLighting, glLightDirection, glLightColor, glAmbientColor;
+let glEnableFog, glFogColor;
 
 ///////////////////////////////////////////////////////////////////////////////
 // webgl setup
@@ -14,13 +25,11 @@ let glBatchCount, glBatchCountTotal, glDrawCalls;
 function glInit()
 {
     // create the canvas
+    const hasAlpha = false;     // there should be no alpha for the background texture
+    const hasAntialias = false; // anti-aliasing can cause texture bleading from neighboring tiles
     document.body.appendChild(glCanvas = document.createElement('canvas'));
-    
-    // anti-aliasing causes thin dark lines on some devices
-    // there should be no alpha for the background texture
-    glContext = glCanvas.getContext('webgl2', {alpha: false, antialias:false});
-    if (debug && !glContext)
-        throw 'Failed to create WebGL canvas!';
+    glContext = glCanvas.getContext('webgl2', {alpha: hasAlpha, antialias: hasAntialias});
+    ASSERT(glContext, 'Failed to create WebGL canvas!');
 
     // setup vertex and fragment shaders
     glShader = glCreateProgram(
@@ -52,9 +61,6 @@ function glInit()
         '}'                          // end of shader
     );
  
-    // init buffers
-    glVertexData = new Float32Array(new ArrayBuffer(gl_VERTEX_BUFFER_SIZE));
-    
     // set up the shader
     glContext.useProgram(glShader);
     glContext.bindBuffer(gl_ARRAY_BUFFER, glContext.createBuffer());
@@ -62,6 +68,7 @@ function glInit()
     glContext.blendFunc(gl_SRC_ALPHA, gl_ONE_MINUS_SRC_ALPHA);
     glSetCapability(gl_BLEND);
     glSetCapability(gl_CULL_FACE); // not culling causeses thin black lines sometimes
+    glVertexData = new Float32Array(new ArrayBuffer(gl_VERTEX_BUFFER_SIZE));
 
     // set vertex attributes
     let offset = 0;
@@ -116,10 +123,10 @@ function glCreateTexture(image)
     return texture;
 }
 
-function glPreRender()
+function glPreRender(canvasSize)
 {
-    // clear and set to same size as main canvas
-    glContext.viewport(0, 0, glCanvas.width = mainCanvas.width, glCanvas.height = mainCanvas.height);
+    // set size of canvas and viewport which also clears it
+    glContext.viewport(0, 0, glCanvas.width = canvasSize.x, glCanvas.height = canvasSize.y);
     glDrawCalls = glBatchCount = glBatchCountTotal = 0; // reset draw counts
     //debug && glContext.clearColor(1, 0, 1, 1); // test background color
     //glContext.clear(gl_DEPTH_BUFFER_BIT|gl_COLOR_BUFFER_BIT); // auto cleared
@@ -128,33 +135,52 @@ function glPreRender()
     glContext.texParameteri(gl_TEXTURE_2D, gl_TEXTURE_MIN_FILTER, gl_NEAREST);
     glContext.texParameteri(gl_TEXTURE_2D, gl_TEXTURE_MAG_FILTER, gl_NEAREST);
 
-    // set up the camera
+    // set up the camera transform
     const viewMatrix = buildMatrix(cameraPos, cameraRot).inverse();
     const combinedMatrix = glCreateProjectionMatrix().multiply(viewMatrix);
     glContext.uniformMatrix4fv(glUniform('m'), 0, combinedMatrix.toFloat32Array());
 }
 
+function glRender(transform=new DOMMatrix)
+{
+    // set up the lights and fog
+    const initUniform4f = (name, x, y, z)=> glContext.uniform4f(glUniform(name), x, y, z, 0);
+    const lightColor   = glEnableLighting ? glLightColor   : BLACK;
+    const ambientColor = glEnableLighting ? glAmbientColor : WHITE;
+    initUniform4f('g', lightColor.r,   lightColor.g,   lightColor.b);
+    initUniform4f('a', ambientColor.r, ambientColor.g, ambientColor.b);
+    initUniform4f('f', glFogColor.r,   glFogColor.g,   glFogColor.b);
+    initUniform4f('l', glLightDirection.x, glLightDirection.y, glLightDirection.z);
+
+    // render the verts
+    ASSERT(glBatchCount < gl_MAX_BATCH, 'Too many points!');
+    const vertexData = glVertexData.subarray(0, glBatchCount * gl_INDICIES_PER_VERT);
+    const m = transform.scaleSelf(glRenderScale, glRenderScale, glRenderScale);
+    glContext.uniformMatrix4fv(glUniform('o'), 0, m.toFloat32Array());
+    glContext.bufferSubData(gl_ARRAY_BUFFER, 0, vertexData);
+    glContext.drawArrays(gl_TRIANGLE_STRIP, 0, glBatchCount);
+    glBatchCountTotal += glBatchCount;
+    glBatchCount = 0;
+    ++glDrawCalls;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // webgl helper functions
 
-const glSetCapability = (cap, enable=1) => enable ? glContext.enable(cap) : glContext.disable(cap);
 const glUniform = (name) => glContext.getUniformLocation(glShader, name);
 
+function glSetCapability(cap, enable=1)
+{ enable ? glContext.enable(cap) : glContext.disable(cap); }
+
 function glPolygonOffset(units=0)
-{
-    glContext.polygonOffset(0, -units);
-    glSetCapability(gl_POLYGON_OFFSET_FILL, !!units);
-}
+{ glContext.polygonOffset(0, -units); glSetCapability(gl_POLYGON_OFFSET_FILL, !!units); }
 
 function glSetDepthTest(depthTest=1, depthWrite=1)
-{
-    glSetCapability(gl_DEPTH_TEST, !!depthTest);
-    glContext.depthMask(!!depthWrite);
-}
+{ glSetCapability(gl_DEPTH_TEST, !!depthTest); glContext.depthMask(!!depthWrite); }
 
 function glCreateProjectionMatrix()
 {
-    const aspect = mainCanvas.width / mainCanvas.height;
+    const aspect = glCanvas.width / glCanvas.height;
     const fov = .5, f = 1 / Math.tan(fov);
     const near = 1, far = 1e4, range = far - near;
     return new DOMMatrix
@@ -169,77 +195,51 @@ function glCreateProjectionMatrix()
 ///////////////////////////////////////////////////////////////////////////////
 // drawing functions
 
-function glRender(transform=new DOMMatrix)
-{
-    // set up the lights and fog
-    const initUniform4f = (name, x, y, z)=> glContext.uniform4f(glUniform(name), x, y, z, 0);
-    const light   = glEnableLighting ? lightColor   : BLACK;
-    const ambient = glEnableLighting ? ambientColor : WHITE;
-    initUniform4f('l', lightDirection.x, lightDirection.y, lightDirection.z);
-    initUniform4f('g', light.r,     light.g,     light.b);
-    initUniform4f('a', ambient.r,   ambient.g,   ambient.b);
-    initUniform4f('f', fogColor.r,  fogColor.g,  fogColor.b);
-
-    ASSERT(glBatchCount < gl_MAX_BATCH, 'Too many points!');
-    const vertexData = glVertexData.subarray(0, glBatchCount * gl_INDICIES_PER_VERT);
-    const m = transform.scaleSelf(glRenderScale, glRenderScale, glRenderScale);
-    glContext.uniformMatrix4fv(glUniform('o'), 0, m.toFloat32Array());
-    glContext.bufferSubData(gl_ARRAY_BUFFER, 0, vertexData);
-    glContext.drawArrays(gl_TRIANGLE_STRIP, 0, glBatchCount);
-    glBatchCountTotal += glBatchCount;
-    glBatchCount = 0;
-    ++glDrawCalls;
-}
-
+// push a list of colored verts with optonal normals and uvs
 function glPushVerts(points, normals, color, uvs)
 {
     const count = points.length;
     if (!(count < gl_MAX_BATCH - glBatchCount))
-    {
-        glMaxBatchWarning && console.log('Too many verts!');
         glRender();
-    }
 
     const na = vec3(1); // no lighting/texture
     for(let i=count; i--;)
-        glDrawVerts(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
+        glPushVert(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
 }
 
+// push a list of colored verts with optonal normals and uvs
+// this is also capped with degenerate verts to close the shape
 function glPushVertsCapped(points, normals, color, uvs)
 {
     // push points with extra degenerate verts to cap both sides
     const count = points.length;
     if (!(count+2 < gl_MAX_BATCH - glBatchCount))
-    {
-        glMaxBatchWarning && console.log('Too many verts!');
         glRender();
-    }
 
     const na = vec3(1); // no lighting/texture
-    glDrawVerts(points[count-1], na, na, color);
+    glPushVert(points[count-1], na, na, color);
     for(let i=count; i--;)
-        glDrawVerts(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
-    glDrawVerts(points[0], na, na, color);
+        glPushVert(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
+    glPushVert(points[0], na, na, color);
 }
 
+// push a list of colored verts without normals or uvs
 function glPushColoredVerts(points, colors)
 {
     // push points with a list of vertex colors
     const count = points.length;
     if (!(count+2 < gl_MAX_BATCH - glBatchCount))
-    {
-        glMaxBatchWarning && console.log('Too many verts!');
         glRender();
-    }
 
     const na = vec3(1); // no lighting/texture
-    glDrawVerts(points[count-1], na, na, colors[count-1]);
+    glPushVert(points[count-1], na, na, colors[count-1]);
     for(let i=count; i--;)
-        glDrawVerts(points[i], na, na, colors[i]);
-    glDrawVerts(points[0], na, na, colors[0]);
+        glPushVert(points[i], na, na, colors[i]);
+    glPushVert(points[0], na, na, colors[0]);
 }
 
-function glDrawVerts(pos, normal, uv, color)
+// push a single vert to the buffer
+function glPushVert(pos, normal, uv, color)
 {
     let offset = glBatchCount * gl_INDICIES_PER_VERT;
     glVertexData[offset++] = pos.x/glRenderScale;
@@ -252,7 +252,7 @@ function glDrawVerts(pos, normal, uv, color)
     glVertexData[offset++] = 0;
     glVertexData[offset++] = uv.x;
     glVertexData[offset++] = uv.y;
-    glVertexData[offset++] = !glEnableTexture || uv.z;
+    glVertexData[offset++] = uv.z;
     glVertexData[offset++] = !glEnableFog;
     glVertexData[offset++] = color.r;
     glVertexData[offset++] = color.g;
@@ -262,7 +262,7 @@ function glDrawVerts(pos, normal, uv, color)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// store gl constants as integers so they can be minifed
+// store webgl constants as integers so they can be minifed
 
 const 
 gl_TRIANGLE_STRIP = 5,

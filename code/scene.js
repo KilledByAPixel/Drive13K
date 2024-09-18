@@ -33,10 +33,10 @@ function drawSky()
         pushGradient(cameraPos.add(vec3(0,skyH,skyZ)), vec3(skyW,skyH), skyColorTop,  skyColorBottom);
         
         // light settings from sky
-        lightDirection = vec3(0,1,1).rotateY(worldHeading).normalize();
-        lightColor = skyColorTop.lerp(WHITE,.8).lerp(BLACK,.3);
-        ambientColor = skyColorBottom.lerp(WHITE,.8).lerp(BLACK,.3);
-        fogColor = skyColorBottom.lerp(WHITE,.5);
+        glLightDirection = vec3(0,1,1).rotateY(worldHeading).normalize();
+        glLightColor = skyColorTop.lerp(WHITE,.8).lerp(BLACK,.3);
+        glAmbientColor = skyColorBottom.lerp(WHITE,.8).lerp(BLACK,.3);
+        glFogColor = skyColorBottom.lerp(WHITE,.5);
     }
 
     const headingScale = -5e3;

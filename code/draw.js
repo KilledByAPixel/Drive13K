@@ -1,6 +1,5 @@
 'use strict';
 
-let lightDirection, lightColor, ambientColor, fogColor;
 let cubeMesh, quadMesh, shadowMesh, cylinderMesh, carMesh, carWheel;
 
 const WHITE  = rgb();
