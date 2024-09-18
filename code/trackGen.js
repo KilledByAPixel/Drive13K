@@ -155,24 +155,34 @@ function initTrackSprites()
     trackSprites.horizon_weird          = new TrackSprite(vec3(7,6));
     trackSprites.horizon_weird.colorHSL = vec3(.7, .5, .6);
 
+    // no mirror on horizon sprites
+    trackSprites.horizon_islands.canMirror = 0;
+    trackSprites.horizon_redMountains.canMirror = 0;
+    trackSprites.horizon_brownMountains.canMirror = 0;
+    trackSprites.horizon_smallMountains.canMirror = 0;
+    trackSprites.horizon_desert.canMirror = 0;
+    trackSprites.horizon_snow.canMirror = 0;
+    trackSprites.horizon_graveyard.canMirror = 0;
+    trackSprites.horizon_weird.canMirror = 0;
+
     // no shadow on these sprites
-    ///trackSprites.tunnel2_rock.shadowScale = 
-    trackSprites.light_tunnel.shadowScale =
-    trackSprites.hazard_rocks.shadowScale =
-    trackSprites.hazard_sand.shadowScale =
-    //trackSprites.hazard_snow.shadowScale =
-    trackSprites.tunnel1.shadowScale = 
-    trackSprites.tunnel2.shadowScale = 
-    trackSprites.tunnel2Front.shadowScale = 
-    trackSprites.water.shadowScale =
-    trackSprites.rock_huge.shadowScale =
-    trackSprites.rock_huge2.shadowScale =
-    trackSprites.rock_huge3.shadowScale =
-    trackSprites.rock_weird.shadowScale =
-    trackSprites.tree_huge.shadowScale =
-    trackSprites.sign_start.shadowScale =
-    trackSprites.sign_goal.shadowScale =
-    trackSprites.sign_checkpoint1.shadowScale =
+    ///trackSprites.tunnel2_rock.shadowScale = 0;
+    trackSprites.light_tunnel.shadowScale = 0;
+    trackSprites.hazard_rocks.shadowScale = 0;
+    trackSprites.hazard_sand.shadowScale = 0;
+    //trackSprites.hazard_snow.shadowScale = 0;
+    trackSprites.tunnel1.shadowScale = 0;
+    trackSprites.tunnel2.shadowScale = 0;
+    trackSprites.tunnel2Front.shadowScale = 0;
+    trackSprites.water.shadowScale = 0;
+    trackSprites.rock_huge.shadowScale = 0;
+    trackSprites.rock_huge2.shadowScale = 0;
+    trackSprites.rock_huge3.shadowScale = 0;
+    trackSprites.rock_weird.shadowScale = 0;
+    trackSprites.tree_huge.shadowScale = 0;
+    trackSprites.sign_start.shadowScale = 0;
+    trackSprites.sign_goal.shadowScale = 0;
+    trackSprites.sign_checkpoint1.shadowScale = 0;
     trackSprites.sign_checkpoint2.shadowScale = 0;
 }
 
