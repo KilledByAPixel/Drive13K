@@ -2,14 +2,24 @@
 
 /*
 
-small and fast dynamic webgl rendering engine for dr1ven wild
+Small and fast dynamic webgl rendering engine for Dr1ven Wild
 
-feaurtes
+Features
 - batch rendering
 - direct and ambient lighting
 - fog with alpha blending
 - texture mapping
 - vertex color
+
+Potential improvements
+- everything is using dynamic buffer, which is slow but flexible
+- it would be faster to use static buffers for static geometry
+- the colors could be passed in as 32 bit integers rather then vec4s
+- specular lighting would also be pretty easy to include
+- the fog calculation could possibly be moved to the vertex shader
+- antialiasing could be enabled if tiles have more space to prevent bleeding
+- a mip map of the passed in texture could be auto generated for smoother scaling
+- additive blending would also be easy to implement
 
 */
 
