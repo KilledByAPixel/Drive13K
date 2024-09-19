@@ -67,8 +67,8 @@ function initTrackSprites()
     PB(trackSprites.sign_js13k     = new TrackSprite(vec3(0,2),600,0,.02,1,0));
     PB(trackSprites.sign_github    = new TrackSprite(vec3(2,2),750,0,.02,.5,0));
     PB(trackSprites.sign_avalanche = new TrackSprite(vec3(7,2),600,0,.02,1,0));
-    PB(trackSprites.sign_opGames   = new TrackSprite(vec3(5,2),600,0,.02,.5,0));
     PB(trackSprites.sign_harris    = new TrackSprite(vec3(4,2),300,0,.02,1,0));
+    PB(trackSprites.sign_opGames   = new TrackSprite(vec3(5,2),600,0,.02,.5,0));
     trackSprites.sign_frankForce   = new TrackSprite(vec3(3,2),500,0,.02,1,0);
     //PB(trackSprites.sign_dwitter   = new TrackSprite(vec3(6,2),550,0,.02,1,0));
     
