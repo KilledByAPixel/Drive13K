@@ -2,7 +2,7 @@
 
 /*
 
-Small and fast dynamic webgl rendering engine for Dr1ven Wild
+Small and fast dynamic webgl rendering engine for Dr1v3n Wild
 
 Features
 - batch rendering
@@ -20,6 +20,7 @@ Potential improvements
 - antialiasing could be enabled if tiles have more space to prevent bleeding
 - a mip map of the passed in texture could be auto generated for smoother scaling
 - additive blending would also be easy to implement
+- there should be an easier way to set the fog range
 
 */
 
