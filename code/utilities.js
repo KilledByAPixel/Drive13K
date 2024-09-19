@@ -186,7 +186,10 @@ class Random
         this.seed ^= this.seed << 13;
         this.seed ^= this.seed >>> 17;
         this.seed ^= this.seed << 5;
-        return b + (a-b) * abs(this.seed % 1e9) / 1e9;
+        if (js13kBuild)
+            return b + (a-b) * Math.abs(this.seed % 1e9) / 1e9; // bias low values due to float error
+        else
+            return b + (a-b) * Math.abs(this.seed % 1e8) / 1e8;
     }
     floatSign(a, b)   { return this.float(a,b) * this.sign(); }
     int(a=1, b=0)     { return this.float(a, b)|0; }
@@ -212,7 +215,6 @@ class Random
     fromList(list,startBias=1) { return list[this.float()**startBias*list.length|0]; }
     warmup(count=3) { for(let i=count;i--;) this.float(); }
 }
-const random = new Random;
 
 ///////////////////////////////////////////////////////////////////////////////
 

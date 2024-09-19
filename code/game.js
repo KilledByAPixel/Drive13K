@@ -51,6 +51,7 @@ const pixelateScale = 3;
 const clampAspectRatios = enhancedMode;
 const optimizedCulling = 1;
 const aiVehicles = 1;
+const random = new Random;
 
 // setup
 const laneWidth = 1400;            // how wide is track

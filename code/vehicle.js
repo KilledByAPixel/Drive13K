@@ -111,9 +111,8 @@ class Vehicle
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
                 ASSERT(v != playerVehicle);
-                this.velocity.z = min(this.velocity.z, v.velocity.z); // clamp velocity
-                v.velocity.z += .1; // push other car       
-                this.isBraking = 30;
+                this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
+                this.isBraking = 10;
                 break;
             }
         }
