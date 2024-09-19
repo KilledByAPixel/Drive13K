@@ -42,3 +42,4 @@ This version has some extra features not included in the 13k build.
 - Touch support
 - Gamepad support
 - Pause feature
+- Slight gameplay tweaks
