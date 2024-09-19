@@ -2,7 +2,7 @@
 
 const debug = 1;
 let enhancedMode = 1;
-let devMode = 1;
+let devMode = 0;
 let downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
 let debugGenerativeCanvas=0, debugInfo=0, debugSkipped=0;
 let debugGenerativeCanvasCached;

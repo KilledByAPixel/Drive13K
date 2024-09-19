@@ -17,7 +17,6 @@ function initLevelInfos()
     LI.horizonSpriteSize = .5;
     //LI.tunnel = trackSprites.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
-    LI.trafficDensity = .7; // less traffic start
     
     // mostly straight with few well defined turns or bumps
     LI.turnChance = .6;
@@ -244,7 +243,7 @@ function initLevelInfos()
         trackSprites.rock_huge2,
     ], trackSprites.rock_big, trackSprites.horizon_redMountains);
     LI.sceneryListBias = 5;
-    LI.trackSideRate = 9;
+    LI.trackSideRate = 20;
     LI.skyColorTop = hsl(0,1,.8);
     LI.skyColorBottom = hsl(.6,1,.6);
     LI.lineColor = hsl(0,0,0,0);
@@ -257,13 +256,13 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
     LI.hazardType = trackSprites.rock_big;
-    LI.hazardChance = .01;
+    LI.hazardChance = 1;
     LI.trafficDensity = 0;  // no other cars in jungle
 
     // bumpy jungle road 
     LI.turnChance = .8;
     //LI.turnMin = 0;
-    LI.turnMax = .6;  // lots of slight turns
+    LI.turnMax = .3;  // lots of slight turns
     LI.bumpChance = 1;
     LI.bumpFreqMin = .4;
     LI.bumpFreqMax = .8;

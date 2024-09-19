@@ -83,7 +83,7 @@ function initTrackSprites()
 
     // rocks
     trackSprites.rock_tall     = new TrackSprite(vec3(1,4),1e3,.3,0,.6,0);
-    trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.3,0,.6,0);
+    trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.2,0,.6,0);
     trackSprites.rock_huge     = new TrackSprite(vec3(1,4),5e3,.7,0,.6,0);
     trackSprites.rock_huge.colorHSL  = vec3(.08, 1, .8);
     trackSprites.rock_huge.hueRandomness = .01;
@@ -407,7 +407,7 @@ function buildTrack()
     
     // generate the road
     const trackEnd = levelGoal*checkpointTrackSegments;
-    const roadTransitionRange = testLevels?min(checkpointTrackSegments,500):500;
+    const roadTransitionRange = testQuick?min(checkpointTrackSegments,500):500;
     for(let i=0; i < trackEnd + 5e4; ++i)
     {
         const levelFloat = i/checkpointTrackSegments;
@@ -644,12 +644,10 @@ function buildTrack()
             {
                 // hazards on the ground in road to slow player
                 const sprite = levelInfo.hazardType;
-                t.addSprite(sprite,random.floatSign(t.width/4,t.width));
+                t.addSprite(sprite,random.floatSign(t.width/.9));
 
                 // wait to spawn another hazard
-                hazardWait = random.float(5,10);
-                if (!sprite.isSlow && !sprite.isBump)
-                    hazardWait *= 2; // longer if collision
+                hazardWait = random.float(40,80);
             }
         }
     }

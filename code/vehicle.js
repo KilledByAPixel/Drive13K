@@ -107,11 +107,12 @@ class Vehicle
         for(const v of vehicles)
         {
             // slow down if behind
-            if (this.pos.z < v.pos.z && this.pos.z > v.pos.z - 1e3)
+            if (this.pos.z < v.pos.z && this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
                 ASSERT(v != playerVehicle);
-                this.velocity.z = min(this.velocity.z, v.velocity.z++);// push other car        
+                this.velocity.z = min(this.velocity.z, v.velocity.z); // clamp velocity
+                v.velocity.z += .1; // push other car       
                 this.isBraking = 30;
                 break;
             }

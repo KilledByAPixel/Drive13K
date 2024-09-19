@@ -26,18 +26,17 @@ Features
 
 */
 
-devMode = 0;
-//enhancedMode = 0;
-//debugInfo = 1
+//devMode = 1
 //soundVolume = 0
+//debugInfo = 1
 //debugGenerativeCanvas = 1
 
 // debug settings
+const testLevel = 0;
 const quickStart = 0;
 let testDrive = 0;
 let testLevelInfo;
-const testStartZ = quickStart&&!testLevelInfo?5e3:0;
-const testLevels = 0;
+const testQuick = 0;
 const js13kBuild = 1;
 const showMap = 0;
 
@@ -58,13 +57,14 @@ const laneWidth = 1400;            // how wide is track
 const trackSegmentLength = 100;    // length of each segment
 const drawDistance = 1e3;          // how many track segments to draw for scenery
 const cameraPlayerOffset = vec3(0,680,1050);
-const checkpointTrackSegments = testLevels?1e3:4500;
+const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
 const startCheckpointTime = 50;
 const levelLerpRange = .1;
 const levelGoal = 10;
 const playerStartZ = 2e3;
 const turnWorldScale = 2e4;
+const testStartZ = testLevel ? testLevel*checkpointDistance-1e3 : quickStart&&!testLevelInfo?5e3:0;
 
 let mainCanvasSize;// = pixelate ? vec3(640, 420) : vec3(1280, 720);
 let mainCanvas, mainContext;
@@ -87,7 +87,7 @@ let freeRide;
 
 function gameInit()
 {
-    if (quickStart)
+    if (quickStart || testLevel)
         titleScreenMode = 0;
 
     debug && debugInit();
@@ -114,7 +114,7 @@ function gameStart()
 {
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
-    startCountdown = quickStart ? 0 : 4;
+    startCountdown = quickStart || testLevel ? 0 : 4;
     worldHeading = titleScreenMode ? rand(7) : .8;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
@@ -241,7 +241,7 @@ function gameUpdateInternal()
 
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
-    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
+    const trafficPosOffset = playerIsSlow? 0 : 19e4; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;

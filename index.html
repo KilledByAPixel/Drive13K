@@ -21,23 +21,23 @@
 <script>
 onerror=(event, source, lineno, colno, error)=>
 {
+    document.body.innerHTML = `<pre style="color:red;font-size:50px;">` + 
+        `${event}\n${source}\nLn ${lineno}, Col ${colno}`; 
     document.body.style.backgroundColor = '#222';
-    document.body.innerHTML = '<pre style="color:red;font-size:50px;">'+
-        event + '\n' + source + '\n' + 'Ln ' + lineno + ', Col ' + colno; 
 }
 </script>
-<script src=code/debug.js?202></script>
-<script src=code/utilities.js?202></script>
-<script src=code/webgl.js?202></script>
-<script src=code/draw.js?202></script>
-<script src=code/scene.js?202></script>
-<script src=code/track.js?202></script>
-<script src=code/levels.js?202></script>
-<script src=code/trackGen.js?202></script>
-<script src=code/generative.js?202></script>
-<script src=code/input.js?202></script>
-<script src=code/audio.js?202></script>
-<script src=code/sounds.js?202></script>
-<script src=code/vehicle.js?202></script>
-<script src=code/hud.js?202></script>
-<script src=code/game.js?202></script>
+<script src=code/debug.js?203></script>
+<script src=code/utilities.js?203></script>
+<script src=code/webgl.js?203></script>
+<script src=code/draw.js?203></script>
+<script src=code/scene.js?203></script>
+<script src=code/track.js?203></script>
+<script src=code/levels.js?203></script>
+<script src=code/trackGen.js?203></script>
+<script src=code/generative.js?203></script>
+<script src=code/input.js?203></script>
+<script src=code/audio.js?203></script>
+<script src=code/sounds.js?203></script>
+<script src=code/vehicle.js?203></script>
+<script src=code/hud.js?203></script>
+<script src=code/game.js?203></script>
