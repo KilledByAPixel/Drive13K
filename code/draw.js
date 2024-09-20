@@ -217,3 +217,24 @@ function pushShadow(pos, xSize, zSize)
     const uvs = mesh.uvs.map(uv=>uv.multiply(tile.size).add(tile.pos));
     glPushVertsCapped(points, 0, color, uvs);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Fullscreen mode
+
+/** Returns true if fullscreen mode is active
+ *  @return {Boolean}
+ *  @memberof Draw */
+function isFullscreen() { return !!document.fullscreenElement; }
+
+/** Toggle fullsceen mode
+ *  @memberof Draw */
+function toggleFullscreen()
+{
+    if (isFullscreen())
+    {
+        if (document.exitFullscreen)
+            document.exitFullscreen();
+    }
+    else if (document.body.requestFullscreen)
+            document.body.requestFullscreen();
+}

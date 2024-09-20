@@ -52,6 +52,7 @@ const clampAspectRatios = enhancedMode;
 const optimizedCulling = 1;
 const aiVehicles = 1;
 const random = new Random;
+let autoFullscreen = 1;
 
 // setup
 const laneWidth = 1400;            // how wide is track
@@ -138,6 +139,13 @@ function gameStart()
 
 function gameUpdateInternal()
 {
+    if (document.hasFocus())
+    {
+        if (autoFullscreen && !isFullscreen())
+            toggleFullscreen();
+        autoFullscreen = 0;
+    }
+
     if (titleScreenMode)
     {
         // update title screen
