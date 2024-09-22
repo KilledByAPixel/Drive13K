@@ -48,10 +48,11 @@ function drawRoad(zwrite = 0)
         const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
         function pushRoadVerts(width, color, offset=0, width2=width, offset2=offset)
         {
+            const bias = 1; // fix polygon cracks with tiny overlap
             const point1a = vec3(p1.x+width+offset, p1.y, p1.z);
             const point1b = vec3(p1.x-width+offset, p1.y, p1.z);
-            const point2a = vec3(p2.x+width2+offset2, p2.y, p2.z);
-            const point2b = vec3(p2.x-width2+offset2, p2.y, p2.z);
+            const point2a = vec3(p2.x+width2+offset2, p2.y, p2.z+bias);
+            const point2b = vec3(p2.x-width2+offset2, p2.y, p2.z+bias);
             const poly = [point1a, point1b, point2a, point2b];
             color.a && glPushVertsCapped(poly, normals, color);
         }
@@ -59,7 +60,7 @@ function drawRoad(zwrite = 0)
         {
             // ground
             const color = segment1.colorGround;
-            const width = 4e3+p1.z*5; // fill the width of the screen
+            const width = 1e5; // fill the width of the screen
             pushRoadVerts(width, color);
         }
 
@@ -201,10 +202,10 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
     }
 
     const tilePos = sprite.tilePos;
-    const spriteYOffset = scale.y*(1+sprite.spriteYOffset);
     const shadowScale = sprite.shadowScale;
     const wind = sprite.windScale * trackWind;
-    const yShadowOffset = 10;
+    const yShadowOffset = freeCamMode ? cameraPos.y/20 : 10; // fix shadows in free cam mode
+    const spriteYOffset = scale.y*(1+sprite.spriteYOffset) + (freeCamMode?cameraPos.y/20:0);
 
     if (shadowScale)
         pushShadow(pos.add(vec3(0,yShadowOffset)), scale.y*shadowScale, scale.y*shadowScale/6);

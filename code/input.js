@@ -6,7 +6,7 @@ const inputWASDEmulateDirection = enhancedMode;
 const gamepadDirectionEmulateStick = 1;
 const isTouchDevice = allowTouch && window.ontouchstart !== undefined;
 
-let mousePos;
+let mousePos = vec3();
 let inputData = [];
 let isUsingGamepad;
 
@@ -70,10 +70,17 @@ function inputInit()
         isUsingGamepad = 0;
         inputData[e.button] = 3; 
         mousePos = mouseToScreen(vec3(e.x,e.y)); 
-        //e.button && e.preventDefault();
     }
     onmouseup     = (e)=> inputData[e.button] = inputData[e.button] & 2 | 4;
-    onmousemove   = (e)=> mousePos = mouseToScreen(vec3(e.x,e.y));
+    onmousemove   = (e)=>
+    {
+        mousePos = mouseToScreen(vec3(e.x,e.y));
+        if (freeCamMode)
+        {
+            mouseDelta.x += e.movementX/mainCanvasSize.x;
+            mouseDelta.y += e.movementY/mainCanvasSize.y;
+        }
+    }
     oncontextmenu = (e)=> false; // prevent right click menu
 
     // handle remapping wasd keys to directions

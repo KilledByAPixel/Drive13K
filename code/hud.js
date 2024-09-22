@@ -4,6 +4,9 @@ const showTitle = 1;
 
 function drawHUD()
 {
+    if (freeCamMode)
+        return;
+
     if (enhancedMode && paused)
     {
         // paused

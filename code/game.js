@@ -35,6 +35,7 @@ Features
 const testLevel = 0;
 const quickStart = 0;
 let testDrive = 0;
+let freeCamMode = 0;
 let testLevelInfo;
 const testQuick = 0;
 const js13kBuild = 1;
@@ -407,6 +408,12 @@ function updateCamera()
 
     // slight tilt camera with road
     cameraRot.x = lerp(.1,cameraRot.x, cameraTrackInfo.pitch/3);
+
+    if (freeCamMode)
+    {
+        cameraPos = freeCamPos.copy();
+        cameraRot = freeCamRot.copy();
+    }
 }
 
 ///////////////////////////////////////

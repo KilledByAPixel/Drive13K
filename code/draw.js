@@ -206,7 +206,7 @@ function pushSprite(pos, size, color, tile, skew=0)
 
 function pushShadow(pos, xSize, zSize)
 {
-    if (optimizedCulling & pos.z > 2e4)
+    if (optimizedCulling && pos.z > 2e4)
         return; // cull far shadows
 
     const color = rgb(0,0,0,.7)

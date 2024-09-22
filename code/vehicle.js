@@ -393,6 +393,8 @@ class PlayerVehicle extends Vehicle
                 playerInputTurn = clamp(3*(mousePos.x-.5),-1,1);
             }
         }
+        if (freeCamMode)
+            playerInputGas = playerInputTurn = playerInputBrake = 0;
         if (testDrive)
             playerInputGas = 1, playerInputTurn=0;
         if (gameOverTimer.isSet())
