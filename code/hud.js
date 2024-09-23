@@ -59,7 +59,8 @@ function drawHUD()
         if (bestTime && (!enhancedMode || time%20<10))
         {
             const timeString = formatTimeString(bestTime);
-            drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            if (!js13kBuildLevel2)
+                drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
             drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
         else if (enhancedMode)
@@ -94,7 +95,7 @@ function drawHUD()
         else if (!startCountdownTimer.active() && !freeRide)
         {
             // big center checkpoint time
-            const c = checkpointTimeLeft < 3 ? RED : checkpointTimeLeft < 10 ? YELLOW : WHITE;
+            const c = checkpointTimeLeft < 4 ? RED : checkpointTimeLeft < 11 ? YELLOW : WHITE;
             const t = checkpointTimeLeft|0;
             drawHUDText(t, vec3(.5,.13), .14, c, undefined,undefined,900,undefined,undefined,.04);
         }
@@ -105,7 +106,8 @@ function drawHUD()
             {
                 // current time
                 const timeString = formatTimeString(raceTime);
-                drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+                if (!js13kBuildLevel2)
+                    drawHUDText('TIME', vec3(.5,.43), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
                 drawHUDText(timeString, vec3(.5), .08, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
             }
             else
@@ -121,12 +123,12 @@ function drawHUD()
         }
     }
 
-    /*if (debug) // mph
+    if (debugInfo&&!titleScreenMode) // mph
     {
         const mph = playerVehicle.velocity.z>>1;
         const mphPos = vec3(.01,.95);
         drawHUDText(mph+' MPH', mphPos, .08, undefined,undefined,'left',900,'italic');
-    }*/
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

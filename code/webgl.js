@@ -25,6 +25,7 @@ Potential improvements
 */
 
 const glRenderScale = 100; // fixes floating point issues on some devices
+const glSpecular = 0; // experimental specular test
 let glCanvas, glContext, glShader, glVertexData;
 let glBatchCount, glBatchCountTotal, glDrawCalls;
 let glEnableLighting, glLightDirection, glLightColor, glAmbientColor;
@@ -42,6 +43,15 @@ function glInit()
     glContext = glCanvas.getContext('webgl2', {alpha: hasAlpha, antialias: hasAntialias});
     ASSERT(glContext, 'Failed to create WebGL canvas!');
 
+    // epxeriment with adding specular lighting to the scene
+    const specularLightingCode = `float shininess = 64.;
+            vec3 normal = normalize((transpose(inverse(o))*n).xyz);
+            vec3 viewPos = vec3(0,680,0);
+            vec3 viewDir = normalize(viewPos - vec3(gl_Position.xyz));
+            vec3 halfwayDir = normalize(l.xyz + viewDir);
+            float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+            d=vec4(spec*g.xyz,0.)+c*(a+vec4(g.xyz*dot(l.xyz,normal),1));`;
+
     // setup vertex and fragment shaders
     glShader = glCreateProgram(
         '#version 300 es\n' +     // specify GLSL ES version
@@ -53,23 +63,24 @@ function glInit()
         'void main(){'+           // shader entry point
         'gl_Position=m*o*p;'+     // transform position
         'v=u,q=f;'+               // pass uv and fog to fragment shader
-        'd=c*(a+vec4(g.xyz*dot(l.xyz,'+ // lighting
-            'normalize((transpose(inverse(o))*n).xyz)),1));'+ // world normal
+        (glSpecular ? specularLightingCode : // specular lighting test
+            'd=c*vec4(a.xyz+g.xyz*dot(l.xyz,'+                  // lighting
+            'normalize((transpose(inverse(o))*n).xyz)),1);') +  // transform light
         '}'                       // end of shader
         ,
-        '#version 300 es\n' +     // specify GLSL ES version
-        'precision highp float;'+ // use highp for better accuracy
-        'in vec4 v,d,q;'+         // uv, color, fog
-        'uniform sampler2D s;'+   // texture
-        'out vec4 c;'+            // out color
-        'void main(){'+           // shader entry point
+        '#version 300 es\n' +            // specify GLSL ES version
+        'precision highp float;'+        // use highp for better accuracy
+        'in vec4 v,d,q;'+                // uv, color, fog
+        'uniform sampler2D s;'+          // texture
+        'out vec4 c;'+                   // out color
+        'void main(){'+                  // shader entry point
         'c=v.z>0.?d:texture(s,v.xy)*d;'+ // color or texture
-        'float f=clamp(gl_FragCoord.z/gl_FragCoord.w/1e5,0.,1.);'+     // fog depth
-        'v.w>0.?c:c=vec4(mix(c.xyz,q.xyz,f*f),'+                       // fog color
-            'c.a*clamp(4.-gl_FragCoord.z/gl_FragCoord.w/2e4,0.,1.));'+ // fog alpha
-        //'c.w);'+                   // disable fog alpha
-        //'if (c.a == 0.) discard;'+ // discard if no alpha
-        '}'                          // end of shader
+        'float f=gl_FragCoord.z/gl_FragCoord.w;'+ // fog depth
+        'v.w>0.?c:c=vec4(mix(c.xyz,q.xyz,clamp(f*f/1e10,0.,1.)),'+ // fog color
+            'c.a*clamp(4.-f/2e4,0.,1.));'+ // fog alpha
+        //'c.w);'+                       // disable fog alpha
+        //'if (c.a == 0.) discard;'+     // discard if no alpha
+        '}'                              // end of shader
     );
  
     // set up the shader
@@ -189,11 +200,10 @@ function glPolygonOffset(units=0)
 function glSetDepthTest(depthTest=1, depthWrite=1)
 { glSetCapability(gl_DEPTH_TEST, !!depthTest); glContext.depthMask(!!depthWrite); }
 
-function glCreateProjectionMatrix()
+function glCreateProjectionMatrix(fov=.5, near = 1, far = 1e4)
 {
     const aspect = glCanvas.width / glCanvas.height;
-    const fov = .5, f = 1 / Math.tan(fov);
-    const near = 1, far = 1e4, range = far - near;
+    const f = 1 / Math.tan(fov), range = far - near;
     return new DOMMatrix
     ([
         f / aspect, 0, 0, 0,

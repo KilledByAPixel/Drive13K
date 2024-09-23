@@ -7,8 +7,7 @@ function trackPreUpdate()
     const cameraTrackSegment = cameraTrackInfo.segmentIndex;
     const cameraTrackSegmentPercent = cameraTrackInfo.percent;
     const turnScale = 2;
-    let x, v, i;
-    for(x = v = i = 0; i < drawDistance; ++i)
+    for(let x=0, v=0, i=0; i<drawDistance; ++i)
     {
         const j = cameraTrackSegment+i;
         if (!track[j])
@@ -22,10 +21,20 @@ function trackPreUpdate()
     }
 }
 
-function drawRoad(zwrite = 0)
+function drawTrack()
 {
-    glSetDepthTest(zwrite,zwrite);
-    
+    glEnableFog = 0; // track looks better without fog
+    drawRoad(1); // first draw just flat ground with z write
+    glSetDepthTest(0,0); // disable z testing
+    drawRoad();  // draw ground and road
+
+    // set evertyhing back to normal
+    glEnableFog = 1;
+    glSetDepthTest();
+}
+
+function drawRoad(zwrite)
+{
     // draw the road segments
     const drawLineDistance = 500;
     const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
@@ -34,25 +43,24 @@ function drawRoad(zwrite = 0)
     {
         const segmentIndex = cameraTrackSegment+i;
         segment1 = track[segmentIndex];    
-        if (!segment1 || !segment2)
+        if (!segment2)
         {
             segment2 = segment1;
             continue;
         }
 
-        const p1 = segment1.pos;
-        const p2 = segment2.pos;
         if (i % (lerp(i/drawDistance,1,8)|0)) // fade in road resolution
             continue;
             
+        const p1 = segment1.pos;
+        const p2 = segment2.pos;
         const normals = [segment1.normal, segment1.normal, segment2.normal, segment2.normal];
-        function pushRoadVerts(width, color, offset=0, width2=width, offset2=offset)
+        function pushRoadVerts(width, color, offset=0, width2=width, offset2=offset, oy=0)
         {
-            const bias = 1; // fix polygon cracks with tiny overlap
-            const point1a = vec3(p1.x+width+offset, p1.y, p1.z);
-            const point1b = vec3(p1.x-width+offset, p1.y, p1.z);
-            const point2a = vec3(p2.x+width2+offset2, p2.y, p2.z+bias);
-            const point2b = vec3(p2.x-width2+offset2, p2.y, p2.z+bias);
+            const point1a = vec3(p1.x+width+offset, p1.y+oy, p1.z);
+            const point1b = vec3(p1.x-width+offset, p1.y+oy, p1.z);
+            const point2a = vec3(p2.x+width2+offset2, p2.y+oy, p2.z);
+            const point2b = vec3(p2.x-width2+offset2, p2.y+oy, p2.z);
             const poly = [point1a, point1b, point2a, point2b];
             color.a && glPushVertsCapped(poly, normals, color);
         }
@@ -64,33 +72,30 @@ function drawRoad(zwrite = 0)
             pushRoadVerts(width, color);
         }
 
-        if (zwrite)
+        if (!zwrite)
         {
-            segment2 = segment1;
-            continue;
-        }
-
-        {
+            const roadHeight = 10;
+            
             // road
             const color = segment1.colorRoad;
             const width = segment1.width;
             const width2 = segment2.width;
-            pushRoadVerts(width, color, undefined, width2);
-        }
+            pushRoadVerts(width, color, undefined, width2,undefined,roadHeight);
 
-        if (i < drawLineDistance)
-        {
-            // lines on road
-            const w = segment1.width;
-            const lineBias = .2
-            const laneCount = 2*w/laneWidth - lineBias;
-            for(let j=1; j<laneCount; ++j)
+            if (i < drawLineDistance)
             {
-                const color = segment1.colorLine;
-                const lineWidth = 30;
-                const offset = j*laneWidth-segment1.width;
-                const offset2 = j*laneWidth-segment2.width;
-                pushRoadVerts(lineWidth, color, offset, undefined, offset2);
+                // lines on road
+                const w = segment1.width;
+                const lineBias = .2
+                const laneCount = 2*w/laneWidth - lineBias;
+                for(let j=1; j<laneCount; ++j)
+                {
+                    const color = segment1.colorLine;
+                    const lineWidth = 30;
+                    const offset = j*laneWidth-segment1.width;
+                    const offset2 = j*laneWidth-segment2.width;
+                    pushRoadVerts(lineWidth, color, offset, undefined, offset2,roadHeight);
+                }
             }
         }
         
@@ -98,7 +103,6 @@ function drawRoad(zwrite = 0)
     }
 
     glRender();
-    glSetDepthTest();
 }
 
 function drawTrackScenery()
@@ -159,7 +163,7 @@ function drawTrackScenery()
                     const s = sprite.size*sprite.getRandomSpriteScale();
 
                     // push farther away if big collision
-                    const xm = w+sprite.size+8*sprite.collideScale*s; 
+                    const xm = w+sprite.size+6*sprite.collideScale*s; 
                     const o = trackSpriteSide * random.float(xm,3e4);
                     const p = trackSegment.pos.add(vec3(o,0));
                     const wind = trackSegment.getWind();
@@ -175,24 +179,18 @@ function drawTrackScenery()
 
     glRender();
 
-    // this is the final thing renderd
-    //glSetDepthTest();
-    //glEnableLighting = 1;
-}
-
-function drawTrack()
-{
-    glEnableFog = 0; // disable track fog
-    drawRoad(1); // first draw just flat ground with z write
-    drawRoad();  // then draw the road without z write
-    glEnableFog = 1;
+    if (!js13kBuild) // final thing rendered, so no need to reset
+    {
+        glSetDepthTest();
+        glEnableLighting = 1;
+    }
 }
 
 function pushTrackObject(pos, scale, color, sprite, trackWind)
  {
     if (optimizedCulling)
     {
-        const cullScale = 100;
+        const cullScale = 200;
         if (cullScale*scale.y < pos.z)
             return; // cull out small sprites
         if (abs(pos.x)-abs(scale.x) > pos.z*4+2e3)
@@ -211,7 +209,7 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
         pushShadow(pos.add(vec3(0,yShadowOffset)), scale.y*shadowScale, scale.y*shadowScale/6);
 
     // draw on top of shadow
-    pushSprite(pos.add(vec3(0,spriteYOffset)), scale, color, getSpriteTile(tilePos), wind);
+    pushSprite(pos.add(vec3(0,spriteYOffset)), scale, color, new SpriteTile(tilePos), wind);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

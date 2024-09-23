@@ -40,8 +40,8 @@ function drawSky()
     }
 
     const headingScale = -5e3;
-    const circleSpriteTile = getSpriteTile(vec3());
-    const dotSpriteTile = getSpriteTile(vec3(1,0));
+    const circleSpriteTile = new SpriteTile(vec3());
+    const dotSpriteTile = new SpriteTile(vec3(1,0));
     { 
         // sun
         const sunSize = 1e2;
@@ -50,9 +50,8 @@ function drawSky()
         const x = mod(worldHeading+PI,2*PI)-PI;
         for(let i=0;i<1;i+=.05)
         {
-            const c = sunColor.copy();
-            c.a = i?(1-i)**7:1;
-            pushSprite(cameraPos.add(vec3( x*headingScale, sunHeight, skyZ)), vec3(sunSize*(1+i*30)), c, i?dotSpriteTile:circleSpriteTile);
+            sunColor.a = i?(1-i)**7:1;
+            pushSprite(cameraPos.add(vec3( x*headingScale, sunHeight, skyZ)), vec3(sunSize*(1+i*30)), sunColor, i?dotSpriteTile:circleSpriteTile);
         }
     }
 
@@ -69,12 +68,12 @@ function drawSky()
         x = mod(x,range) - range/2;
         const y = random.float(skyTop);
         const s = random.float(3e2,8e2);
-        pushSprite(cameraPos.add(vec3( x, y, skyZ)), vec3(s*cloudWidth,s*cloudHeight), cloudColor, getSpriteTile(vec3(1,0)))
+        pushSprite(cameraPos.add(vec3( x, y, skyZ)), vec3(s*cloudWidth,s*cloudHeight), cloudColor, new SpriteTile(vec3(1,0)))
     }
 
     // parallax
     const horizonSprite = levelInfo.horizonSprite;
-    const horizonSpriteTile = getSpriteTile(horizonSprite.tilePos);
+    const horizonSpriteTile = new SpriteTile(horizonSprite.tilePos);
     const horizonSpriteSize = levelInfo.horizonSpriteSize;
     for(let i=99;i--;)
     {

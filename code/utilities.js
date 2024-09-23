@@ -178,8 +178,12 @@ class Color
 
 class Random
 {
-    constructor(seed=0) { this.setSeed(seed); }
-    setSeed(seed) { this.seed = seed+1|0;this.warmup(); }
+    constructor(seed) { this.setSeed(seed); }
+    setSeed(seed) 
+    { 
+        this.seed = seed+1|0;
+        this.float();this.float();this.float();// warmup
+    }
     float(a=1, b=0)
     {
         // xorshift
@@ -192,10 +196,9 @@ class Random
             return b + (a-b) * Math.abs(this.seed % 1e8) / 1e8;
     }
     floatSign(a, b)   { return this.float(a,b) * this.sign(); }
-    int(a=1, b=0)     { return this.float(a, b)|0; }
+    int(a, b)         { return this.float(a, b)|0; }
     bool(chance = .5) { return this.float() < chance; }
     sign()            { return this.bool() ? -1 : 1; }
-    angle(p=1)        { return this.float(Math.PI*2*p); }
     circle(radius=0, bias = .5)
     {
         const r = this.float()**bias*radius;
@@ -206,14 +209,13 @@ class Random
     {
         return rgb
         (
-            clamp((1-random.float(brightnessAmount))*(color.r + this.floatSign(amount))),
-            clamp((1-random.float(brightnessAmount))*(color.g + this.floatSign(amount))),
-            clamp((1-random.float(brightnessAmount))*(color.b + this.floatSign(amount))),
-            color.angle
+            clamp(random.float(1,1-brightnessAmount)*(color.r + this.floatSign(amount))),
+            clamp(random.float(1,1-brightnessAmount)*(color.g + this.floatSign(amount))),
+            clamp(random.float(1,1-brightnessAmount)*(color.b + this.floatSign(amount))),
+            color.a
         );
     }
     fromList(list,startBias=1) { return list[this.float()**startBias*list.length|0]; }
-    warmup(count=3) { for(let i=count;i--;) this.float(); }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,12 +223,11 @@ class Random
 class Timer
 {
     constructor(timeLeft) 
-    { this.time = timeLeft == undefined ? undefined : time + timeLeft; this.setTime = timeLeft; }
-    set(timeLeft=0) { this.time = time + timeLeft; this.setTime = timeLeft; }
+    { this.time = timeLeft == undefined ? undefined : time + timeLeft; }
+    set(timeLeft=0) { this.time = time + timeLeft; }
     unset() { this.time = undefined; }
     isSet() { return this.time != undefined; }
     active() { return time < this.time; }
     elapsed() { return time >= this.time; }
     get() { return this.isSet()? time - this.time : 0; }
-    getPercent() { return this.isSet()? percent(this.time - time, this.setTime, 0) : 0; }
 }

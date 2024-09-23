@@ -39,7 +39,7 @@ const gamepadIsDown = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 1);
 const gamepadWasPressed = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 2); 
 const gamepadWasReleased = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 4); 
 const gamepadStick = (stick, gamepad=0) =>
-    stickData[gamepad] ? stickData[gamepad][stick] || vec3() : vec3();
+    gamepadStickData[gamepad] ? gamepadStickData[gamepad][stick] || vec3() : vec3();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input event handlers
@@ -164,13 +164,13 @@ function inputInit()
 // gamepad input
 
 // gamepad internal variables
-let gamepadData, stickData;
+let gamepadData, gamepadStickData;
 
 // gamepads are updated by engine every frame automatically
 function gamepadsUpdate()
 {
     // only poll gamepads when focused or in debug mode (allow playing when not focused in debug)
-    if (!enhancedMode && !document.hasFocus())
+    if (!devMode && !document.hasFocus())
         return;
 
     // return if gamepads are disabled or not supported
@@ -178,7 +178,7 @@ function gamepadsUpdate()
         return;
 
     if (!gamepadData) // init
-        gamepadData = [], stickData = [];
+        gamepadData = [], gamepadStickData = [];
 
     const applyDeadZones = (v)=>
     {
@@ -196,7 +196,7 @@ function gamepadsUpdate()
         // get or create gamepad data
         const gamepad = gamepads[i];
         const data = gamepadData[i] || (gamepadData[i] = []);
-        const sticks = stickData[i] || (stickData[i] = []);
+        const sticks = gamepadStickData[i] || (gamepadStickData[i] = []);
 
         if (gamepad)
         {

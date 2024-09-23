@@ -3,9 +3,10 @@
 const debug = 1;
 let enhancedMode = 1;
 let devMode = 0;
+let autoPause = 1;
 let downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
 let debugGenerativeCanvas=0, debugInfo=0, debugSkipped=0;
-let debugGenerativeCanvasCached;
+let debugGenerativeCanvasCached, showMap;
 let freeCamPos, freeCamRot, mouseDelta;
 
 function ASSERT(assert, output) 
@@ -28,11 +29,11 @@ function enhancedModeUpdate()
     if (!enhancedMode)
         return;
 
-    if (!document.hasFocus() && !titleScreenMode)
+    if (autoPause && !document.hasFocus() && !titleScreenMode)
         paused = 1; // pause when losing focus
 
     if (keyWasPressed('Home')) // dev mode
-        debugInfo = devMode = !devMode;
+        devMode || (debugInfo = devMode = 1);
     if (keyWasPressed('KeyI')) // debug info
         debugInfo = !debugInfo;
     if (keyWasPressed('KeyM')) // toggle mute
@@ -61,13 +62,7 @@ function debugUpdate()
     if (keyWasPressed('KeyG')) // free Cam
     {
         freeCamMode = !freeCamMode;
-        if (freeCamMode)
-        {
-            mainCanvas.requestPointerLock();
-            freeCamPos = cameraPos.copy();
-            freeCamRot = cameraRot.copy();
-        }
-        else
+        if (!freeCamMode)
         {
             document.exitPointerLock();
             cameraPos = vec3();
@@ -76,6 +71,13 @@ function debugUpdate()
     }
     if (freeCamMode)
     {
+        if (!document.pointerLockElement)
+        {
+            mainCanvas.requestPointerLock();
+            freeCamPos = cameraPos.copy();
+            freeCamRot = cameraRot.copy();
+        }
+
         const input = vec3(
             keyIsDown('KeyD') - keyIsDown('KeyA'),
             keyIsDown('KeyE') - keyIsDown('KeyQ'),
@@ -86,6 +88,7 @@ function debugUpdate()
         const moveDirection = input.rotateX(freeCamRot.x).rotateY(-freeCamRot.y);
         freeCamPos = freeCamPos.add(moveDirection.scale(moveSpeed));
         freeCamRot = freeCamRot.add(vec3(mouseDelta.y,mouseDelta.x).scale(turnSpeed));
+        freeCamRot.x = clamp(freeCamRot.x, -PI/2, PI/2);
         mouseDelta = vec3();
     }
 
@@ -113,7 +116,7 @@ function debugUpdate()
         debugSkipped = 1;
     }
     if (keyWasPressed('Digit5'))
-        checkpointTimeLeft=1
+        checkpointTimeLeft=12
     if (keyWasPressed('Digit6'))
     {
         // randomize track
@@ -136,10 +139,10 @@ function debugUpdate()
         debugGenerativeCanvas = !debugGenerativeCanvas;
     if (keyWasPressed('Digit0'))
         debugCapture = 1;
-    if (keyWasPressed('KeyT'))
+    if (keyWasPressed('KeyQ') && !freeCamMode)
         testDrive = !testDrive
     if (keyWasPressed('KeyP'))
-        sound_beep.play(1,4);
+        sound_win.play();
     if (debug && keyWasPressed('KeyV'))
         spawnVehicle(playerVehicle.pos.z-1300)
     //if (!document.hasFocus())

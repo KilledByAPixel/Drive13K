@@ -2,9 +2,10 @@
 
 const hardAlpha = 1;
 const generativeTileSize = 512;
-const generativeCanvasSize = vec3(generativeTileSize*8,generativeTileSize*8,1);
-const generativeTileSizeVec = vec3(generativeTileSize,generativeTileSize);
-const fixFirefoxFontBug = 1;
+const generativeCanvasScaleFactor = 8;
+const generativeCanvasSize = generativeTileSize*generativeCanvasScaleFactor;
+const generativeCanvasSizeInverse = 1/generativeCanvasSize;
+const fixFirefoxFontBug = 1; // fix firefox not drawing fonts below a min size
     
 function initGenerative()
 {
@@ -14,8 +15,8 @@ function initGenerative()
     if (debug)
     {
         debugGenerativeCanvasCached = document.createElement('canvas');
-        debugGenerativeCanvasCached.width = generativeCanvasSize.x;
-        debugGenerativeCanvasCached.height = generativeCanvasSize.y;
+        debugGenerativeCanvasCached.height = 
+        debugGenerativeCanvasCached.width = generativeCanvasSize;
         const context = debugGenerativeCanvasCached.getContext('2d');
         context.drawImage(mainCanvas, 0, 0);
     }
@@ -27,8 +28,7 @@ function initGenerative()
 function generateTetures()
 {
     const context = mainContext;
-    mainCanvas.width = generativeCanvasSize.x;
-    mainCanvas.height = generativeCanvasSize.y;
+    mainCanvas.height = mainCanvas.width = generativeCanvasSize;
     random.setSeed(13);
 
     class Particle
@@ -178,7 +178,7 @@ function generateTetures()
                 const brightness = .1+random.float(p,1)*leafBrightness;
                 color(random.mutateColor(hsl(leafHue,sat,brightness),.1));
                 leafPos = leafPos.add(random.circle(leafOffset));
-                rect(leafPos.x,leafPos.y,leafSize,leafSize,random.angle());
+                rect(leafPos.x,leafPos.y,leafSize,leafSize,random.float(2*PI));
                 if (random.bool(this.flowerChance))
                     drawFlower(leafPos, 5, random.float(.01,.02), this.flowerColor)
             }
@@ -675,8 +675,8 @@ function generateTetures()
     {
         // make hard alpha
         const minAlpha = 99;
-        const w = generativeCanvasSize.x, h = generativeCanvasSize.y;
-        const imageData = context.getImageData(0, generativeTileSize, w, h);
+        const s = generativeCanvasSize;
+        const imageData = context.getImageData(0, generativeTileSize, s, s);
         const data = imageData.data;
         for (let i=3; i<data.length; i+=4)
             data[i] = data[i] < minAlpha ? 0 : 255;
@@ -861,7 +861,7 @@ function generateTetures()
 
     function drawFlower(pos, flowerPetals, flowerSize, c=RED)
     {
-        const flowerAngle = random.angle();
+        const flowerAngle = random.float(2*PI);
         const regularity = 1+random.floatSign(.08);
         flowerSize = random.float(flowerSize*.6,flowerSize);
         color(random.mutateColor(WHITE,.2));

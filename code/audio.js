@@ -19,12 +19,12 @@ class Sound
         this.samples = zzfxG(...zzfxSound);
     }
 
-    play(volume=1, pitch=1, randomnessScale=1)
+    play(volume=1, pitch=1)
     {
         if (!soundEnable) return;
 
         // play the sound
-        const playbackRate = pitch + this.randomness*randomnessScale*rand(-pitch,pitch);
+        const playbackRate = pitch + this.randomness*rand(-pitch,pitch);
         return playSamples(this.samples, volume, playbackRate);
     }
 
@@ -36,7 +36,7 @@ class Sound
 
 let audioContext;
 
-function playSamples(samples, volume=1, rate=1) 
+function playSamples(samples, volume, rate) 
 {
     const sampleRate=zzfxR;
 
@@ -80,7 +80,6 @@ function playSamples(samples, volume=1, rate=1)
 ///////////////////////////////////////////////////////////////////////////////
 // ZzFXMicro - Zuper Zmall Zound Zynth - v1.3.1 by Frank Force
 
-function zzfx(...zzfxSound) { return playSamples([zzfxG(...zzfxSound)]); }
 const zzfxR = 44100; 
 function zzfxG
 (

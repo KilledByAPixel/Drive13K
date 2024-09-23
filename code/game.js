@@ -30,16 +30,18 @@ Features
 //soundVolume = 0
 //debugInfo = 1
 //debugGenerativeCanvas = 1
+//autoPause = 0
 
 // debug settings
 const testLevel = 0;
 const quickStart = 0;
+const aiVehicles = 1;
 let testDrive = 0;
 let freeCamMode = 0;
 let testLevelInfo;
 const testQuick = 0;
 const js13kBuild = 1;
-const showMap = 0;
+const js13kBuildLevel2 = 0;
 
 ///////////////////////////////////////////////////
 
@@ -51,7 +53,6 @@ const timeDelta = 1/frameRate;
 const pixelateScale = 3;
 const clampAspectRatios = enhancedMode;
 const optimizedCulling = 1;
-const aiVehicles = 1;
 const random = new Random;
 let autoFullscreen = 0;
 
@@ -63,6 +64,7 @@ const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
 const startCheckpointTime = 50;
+const extraCheckpointTime = 40;
 const levelLerpRange = .1;
 const levelGoal = 10;
 const playerStartZ = 2e3;
@@ -134,7 +136,7 @@ function gameStart()
     if (titleScreenMode)
     {
         const level = titleModeStartCount*2%9;
-        playerVehicle.pos.z = 6e4+level*checkpointDistance;
+        playerVehicle.pos.z = 8e4+level*checkpointDistance;
     }
 }
 
@@ -212,7 +214,7 @@ function gameUpdateInternal()
             raceTime += timeDelta;
             const lastCheckpointTimeLeft = checkpointTimeLeft;
             checkpointTimeLeft -= timeDelta;
-            if (checkpointTimeLeft < 3)
+            if (checkpointTimeLeft < 4)
             if ((lastCheckpointTimeLeft|0) != (checkpointTimeLeft|0))
             {
                 // low time warning
@@ -251,7 +253,7 @@ function gameUpdateInternal()
 
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
-    const trafficPosOffset = playerIsSlow? 0 : 19e4; // check in front/behind
+    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
@@ -318,7 +320,7 @@ function gameUpdate(frameTimeMS=0)
                 || mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
             {
                 paused = 0;
-                sound_checkpoint_outrun.play();
+                sound_checkpoint.play();
             }
             if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
             {
@@ -336,8 +338,8 @@ function gameUpdate(frameTimeMS=0)
     // update time keeping
     let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
     frameTimeLastMS = frameTimeMS;
-    const debugSpeedUp   = debug && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
-    const debugSpeedDown = debug && keyIsDown('Minus') || keyIsDown('NumpadSubtract'); // -
+    const debugSpeedUp   = devMode && (keyIsDown('Equal')|| keyIsDown('NumpadAdd')); // +
+    const debugSpeedDown = devMode && keyIsDown('Minus') || keyIsDown('NumpadSubtract'); // -
     if (debug) // +/- to speed/slow time
         frameTimeDeltaMS *= debugSpeedUp ? 20 : debugSpeedDown ? .1 : 1;
     averageFPS = lerp(.05, averageFPS, 1e3/(frameTimeDeltaMS||1));
@@ -369,7 +371,7 @@ function gameUpdate(frameTimeMS=0)
         {
             // update pause
             paused = 1;
-            sound_checkpoint_outrun.play(1,.5);
+            sound_checkpoint.play(1,.5);
         }
         
         updateCamera();
@@ -420,13 +422,13 @@ function updateCamera()
 // save data
 
 const saveName = 'DW';
-let bestTime     = localStorage[saveName+1]*1 || 0;
-let bestDistance = localStorage[saveName+2]*1 || 0;
+let bestTime     = localStorage[saveName+3]*1 || 0;
+let bestDistance = localStorage[saveName+4]*1 || 0;
 
 function writeSaveData()
 {
-    localStorage[saveName+1] = bestTime;
-    localStorage[saveName+2] = bestDistance;
+    localStorage[saveName+3] = bestTime;
+    localStorage[saveName+4] = bestDistance;
 }
 
 ///////////////////////////////////////

@@ -13,8 +13,6 @@ const BLUE   = rgb(0,0,1);
 const MAGENTA= rgb(1,0,1);
 const GRAY   = rgb(.5,.5,.5);
 
-const getSpriteTile = (pos)=> new Tile(pos.scale(generativeTileSize), generativeTileSizeVec);
-
 ///////////////////////////////////////////////////////////////////////////////
 
 function drawInit()
@@ -64,14 +62,19 @@ function drawInit()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class Tile
+class SpriteTile
 {
-    constructor(pos, size)
+    constructor(pos)
     {
         const bleedPixels = 2;
-        const textureSize = generativeCanvasSize;
-        this.pos = pos.add(vec3(bleedPixels)).divide(textureSize);
-        this.size = size.add(vec3(-2*bleedPixels)).divide(textureSize);
+        this.pos = vec3(
+            (pos.x * generativeTileSize + bleedPixels) * generativeCanvasSizeInverse,
+            (pos.y * generativeTileSize + bleedPixels) * generativeCanvasSizeInverse,
+        );
+        this.size = vec3(
+            (generativeTileSize - 2*bleedPixels) * generativeCanvasSizeInverse,
+            (generativeTileSize - 2*bleedPixels) * generativeCanvasSizeInverse,
+        );
     }
 }
 
@@ -94,7 +97,7 @@ class Mesh
 
     renderTile(transform, color, tile)
     { 
-        ASSERT(tile instanceof Tile);
+        ASSERT(tile instanceof SpriteTile);
         const uvs = this.uvs.map(uv=>(vec3(tile.size.x*(1-uv.x)+tile.pos.x,uv.y*tile.size.y+tile.pos.y)));
         // todo, figure out why this is backwards
         //const uvs = this.uvs.map(uv=>uv.multiply(tile.size).add(tile.pos));
@@ -181,23 +184,22 @@ function pushGradient(pos, size, color, color2)
 function pushSprite(pos, size, color, tile, skew=0)
 {
     const mesh = quadMesh;
-    const flip = size.x < 0;
-    size = vec3(abs(size.x),size.y);
-    const points = mesh.points.map(p=>p.multiply(size).add(pos));
+    const points = mesh.points.map(p=>vec3(p.x*abs(size.x)+pos.x, p.y*size.y+pos.y,pos.z));
 
     const o = skew*size.y;
     points[0].x += o;
     points[1].x += o;
     if (tile)
     {
-        ASSERT(tile instanceof Tile);
-        if (flip)
+        ASSERT(tile instanceof SpriteTile);
+        if (size.x < 0)
         {
             tile.pos.x += tile.size.x;
             tile.size.x *= -1;
         }
 
-        const uvs = mesh.uvs.map(uv=>uv.multiply(tile.size).add(tile.pos));
+        const uvs = mesh.uvs.map(uv=>
+            vec3(uv.x*tile.size.x+tile.pos.x, uv.y*tile.size.y+tile.pos.y));
         glPushVertsCapped(points, 0, color, uvs);
     }
     else
@@ -210,11 +212,11 @@ function pushShadow(pos, xSize, zSize)
         return; // cull far shadows
 
     const color = rgb(0,0,0,.7)
-    const size = vec3(xSize,0,zSize);
-    const tile = getSpriteTile(vec3(1,0));
+    const tile = new SpriteTile(vec3(1,0));
     const mesh = shadowMesh;
-    const points = mesh.points.map(p=>vec3(p.x*size.x+pos.x,pos.y,p.z*size.z+pos.z));
-    const uvs = mesh.uvs.map(uv=>uv.multiply(tile.size).add(tile.pos));
+    const points = mesh.points.map(p=>vec3(p.x*xSize+pos.x,pos.y,p.z*zSize+pos.z));
+    const uvs = mesh.uvs.map(uv=>
+        vec3(uv.x*tile.size.x+tile.pos.x, uv.y*tile.size.y+tile.pos.y));
     glPushVertsCapped(points, 0, color, uvs);
 }
 

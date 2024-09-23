@@ -49,16 +49,17 @@ function initLevelInfos()
     LI.cloudHeight = .2;
     LI.sunHeight = .7;
     LI.billboardChance = .1 // less billboards in forest type areas
+    //LI.trafficDensity = .7; // less traffic in forest
 
     // trail through forest
     LI.turnChance = .7; // more small turns
     //LI.turnMin = 0;
     //LI.turnMax = .6;
     LI.bumpChance = .8;
-    LI.bumpFreqMin = .3;
+    LI.bumpFreqMin = .4;
     //LI.bumpFreqMax = .7;
     //LI.bumpScaleMin = 50;
-    LI.bumpScaleMax = 100;
+    LI.bumpScaleMax = 120;
 
     // Level 3 - desert - 
     // has long straight thin roads and tunnel
@@ -81,16 +82,16 @@ function initLevelInfos()
     LI.sideStreets = 1;
     LI.laneCount = 2;
     LI.hazardType = trackSprites.hazard_sand;
-    LI.hazardChance = .003;
+    LI.hazardChance = .005;
     LI.tunnel = trackSprites.tunnel2;
     LI.trafficDensity = .7; // less traffic in desert, only 2 lanes
-    LI.billboardRate = 91;
+    LI.billboardRate = 87;
     LI.billboardScale = 8;
 
     // flat desert
     //LI.turnChance = .5;
     LI.turnMin = .2;
-    LI.turnMax = .5;
+    LI.turnMax = .6;
     LI.bumpChance = 1;
     //LI.bumpFreqMin = 0;
     LI.bumpFreqMax = .2;
@@ -115,7 +116,7 @@ function initLevelInfos()
     LI.lineColor = hsl(0,0,1,.5);
     LI.sunHeight = .7;
     LI.hazardType = trackSprites.hazard_rocks;
-    LI.hazardChance = .001;
+    LI.hazardChance = .002;
     LI.trafficDensity = 1.5; // extra traffic through snow
 
     // snowy mountains
@@ -125,8 +126,8 @@ function initLevelInfos()
     LI.bumpChance = .8;
     LI.bumpFreqMin = .3;
     //LI.bumpFreqMax = .7;
-    LI.bumpScaleMin = 80;
-    LI.bumpScaleMax = 160;
+    LI.bumpScaleMin = 50;
+    LI.bumpScaleMax = 100;
 
     // Level 5 - canyon - 
     // has winding roads, hills, and sand onground
@@ -150,9 +151,8 @@ function initLevelInfos()
     LI.cloudHeight = .1;
     LI.sunColor = hsl(0,1,.7);
     //LI.laneCount = 3;
-    LI.hazardChance = .01;
     LI.billboardChance = .1 // less billboards in forest type areas
-    LI.trafficDensity = .7;
+    LI.trafficDensity = .7; // less traffic in canyon
 
     // rocky canyon
     LI.turnChance = 1; // must turn to block vision
@@ -219,17 +219,16 @@ function initLevelInfos()
     LI.horizonSpriteSize = 4;
     LI.sunHeight = 1.5;
     //LI.laneCount = 3;
-    LI.trafficDensity = .5;
+    //LI.trafficDensity = .7;
     LI.trackSideChance = 1; // more trees
-    LI.trackSideRate = 50;
 
     // thin road over hills in graveyard
     //LI.turnChance = .5;
     LI.turnMin = .1;
-    //LI.turnMax = .6;
-    //LI.bumpChance = .5;
-    LI.bumpFreqMin = .4;
-    LI.bumpFreqMax = .8;
+    LI.turnMax = .7;
+    LI.bumpChance = .7;
+    LI.bumpFreqMin = .3;
+    LI.bumpFreqMax = .7;
     LI.bumpScaleMin = 100;
     //LI.bumpScaleMax = 150;
 
@@ -244,7 +243,7 @@ function initLevelInfos()
         trackSprites.rock_huge2,
     ], trackSprites.rock_big, trackSprites.horizon_redMountains);
     LI.sceneryListBias = 5;
-    LI.trackSideRate = 20;
+    LI.trackSideRate = 25;
     LI.skyColorTop = hsl(0,1,.8);
     LI.skyColorBottom = hsl(.6,1,.6);
     LI.lineColor = hsl(0,0,0,0);
@@ -257,7 +256,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
     LI.hazardType = trackSprites.rock_big;
-    LI.hazardChance = 1;
+    LI.hazardChance = .2;
     LI.trafficDensity = 0;  // no other cars in jungle
 
     // bumpy jungle road 
@@ -338,7 +337,7 @@ function initLevelInfos()
     LI.sceneryListBias = 1;
     LI.groundColor = hsl(.2,.3,.5);
     LI.trackSideRate = LI.laneCount = LI.billboardChance = 0;
-    LI.sunHeight = .5;
+    LI.sunHeight = .7; // should match previous level
 }
 
 const getLevelInfo = (level) => testLevelInfo || levelInfoList[level|0] || levelInfoList[0];

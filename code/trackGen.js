@@ -11,7 +11,6 @@ function initTrackSprites()
     trackSprites = {};
 
     // trees
-    trackSprites.trees = [];
     trackSprites.tree_palm   = new TrackSprite(vec3(0,1),1500,.2,.1,.04);
     trackSprites.tree_oak    = new TrackSprite(vec3(1,1),2e3,.5,.06,.1);
     trackSprites.tree_stump  = new TrackSprite(vec3(2,1),1e3,.6,.04);
@@ -42,7 +41,6 @@ function initTrackSprites()
     trackSprites.tree_huge.shadowScale = .7;
 
     // grass and flowers
-    trackSprites.grasses = [];
     trackSprites.grass_plain     = new TrackSprite(vec3(0,3),500,.5,1);
     trackSprites.grass_plain.colorHSL = vec3(.3, .4, .5);
     trackSprites.grass_dead      = new TrackSprite(vec3(0,3),600,.3,1);
@@ -63,12 +61,12 @@ function initTrackSprites()
     // billboards 
     trackSprites.billboards = [];
     const PB = (s)=>trackSprites.billboards.push(s);
-    PB(trackSprites.sign_zzfx      = new TrackSprite(vec3(1,2),500,0,.02,.5,0));
-    PB(trackSprites.sign_js13k     = new TrackSprite(vec3(0,2),600,0,.02,1,0));
-    PB(trackSprites.sign_github    = new TrackSprite(vec3(2,2),750,0,.02,.5,0));
-    PB(trackSprites.sign_avalanche = new TrackSprite(vec3(7,2),600,0,.02,1,0));
-    PB(trackSprites.sign_harris    = new TrackSprite(vec3(4,2),300,0,.02,1,0));
     PB(trackSprites.sign_opGames   = new TrackSprite(vec3(5,2),600,0,.02,.5,0));
+    PB(trackSprites.sign_js13k     = new TrackSprite(vec3(0,2),600,0,.02,1,0));
+    PB(trackSprites.sign_zzfx      = new TrackSprite(vec3(1,2),500,0,.02,.5,0));
+    PB(trackSprites.sign_avalanche = new TrackSprite(vec3(7,2),600,0,.02,1,0));
+    PB(trackSprites.sign_github    = new TrackSprite(vec3(2,2),750,0,.02,.5,0));
+    PB(trackSprites.sign_harris    = new TrackSprite(vec3(4,2),300,0,.02,1,0));
     trackSprites.sign_frankForce   = new TrackSprite(vec3(3,2),500,0,.02,1,0);
     //PB(trackSprites.sign_dwitter   = new TrackSprite(vec3(6,2),550,0,.02,1,0));
     
@@ -197,7 +195,7 @@ class TrackSprite
         this.windScale = windScale;
         this.collideScale = collideScale;
         this.canMirror = canMirror; // allow mirroring
-        this.trackFace =          // face track if close
+        this.trackFace = 0;         // face track if close
         this.spriteYOffset = 0;     // how much to offset the sprite from the ground
         this.shadowScale = 1.2;
 
@@ -385,13 +383,9 @@ class TrackSegmentInfo
     }
 }
 
+// build the road with procedural generation
 function buildTrack()
 {
-    /////////////////////////////////////////////////////////////////////////////////////
-    // build the road with procedural generation
-    /////////////////////////////////////////////////////////////////////////////////////
-
-
     // set random seed & time
     random.setSeed(trackSeed);
     track = [];
@@ -405,6 +399,8 @@ function buildTrack()
     let currentNoiseFrequency = 0;
     let currentNoiseScale = 1;
     
+    let turn = 0;
+
     // generate the road
     const trackEnd = levelGoal*checkpointTrackSegments;
     const roadTransitionRange = testQuick?min(checkpointTrackSegments,500):500;
@@ -421,7 +417,6 @@ function buildTrack()
 
         const roadGenWidth = laneWidth/2*lerp(levelLerpPercent, levelInfoLast.laneCount, levelInfo.laneCount);
 
-        let turn = 0;
         let height = 0;
         let width = roadGenWidth;
 
@@ -477,7 +472,7 @@ function buildTrack()
             }
         }
 
-        turn = sectionTurn;
+        turn = lerp(.02,turn, sectionTurn); // smooth out turns
 
         // apply noise to height
         const noiseFrequency = currentNoiseFrequency 
@@ -491,7 +486,8 @@ function buildTrack()
         const noiseConstant = 20;
         height = noise1D(noisePos)*noiseConstant*noiseSize;
 
-        //turn = 0; height = 0;
+        //turn = .5; height = 0;
+        //turn = Math.sin(i/100)*.7;
         //height = noise1D(i/29)*400;turn =0; // jumps test
 
         // create track segment
