@@ -17,7 +17,6 @@ function initLevelInfos()
     LI.horizonSpriteSize = .5;
     //LI.tunnel = trackSprites.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
-    //LI.trafficDensity = .7; // less traffic at start
     
     // mostly straight with few well defined turns or bumps
     LI.turnChance = .6;
@@ -124,7 +123,8 @@ function initLevelInfos()
     LI.turnMin = .4;
     //LI.turnMax = .6;
     LI.bumpChance = .8;
-    LI.bumpFreqMin = .3;
+    LI.bumpFreqMin = .2;
+    LI.bumpFreqMax = .6;
     //LI.bumpFreqMax = .7;
     LI.bumpScaleMin = 50;
     LI.bumpScaleMax = 100;

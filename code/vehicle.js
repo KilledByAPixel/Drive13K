@@ -107,11 +107,11 @@ class Vehicle
         for(const v of vehicles)
         {
             // slow down if behind
-            const nextPos = v.pos.z + v.velocity.z;
             if (this != v)
-            if (this.pos.z < nextPos &&  this.pos.z > nextPos - 2e3)
+            if (this.pos.z < v.pos.z + 500 &&  this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
+                this.destroyed |= (this.pos.z >= v.pos.z); // get rid overlaps
                 ASSERT(v != playerVehicle);
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
                 this.isBraking = 20;
@@ -142,7 +142,7 @@ class Vehicle
         p.y += vehicleHeight;
         p.z = p.z - cameraOffset;
 
-        if (p.z < 0)
+        if (p.z < 0 && !freeCamMode)
         {
             // causes glitches if rendered
             return; // behind camera
@@ -291,7 +291,7 @@ class PlayerVehicle extends Vehicle
             }
         }
 
-        const hitBump=(amount = .98)=>
+        const hitBump=(amount = .97)=>
         {
             this.velocity.z *= amount;
             if (this.bumpTime < 0)
@@ -355,7 +355,7 @@ class PlayerVehicle extends Vehicle
             if (v != this && d.x < s.x && d.z < s.z)
             {
                 // collision
-                this.velocity.z = v.velocity.z*.7;
+                this.velocity.z = v.velocity.z*.8;
                 v.velocity.z = max(v.velocity.z, this.velocity.z*1.2); // push other car
                 this.velocity.x = 99*sign(this.pos.x-v.pos.x); // push away from car
                 playHitSound();
@@ -473,13 +473,11 @@ class PlayerVehicle extends Vehicle
             {
                 const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .45);
                 // extra boost at low speeds
-                const lowSpeedPercent = percent(this.velocity.z, 100, 0)**2;
-                this.velocity.z += accel * lerp(lowSpeedPercent, 1, 7);
+                const lowSpeedPercent = percent(this.velocity.z, 80, 0)**2;
+                this.velocity.z += accel * lerp(lowSpeedPercent, 1, 9);
             }
             else if (this.velocity.z < 30)
                 this.velocity.z *= .9; // slow to stop
-
-            this.velocity.z *= forwardDamping;
         }
         else
         {
@@ -490,7 +488,7 @@ class PlayerVehicle extends Vehicle
 
         {
             // clamp z velocity
-            this.velocity.z = max(0, this.velocity.z);
+            this.velocity.z = max(0, this.velocity.z*forwardDamping);
 
             // turning
             let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn * playerTurnControl;
@@ -574,7 +572,7 @@ class PlayerVehicle extends Vehicle
                             dp.x;  // push away from object
 
                         this.velocity.x = 99*sign(pushDirection);
-                        this.velocity.z *= .8;
+                        this.velocity.z *= .7;
                         playHitSound();
                     }
                 }

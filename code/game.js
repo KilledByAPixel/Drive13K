@@ -63,7 +63,7 @@ const drawDistance = 1e3;          // how many track segments to draw for scener
 const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
-const startCheckpointTime = 50;
+const startCheckpointTime = 45;
 const extraCheckpointTime = 40;
 const levelLerpRange = .1;
 const levelGoal = 10;
@@ -120,7 +120,7 @@ function gameStart()
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart || testLevel ? 0 : 4;
-    worldHeading = titleScreenMode ? rand(7) : .8;
+    worldHeading = titleScreenMode ? rand(7) : 1;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
