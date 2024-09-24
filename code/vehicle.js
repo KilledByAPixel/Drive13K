@@ -107,12 +107,11 @@ class Vehicle
         for(const v of vehicles)
         {
             // slow down if behind
-            if (this != v)
+            if (v != this && v != playerVehicle)
             if (this.pos.z < v.pos.z + 500 &&  this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
-                this.destroyed |= (this.pos.z >= v.pos.z); // get rid overlaps
-                ASSERT(v != playerVehicle);
+                this.destroyed |= (this.pos.z >= v.pos.z); // get rid of overlaps
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
                 this.isBraking = 20;
                 break;
@@ -372,6 +371,13 @@ class PlayerVehicle extends Vehicle
             playerInputTurn = gamepadStick(0).x;
             playerInputGas = gamepadIsDown(0) || gamepadIsDown(7);
             playerInputBrake = gamepadIsDown(1) || gamepadIsDown(2) || gamepadIsDown(3) || gamepadIsDown(6);
+
+            const analogGas = gamepadGetValue(7);
+            if (analogGas)
+                playerInputGas = analogGas;
+            const analogBrake = gamepadGetValue(6);
+            if (analogBrake)
+                playerInputBrake = analogBrake;
         }
 
         if (playerInputGas)
@@ -468,7 +474,7 @@ class PlayerVehicle extends Vehicle
 
             // update velocity
             if (playerInputBrake)
-                this.velocity.z -= playerBrake;
+                this.velocity.z -= playerBrake*playerInputBrake;
             else if (playerInputGas)
             {
                 // extra boost at low speeds
