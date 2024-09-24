@@ -83,7 +83,7 @@ function debugUpdate()
             keyIsDown('KeyE') - keyIsDown('KeyQ'),
             keyIsDown('KeyW') - keyIsDown('KeyS'));
 
-        const moveSpeed = 100;
+        const moveSpeed = keyIsDown('ShiftLeft') ? 500 : 100;
         const turnSpeed = 2;
         const moveDirection = input.rotateX(freeCamRot.x).rotateY(-freeCamRot.y);
         freeCamPos = freeCamPos.add(moveDirection.scale(moveSpeed));
