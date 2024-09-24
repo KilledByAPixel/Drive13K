@@ -265,9 +265,6 @@ function handleTouchGamepad(e)
     if (soundEnable && !audioContext)
         audioContext = new AudioContext; // create audio context
 
-    if (!isFullscreen())
-        toggleFullscreen();
-
     // clear touch gamepad input
     touchGamepadStick = vec3();
     touchGamepadButtons = [];
