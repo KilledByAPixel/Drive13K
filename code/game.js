@@ -40,8 +40,8 @@ let testDrive = 0;
 let freeCamMode = 0;
 let testLevelInfo;
 const testQuick = 0;
-const js13kBuild = 1;
-const js13kBuildLevel2 = 0;
+const js13kBuild = 1; // hacks made when building for js13k
+const js13kBuildLevel2 = 0; // if more space is needed for js13k
 
 ///////////////////////////////////////////////////
 
@@ -120,7 +120,7 @@ function gameStart()
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart || testLevel ? 0 : 4;
-    worldHeading = titleScreenMode ? rand(7) : 1;
+    worldHeading = titleScreenMode ? rand(7) : .9;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;

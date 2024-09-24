@@ -43,7 +43,7 @@ function drawRoad(zwrite)
     {
         const segmentIndex = cameraTrackSegment+i;
         segment1 = track[segmentIndex];    
-        if (!segment2)
+        if (!segment1 || !segment2)
         {
             segment2 = segment1;
             continue;

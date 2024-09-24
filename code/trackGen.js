@@ -12,10 +12,12 @@ function initTrackSprites()
 
     // trees
     trackSprites.tree_palm   = new TrackSprite(vec3(0,1),1500,.2,.1,.04);
+    trackSprites.tree_palm.trackFace = 1;
     trackSprites.tree_oak    = new TrackSprite(vec3(1,1),2e3,.5,.06,.1);
     trackSprites.tree_stump  = new TrackSprite(vec3(2,1),1e3,.6,.04);
     trackSprites.tree_dead   = new TrackSprite(vec3(3,1),800,.3,.03,.06);
     trackSprites.tree_pink   = new TrackSprite(vec3(4,1),1500,.3,.1,.04);
+    trackSprites.tree_pink.trackFace = 1;
     trackSprites.tree_bush   = new TrackSprite(vec3(5,1),1e3,.5,.1,.06);
     trackSprites.tree_fall   = new TrackSprite(vec3(6,1),1500,.3,.1,.1);
     //TB(trackSprites.tree_flower = new TrackSprite(vec3(7,1),2e3,.3,.05,200));
@@ -23,10 +25,7 @@ function initTrackSprites()
     trackSprites.tree_yellow    = new TrackSprite(vec3(5,3),1e3,.3,.06,.1)
     trackSprites.tree_huge    = new TrackSprite(vec3(3,1),1e4,.5,.1,.1)
     trackSprites.tree_huge.colorHSL = vec3(.8, 0, .5);
-
-    // must face track
-    trackSprites.tree_palm.trackFace = 
-    trackSprites.tree_pink.trackFace = 1;
+    trackSprites.tree_huge.shadowScale = 0;
 
     // smaller tree shadows
     trackSprites.tree_palm.shadowScale =
@@ -37,8 +36,7 @@ function initTrackSprites()
     trackSprites.tree_bush.shadowScale =
     trackSprites.tree_fall.shadowScale =
     trackSprites.tree_snow.shadowScale =
-    trackSprites.tree_yellow.shadowScale =
-    trackSprites.tree_huge.shadowScale = .7;
+    trackSprites.tree_yellow.shadowScale = .7;
 
     // grass and flowers
     trackSprites.grass_plain     = new TrackSprite(vec3(0,3),500,.5,1);
@@ -83,105 +81,101 @@ function initTrackSprites()
     trackSprites.rock_tall     = new TrackSprite(vec3(1,4),1e3,.3,0,.6,0);
     trackSprites.rock_big      = new TrackSprite(vec3(2,4),800,.2,0,.6,0);
     trackSprites.rock_huge     = new TrackSprite(vec3(1,4),5e3,.7,0,.6,0);
+    trackSprites.rock_huge.shadowScale = 0;
     trackSprites.rock_huge.colorHSL  = vec3(.08, 1, .8);
     trackSprites.rock_huge.hueRandomness = .01;
     trackSprites.rock_huge2     = new TrackSprite(vec3(2,4),8e3,.5,0,.25,0);
+    trackSprites.rock_huge2.shadowScale = 0;
     trackSprites.rock_huge2.colorHSL  = vec3(.05, 1, .8);
     trackSprites.rock_huge2.hueRandomness = .01;
     trackSprites.rock_huge3     = new TrackSprite(vec3(2,4),8e3,.7,0,.5,0);
+    trackSprites.rock_huge3.shadowScale = 0;
     trackSprites.rock_huge3.colorHSL  = vec3(.05, 1, .8);
     trackSprites.rock_huge3.hueRandomness = .01;
     trackSprites.rock_weird      = new TrackSprite(vec3(2,4),5e3,.5,0,1,0);
+    trackSprites.rock_weird.shadowScale = 0;
     trackSprites.rock_weird.colorHSL  = vec3(.8, 1, .8);
     trackSprites.rock_weird.hueRandomness = .2;
     trackSprites.rock_weird2     = new TrackSprite(vec3(1,4),1e3,.5,0,.5,0);
     trackSprites.rock_weird2.colorHSL  = vec3(0, 0, .2);
     trackSprites.tunnel1     = new TrackSprite(vec3(6,4),1e4,.0,0,0,0);
+    trackSprites.tunnel1.shadowScale = 0;
     trackSprites.tunnel1.colorHSL  = vec3(.05, 1, .8);
     trackSprites.tunnel1.tunnelArch = 1;
     trackSprites.tunnel2     = new TrackSprite(vec3(7,4),5e3,0,0,0,0);
+    trackSprites.tunnel2.shadowScale = 0;
     trackSprites.tunnel2.colorHSL  = vec3(0, 0, .1);
     trackSprites.tunnel2.tunnelLong = 1;
     trackSprites.tunnel2Front     = new TrackSprite(vec3(7,4),5e3,0,0,0,0);
+    trackSprites.tunnel2Front.shadowScale = 0;
     trackSprites.tunnel2Front.colorHSL  = vec3(0,0,.8);
     //trackSprites.tunnel2_rock         = new TrackSprite(vec3(6,6),1e4,.2,0,.5,0);
     //trackSprites.tunnel2_rock.colorHSL = vec3(.15, .5, .8);
 
     // hazards
     trackSprites.hazard_rocks      = new TrackSprite(vec3(3,4),600,.2,0,.9);
+    trackSprites.hazard_rocks.shadowScale = 0;
+    trackSprites.hazard_rocks.isBump = 1;
+    trackSprites.hazard_rocks.spriteYOffset = -.02;
     trackSprites.hazard_sand      = new TrackSprite(vec3(4,4),600,.2,0,.9);
-    trackSprites.hazard_rocks.isBump = 
+    trackSprites.hazard_sand.shadowScale = 0;
     trackSprites.hazard_sand.isSlow = 1;
-    trackSprites.hazard_rocks.spriteYOffset =
     trackSprites.hazard_sand.spriteYOffset = -.02;
     //trackSprites.hazard_snow     = new TrackSprite(vec3(6,6),500,.1,0,300,0);
     //trackSprites.hazard_snow.isSlow = 1;
 
     // special sprites
     trackSprites.water            = new TrackSprite(vec3(5,4),6e3,.5,1);
-    trackSprites.sign_start       = new TrackSprite(vec3(5,0),2300,0,.01,0,0);
+    trackSprites.water.shadowScale = 0;
+    trackSprites.sign_start       = new TrackSprite(vec3(1,6),2300,0,.01,0,0);
+    trackSprites.sign_start.shadowScale = 0;
     trackSprites.sign_goal        = new TrackSprite(vec3(0,6),2300,0,.01,0,0);
+    trackSprites.sign_goal.shadowScale = 0;
     trackSprites.sign_checkpoint1 = new TrackSprite(vec3(6,0),1e3,0,.01,0,0);
+    trackSprites.sign_checkpoint1.shadowScale = 0;
     trackSprites.sign_checkpoint2 = new TrackSprite(vec3(7,0),1e3,0,.01,0,0);
+    trackSprites.sign_checkpoint2.shadowScale = 0;
     trackSprites.telephonePole    = new TrackSprite(vec3(0,4),1800,0,0,.03,0);
     //trackSprites.parts_girder  = new TrackSprite(vec3(0,6),500,0,.05,30,0);
     trackSprites.telephonePole.shadowScale = .3;
     trackSprites.grave_stone      = new TrackSprite(vec3(2,6),500,.4,.05,.5,0);
     trackSprites.grave_stone.lightnessRandomness = .5;
     trackSprites.light_tunnel      = new TrackSprite(vec3(0,0),200,0,0,0,0);
+    trackSprites.light_tunnel.shadowScale = 0;
 
     // horizon sprites
     trackSprites.horizon_city           = new TrackSprite(vec3(3,6),0,0,0,0,1);
     trackSprites.horizon_city.hueRandomness = 
-        trackSprites.horizon_city.lightnessRandomness = .1;
+        trackSprites.horizon_city.lightnessRandomness = .15;
     trackSprites.horizon_city.colorHSL = vec3(1); // vary color
 
+    trackSprites.horizon_mountains      = new TrackSprite(vec3(7,6));
+    trackSprites.horizon_mountains.colorHSL = vec3(0, 0, .7);
+    trackSprites.horizon_mountains.canMirror = 0;
     trackSprites.horizon_islands        = new TrackSprite(vec3(7,6));
     trackSprites.horizon_islands.colorHSL = vec3(.25, .5, .6);
+    trackSprites.horizon_islands.canMirror = 0;
     trackSprites.horizon_redMountains   = new TrackSprite(vec3(7,6));
     trackSprites.horizon_redMountains.colorHSL = vec3(.05, .7, .7);
+    trackSprites.horizon_redMountains.canMirror = 0;
     trackSprites.horizon_brownMountains = new TrackSprite(vec3(7,6));
     trackSprites.horizon_brownMountains.colorHSL = vec3(.1, .5, .6);
+    trackSprites.horizon_brownMountains.canMirror = 0;
     trackSprites.horizon_smallMountains = new TrackSprite(vec3(6,6));
     trackSprites.horizon_smallMountains.colorHSL = vec3(.1, .5, .6);
+    trackSprites.horizon_smallMountains.canMirror = 0;
     trackSprites.horizon_desert         = new TrackSprite(vec3(6,6));
     trackSprites.horizon_desert.colorHSL = vec3(.15, .5, .8);
+    trackSprites.horizon_desert.canMirror = 0;
     trackSprites.horizon_snow           = new TrackSprite(vec3(7,6));
     trackSprites.horizon_snow.colorHSL  = vec3(0,0,1);
+    trackSprites.horizon_snow.canMirror = 0;
     trackSprites.horizon_graveyard      = new TrackSprite(vec3(6,6));
     trackSprites.horizon_graveyard.colorHSL = vec3(.2, .4, .8);
+    trackSprites.horizon_graveyard.canMirror = 0;
     trackSprites.horizon_weird          = new TrackSprite(vec3(7,6));
     trackSprites.horizon_weird.colorHSL = vec3(.7, .5, .6);
-
-    // no mirror on horizon sprites
-    trackSprites.horizon_islands.canMirror = 0;
-    trackSprites.horizon_redMountains.canMirror = 0;
-    trackSprites.horizon_brownMountains.canMirror = 0;
-    trackSprites.horizon_smallMountains.canMirror = 0;
-    trackSprites.horizon_desert.canMirror = 0;
-    trackSprites.horizon_snow.canMirror = 0;
-    trackSprites.horizon_graveyard.canMirror = 0;
     trackSprites.horizon_weird.canMirror = 0;
-
-    // no shadow on these sprites
-    ///trackSprites.tunnel2_rock.shadowScale = 0;
-    trackSprites.light_tunnel.shadowScale = 0;
-    trackSprites.hazard_rocks.shadowScale = 0;
-    trackSprites.hazard_sand.shadowScale = 0;
-    //trackSprites.hazard_snow.shadowScale = 0;
-    trackSprites.tunnel1.shadowScale = 0;
-    trackSprites.tunnel2.shadowScale = 0;
-    trackSprites.tunnel2Front.shadowScale = 0;
-    trackSprites.water.shadowScale = 0;
-    trackSprites.rock_huge.shadowScale = 0;
-    trackSprites.rock_huge2.shadowScale = 0;
-    trackSprites.rock_huge3.shadowScale = 0;
-    trackSprites.rock_weird.shadowScale = 0;
-    trackSprites.tree_huge.shadowScale = 0;
-    trackSprites.sign_start.shadowScale = 0;
-    trackSprites.sign_goal.shadowScale = 0;
-    trackSprites.sign_checkpoint1.shadowScale = 0;
-    trackSprites.sign_checkpoint2.shadowScale = 0;
 }
 
 // a sprite that can be placed on the track
@@ -252,8 +246,8 @@ class TrackSegment
 {
     constructor(segmentIndex,offset,width)
     {
-        if (segmentIndex > levelGoal*checkpointTrackSegments)
-            width = 0;
+        if (segmentIndex >= levelGoal*checkpointTrackSegments)
+            width = 0; // no track after end
 
         this.offset = offset;
         this.width = width;
@@ -265,7 +259,6 @@ class TrackSegment
         const level = this.level = testLevelInfo ? testLevelInfo.level : levelFloat|0;
         const levelInfo = getLevelInfo(level);
         const levelInfoNext = getLevelInfo(levelFloat+1);
-        //const levelLerpPercent = percent(levelFloat%1, 0, levelLerpRange);
         const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
 
         const checkpointLine = segmentIndex > 25 && segmentIndex < 30
@@ -428,10 +421,9 @@ function buildTrack()
         isBetweenLevels |= startOfTrack; // start of track
         //const nextCheckpoint = (level+1)*checkpointTrackSegments;
 
-        if (isBetweenLevels || i > trackEnd - 500) // straight at end
+        if (isBetweenLevels)
         {
             // transition at start or end of level
-            // reset stuff
             sectionXEndDistance = sectionYEndDistance = sectionTurn = 0;
         }
         else
@@ -472,6 +464,9 @@ function buildTrack()
             }
         }
 
+        if (i > trackEnd - 500)
+            sectionTurn = 0; // no turns at end
+
         turn = lerp(.02,turn, sectionTurn); // smooth out turns
 
         // apply noise to height
@@ -488,7 +483,7 @@ function buildTrack()
 
         //turn = .5; height = 0;
         //turn = Math.sin(i/100)*.7;
-        //height = noise1D(i/29)*400;turn =0; // jumps test
+        //height = noise1D(i/29)*-1700;turn =0; // jumps test
 
         // create track segment
         const o = vec3(turn, height, i*trackSegmentLength);

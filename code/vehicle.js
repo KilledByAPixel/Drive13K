@@ -291,7 +291,7 @@ class PlayerVehicle extends Vehicle
             }
         }
 
-        const hitBump=(amount = .97)=>
+        const hitBump=(amount = .98)=>
         {
             this.velocity.z *= amount;
             if (this.bumpTime < 0)
@@ -471,10 +471,14 @@ class PlayerVehicle extends Vehicle
                 this.velocity.z -= playerBrake;
             else if (playerInputGas)
             {
-                const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .45);
                 // extra boost at low speeds
-                const lowSpeedPercent = percent(this.velocity.z, 80, 0)**2;
-                this.velocity.z += accel * lerp(lowSpeedPercent, 1, 9);
+                const lowSpeedPercent = percent(this.velocity.z, 100, 0)**2;
+                const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .5)
+                    * lerp(lowSpeedPercent, 1, 7);
+
+                // apply acceleration in angle of road
+                const accelVec = vec3(0,0,accel).rotateX(trackSegment.pitch);
+                this.velocity = this.velocity.add(accelVec);
             }
             else if (this.velocity.z < 30)
                 this.velocity.z *= .9; // slow to stop

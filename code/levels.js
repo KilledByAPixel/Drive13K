@@ -183,6 +183,8 @@ function initLevelInfos()
     LI.billboardRate = 23; // more billboards in city
     LI.billboardChance = .5
     LI.horizonSpriteSize = 1;
+    if (!js13kBuildLevel2)
+        LI.horizonFlipChance = .3;
     LI.sunHeight = .5;
     LI.sunColor = hsl(.15,1,.8);
     LI.sideStreets = 1;
@@ -304,16 +306,16 @@ function initLevelInfos()
         trackSprites.grass_flower1,
         trackSprites.rock_huge2,
         trackSprites.rock_huge,
-    ], trackSprites.tree_pink);
-    LI.trackSideRate = 30;
+    ], trackSprites.tree_pink, trackSprites.horizon_mountains);
+    LI.trackSideRate = 21;
     LI.skyColorTop = hsl(.2,1,.9);
     LI.skyColorBottom = hsl(.55,1,.5);
     LI.roadColor = hsl(0,0,.1);
     LI.groundColor = hsl(.1,.5,.7);
     LI.cloudColor = hsl(0,0,1,.5);
-    LI.sunHeight = .7;
     LI.tunnel = trackSprites.tunnel1;
-    LI.horizonSpriteSize = 0; // no horizon
+    LI.sunHeight = .6;
+    LI.horizonSpriteSize = .5;
 
     // mountains, most difficult level
     LI.turnChance = .8;
@@ -333,11 +335,15 @@ function initLevelInfos()
         trackSprites.grass_plain, 
         trackSprites.tree_oak,
         trackSprites.tree_bush,
-    ], trackSprites.tree_oak);
+    ], trackSprites.tree_oak, trackSprites.horizon_mountains);
     LI.sceneryListBias = 1;
     LI.groundColor = hsl(.2,.3,.5);
-    LI.trackSideRate = LI.laneCount = LI.billboardChance = 0;
-    LI.sunHeight = .7; // should match previous level
+    LI.trackSideRate = LI.billboardChance = 0;
+    LI.bumpScaleMin = 1e3; // hill in the distance
+
+    // match settings to previous level
+    LI.sunHeight = .6;
+    LI.horizonSpriteSize = .5;
 }
 
 const getLevelInfo = (level) => testLevelInfo || levelInfoList[level|0] || levelInfoList[0];

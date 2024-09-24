@@ -80,14 +80,22 @@ function drawSky()
         const p = i/99;
         const ltp = lerp(p,1,2);
         const ltt = .1;
-        const levelTransition = levelFloat<.5 ? 1 : levelPercent < ltt ? (levelPercent/ltt)**ltp : 
+        const levelTransition = levelFloat<.5 || levelFloat > levelGoal-.5 ? 1 : levelPercent < ltt ? (levelPercent/ltt)**ltp : 
                 levelPercent > 1-ltt ? 1-((levelPercent-1)/ltt+1)**ltp : 1;
             
         const parallax = lerp(p, 1.01, 1.07);
         const s = random.float(1e2,2e2)*horizonSpriteSize;
         const size = vec3(random.float(1,2)*(horizonSprite.canMirror ? s*random.sign() : s),s,s);
         const x = mod(worldHeading*headingScale/parallax + random.float(range),range) - range/2;
-        const y = lerp(levelTransition, -s*1.5, random.float(s));
+
+        const yMax = size.y*.75;
+        if (!js13kBuildLevel2 && levelInfo.horizonFlipChance)
+        {
+            // horizon spites that can be flipped vertically
+            if (random.bool(levelInfo.horizonFlipChance))
+                size.y *= -1;
+        }
+        const y = lerp(levelTransition, -yMax*1.5, yMax);
         const c = horizonSprite.getRandomSpriteColor();
         pushSprite(cameraPos.add(vec3( x, y, skyZ)), size, c, horizonSpriteTile);
     }
