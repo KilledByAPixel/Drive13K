@@ -17,7 +17,6 @@ Potential improvements
 - the colors could be passed in as 32 bit integers rather then vec4s
 - specular lighting would also be pretty easy to include
 - the fog calculation could possibly be moved to the vertex shader
-- antialiasing could be enabled if tiles have more space to prevent bleeding
 - a mip map of the passed in texture could be auto generated for smoother scaling
 - additive blending would also be easy to implement
 - there should be an easier way to set the fog range
@@ -38,9 +37,8 @@ function glInit()
 {
     // create the canvas
     const hasAlpha = false;     // there should be no alpha for the background texture
-    const hasAntialias = false; // anti-aliasing can cause texture bleading from neighboring tiles
     document.body.appendChild(glCanvas = document.createElement('canvas'));
-    glContext = glCanvas.getContext('webgl2', {alpha: hasAlpha, antialias: hasAntialias});
+    glContext = glCanvas.getContext('webgl2', {alpha: hasAlpha});
     ASSERT(glContext, 'Failed to create WebGL canvas!');
 
     // epxeriment with adding specular lighting to the scene

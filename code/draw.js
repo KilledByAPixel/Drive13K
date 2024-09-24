@@ -62,11 +62,11 @@ function drawInit()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+const bleedPixels = 8;
 class SpriteTile
 {
     constructor(pos)
     {
-        const bleedPixels = 2;
         this.pos = vec3(
             (pos.x * generativeTileSize + bleedPixels) * generativeCanvasSizeInverse,
             (pos.y * generativeTileSize + bleedPixels) * generativeCanvasSizeInverse,
@@ -184,22 +184,27 @@ function pushGradient(pos, size, color, color2)
 function pushSprite(pos, size, color, tile, skew=0)
 {
     const mesh = quadMesh;
-    const points = mesh.points.map(p=>vec3(p.x*abs(size.x)+pos.x, p.y*size.y+pos.y,pos.z));
+    const points = mesh.points.map(p=>vec3(p.x*abs(size.x)+pos.x, p.y*abs(size.y)+pos.y,pos.z));
 
+    // apply skew
     const o = skew*size.y;
     points[0].x += o;
     points[1].x += o;
+
+    // apply texture
     if (tile)
     {
         ASSERT(tile instanceof SpriteTile);
+        let tilePosX  = tile.pos.x;
+        let tilePosY  = tile.pos.y;
+        let tileSizeX = tile.size.x;
+        let tileSizeY = tile.size.y;
         if (size.x < 0)
-        {
-            tile.pos.x += tile.size.x;
-            tile.size.x *= -1;
-        }
-
+            tilePosX -= tileSizeX *= -1;
+        if (size.y < 0)
+            tilePosY -= tileSizeY *= -1;
         const uvs = mesh.uvs.map(uv=>
-            vec3(uv.x*tile.size.x+tile.pos.x, uv.y*tile.size.y+tile.pos.y));
+            vec3(uv.x*tileSizeX+tilePosX, uv.y*tileSizeY+tilePosY));
         glPushVertsCapped(points, 0, color, uvs);
     }
     else

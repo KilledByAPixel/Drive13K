@@ -204,9 +204,7 @@ function generateTetures()
         setupContext(3,0);
         drawLicensePlate();
         setupContext(4,0);
-        text('13',.5,.6,1,1,.04,undefined,undefined,900); 
-        setupContext(5,0);
-        drawStartSign('START');
+        text(13,.5,.6,1,1,.04,undefined,undefined,900);
         setupContext(6,0);
         drawCheckpointSign(1);
         setupContext(7,0);
@@ -550,6 +548,8 @@ function generateTetures()
         // more stuff
         setupContext(0,6);
         drawStartSign('GOAL');
+        setupContext(1,6);
+        drawStartSign('START');
         /*setupContext(1,6);
         {
             // grave cross
@@ -578,23 +578,47 @@ function generateTetures()
             drawRock(.5,.2,.7,0.003,.9,1,undefined,undefined,undefined,undefined,vec3(0,0,2));
         }*/
         setupContext(3,6);
+        if (js13kBuildLevel2)
         {
             // city building
             color(BLACK);
-            rect(.5,.6,.3,1);
+            rect(.5,.57,.3,1);
             for(let i=19; i--;)
-                rect(.5+random.floatSign(.14),.1,random.float(.02),random.float(.1));
+                rect(.5+random.floatSign(.15),random.float(.5,.6),i/2e3,1);
 
-            for(let j=33; j--;)
+            for(let j=30; j--;)
             for(let i=9; i--;)
             {
                 const w = .03;
-                const x = .37+i*w;
-                const y = .13+j*w;
-                color(hsl(random.float(.1,.15),random.float(.5,1),(i&j)%2?0:random.float(.3,1)**3));
+                const x = .38+i*w;
+                const y = .1+j*w;
+                color(hsl(random.float(.07,.15),random.float(.5,1),(i&j)%2?0:random.float(.3,1)**3));
                 rect(x,y,w*.7,w*.7);
             }
         }
+        else
+        {
+            // city building
+            color(BLACK);
+            for(let i=19; i--;)
+            {
+                const p = i/19;
+                const h = lerp(p,.9,.86)
+                rect(lerp(p,.36,.64),.07+h/2,.03,h);
+                rect(.5-random.floatSign(.14),.5,random.float(.02),random.float(.85,1));
+            }
+
+            for(let j=28; j--;)
+            for(let i=9; i--;)
+            {
+                const w = .03;
+                const x = .372+i*w;
+                const y = .1+j*w;
+                color(hsl(random.float(.07,.15),random.float(.5,1),(i&j)%2?0:random.float(.3,1)**3));
+                rect(x,y,w*.7,w*.7);
+            }
+        }
+        
         /*setupContext(5,6);
         {
             // green mountains
@@ -691,10 +715,11 @@ function generateTetures()
             debugGenerativeCanvas = 1
         }
         // set context transform to go from 0-1 to 0-size
+        const b = bleedPixels;
         const w = generativeTileSize;
         context.restore();
         context.save();
-        context.setTransform(w,0,0,w,w*x,w*y);
+        context.setTransform(w-2*b,0,0,w-2*b,w*x+b,w*y+b);
         context.beginPath();
         context.rect(0,0,1,1);
         context.clip();
