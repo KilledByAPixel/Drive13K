@@ -21,10 +21,12 @@ function drawHUD()
             // draw logo
             const text = j?'DR1V3N':'WILD';
             const pos = vec3(.5,.3-j*.15).multiply(mainCanvasSize);
-            const size = mainCanvasSize.y/9;
+            let size = mainCanvasSize.y/9;
             const weight = 900;
             const style = 'italic';
             const font = 'arial';
+            if (enhancedMode && getAspect() < .6)
+                size = mainCanvasSize.x/5;
                     
             const context = mainContext;
             context.strokeStyle = BLACK;
@@ -45,7 +47,7 @@ function drawHUD()
                     continue;
                 }
 
-                const x = pos.x+w/2-totalWidth/2;
+                const x = pos.x+w/3-totalWidth/2;
                 for(let f = 2;f--;)
                 {
                     const o = f*mainCanvasSize.y/99;
@@ -63,10 +65,9 @@ function drawHUD()
                 drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
             drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
-        else if (enhancedMode)
+        else if (enhancedMode && !isTouchDevice)
         {
-            const s = isTouchDevice ? 'TOUCH TO DRIVE' : 'CLICK TO PLAY';
-            drawHUDText(s, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            drawHUDText('CLICK TO PLAY', vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
         }
     }
     else if (startCountdownTimer.active() || startCountdown)
@@ -97,7 +98,12 @@ function drawHUD()
             // big center checkpoint time
             const c = checkpointTimeLeft < 4 ? RED : checkpointTimeLeft < 11 ? YELLOW : WHITE;
             const t = checkpointTimeLeft|0;
-            drawHUDText(t, vec3(.5,.13), .14, c, undefined,undefined,900,undefined,undefined,.04);
+        
+            let y=.13, s=.14;
+            if (enhancedMode && getAspect() < .6)
+                y=.14, s=.1;
+
+            drawHUDText(t, vec3(.5,y), s, c, undefined,undefined,900,undefined,undefined,.04);
         }
 
         if (!freeRide)

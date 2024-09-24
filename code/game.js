@@ -288,7 +288,7 @@ function gameUpdate(frameTimeMS=0)
         }
         else
         {
-            const minAspect = .5, maxAspect = 3;
+            const minAspect = .45, maxAspect = 3;
             const correctedWidth = innerAspect > maxAspect ? innerHeight * maxAspect :
                     innerAspect < minAspect ? innerHeight * minAspect : innerWidth;
             if (pixelate)
@@ -387,6 +387,7 @@ function gameUpdate(frameTimeMS=0)
 
     glPreRender(mainCanvasSize);
     drawScene();
+    touchGamepadRender();
     drawHUD();
     debugDraw();
 }

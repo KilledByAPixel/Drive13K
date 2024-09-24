@@ -15,6 +15,8 @@ const GRAY   = rgb(.5,.5,.5);
 
 ///////////////////////////////////////////////////////////////////////////////
 
+const getAspect =()=> mainCanvasSize.x/mainCanvasSize.y;
+
 function drawInit()
 {
     {
@@ -237,11 +239,16 @@ function isFullscreen() { return !!document.fullscreenElement; }
  *  @memberof Draw */
 function toggleFullscreen()
 {
+    const element = document.body;
     if (isFullscreen())
     {
         if (document.exitFullscreen)
             document.exitFullscreen();
     }
-    else if (document.body.requestFullscreen)
-            document.body.requestFullscreen();
+    else if (element.requestFullscreen)
+        element.requestFullscreen();
+    else if (element.webkitRequestFullscreen)
+        element.webkitRequestFullscreen();
+    else if (element.mozRequestFullScreen)
+      element.mozRequestFullScreen();
 }

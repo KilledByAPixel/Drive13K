@@ -29,7 +29,7 @@ function enhancedModeUpdate()
     if (!enhancedMode)
         return;
 
-    if (autoPause && !document.hasFocus() && !titleScreenMode)
+    if (autoPause && !document.hasFocus() && !titleScreenMode && !isTouchDevice)
         paused = 1; // pause when losing focus
 
     if (keyWasPressed('Home')) // dev mode
