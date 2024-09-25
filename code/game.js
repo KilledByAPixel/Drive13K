@@ -58,7 +58,7 @@ let autoFullscreen = 0;
 // setup
 const laneWidth = 1400;            // how wide is track
 const trackSegmentLength = 100;    // length of each segment
-const drawDistance = 1e3;          // how many track segments to draw for scenery
+const drawDistance = 1e3;          // how many track segments to draw
 const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
@@ -177,7 +177,7 @@ function gameUpdateInternal()
             startCountdownTimer.set(1);
         }
 
-        if (gameOverTimer.get() > 1 && (mouseWasPressed(0) || isUsingGamepad && gamepadWasPressed(0)) || gameOverTimer.get() > 9)
+        if (gameOverTimer.get() > 1 && (mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9))) || gameOverTimer.get() > 9)
         {
             // go back to title screen after a while
             titleScreenMode = 1;
@@ -305,7 +305,7 @@ function gameUpdate(frameTimeMS=0)
                 || mouseWasPressed(0) || isUsingGamepad && (gamepadWasPressed(0)||gamepadWasPressed(9)))
             {
                 paused = 0;
-                sound_checkpoint.play();
+                sound_checkpoint.play(.5);
             }
             if (keyWasPressed('Escape') || isUsingGamepad && gamepadWasPressed(8))
             {
@@ -353,10 +353,11 @@ function gameUpdate(frameTimeMS=0)
     
         if (debug && !titleScreenMode)
         if (keyWasPressed('KeyP') || isUsingGamepad && gamepadWasPressed(9))
+        if (!gameOverTimer.isSet())
         {
             // update pause
             paused = 1;
-            sound_checkpoint.play(1,.5);
+            sound_checkpoint.play(.5,.5);
         }
         
         updateCamera();

@@ -265,8 +265,15 @@ let touchGamepadTimer = new Timer, touchGamepadButtons, touchGamepadStick, touch
 // special handling for virtual gamepad mode
 function handleTouchGamepad(e)
 {
-    if (soundEnable && !audioContext)
-        audioContext = new AudioContext; // create audio context
+    if (soundEnable)
+    {
+        if (!audioContext)
+            audioContext = new AudioContext; // create audio context
+            
+        // fix stalled audio
+        if (audioContext.state != 'running')
+            audioContext.resume();
+    }
 
     // clear touch gamepad input
     touchGamepadStick = vec3();
