@@ -6,6 +6,28 @@ function drawCars()
         v.draw();
 }
 
+function updateCars()
+{
+    // spawn in more vehicles
+    const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
+    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
+    const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
+    const trafficLevelInfo = getLevelInfo(trafficLevel);
+    const trafficDensity = trafficLevelInfo.trafficDensity;
+    const maxVehicleCount = 10*trafficDensity;
+    if (trafficDensity)
+    if (vehicles.length<maxVehicleCount && !gameOverTimer.isSet() && !vehicleSpawnTimer.active())
+    {
+        const spawnOffset = playerIsSlow ? -1300 : rand(5e4,6e4);
+        spawnVehicle(playerVehicle.pos.z + spawnOffset);
+        vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
+    }
+
+    for(const v of vehicles)
+        v.update();
+    vehicles = vehicles.filter(o=>!o.destroyed);
+}
+
 function spawnVehicle(z)
 {
     if (!aiVehicles)
@@ -61,7 +83,7 @@ class Vehicle
     {
         const levelInfo = getLevelInfo(this.pos.z/checkpointDistance);
         const lane = levelInfo.laneCount - 1 - this.lane; // flip side
-        return max(120,120 + lane*22); // faster on left
+        return max(120,120 + lane*20); // faster on left
     }
 
     getLaneOffset()
@@ -108,10 +130,11 @@ class Vehicle
         {
             // slow down if behind
             if (v != this && v != playerVehicle)
-            if (this.pos.z < v.pos.z + 500 &&  this.pos.z > v.pos.z - 2e3)
+            if (this.pos.z < v.pos.z + (js13kBuildLevel2?0:500) &&  this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
-                this.destroyed |= (this.pos.z >= v.pos.z); // get rid of overlaps
+                if (!js13kBuildLevel2)
+                    this.destroyed |= (this.pos.z >= v.pos.z); // get rid of overlaps
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
                 this.isBraking = 20;
                 break;
@@ -290,7 +313,7 @@ class PlayerVehicle extends Vehicle
             }
         }
 
-        const hitBump=(amount = .98)=>
+        const hitBump=(amount = .97)=>
         {
             this.velocity.z *= amount;
             if (this.bumpTime < 0)
@@ -318,6 +341,8 @@ class PlayerVehicle extends Vehicle
             ++playerLevel;
             nextCheckpointDistance += checkpointDistance;
             checkpointTimeLeft += extraCheckpointTime;
+            if (enhancedMode)
+                checkpointTimeLeft = min(60,checkpointTimeLeft);
                 
             if (playerLevel >= levelGoal && !gameOverTimer.isSet())
             {
@@ -354,8 +379,8 @@ class PlayerVehicle extends Vehicle
             if (v != this && d.x < s.x && d.z < s.z)
             {
                 // collision
-                this.velocity.z = v.velocity.z*.8;
-                v.velocity.z = max(v.velocity.z, this.velocity.z*1.2); // push other car
+                this.velocity.z = v.velocity.z/2;
+                v.velocity.z = max(v.velocity.z, this.velocity.z*1.5); // push other car
                 this.velocity.x = 99*sign(this.pos.x-v.pos.x); // push away from car
                 playHitSound();
             }
@@ -414,7 +439,7 @@ class PlayerVehicle extends Vehicle
         {
             --this.engineTime;
             const f = sound_velocity;
-            sound_engine.play(.1,f*f/8e3+rand(.1));
+            sound_engine.play(.1,f/40+rand(.1));
         }
 
         // player settings
@@ -423,9 +448,9 @@ class PlayerVehicle extends Vehicle
         const gravity = -3;           // gravity to apply in y axis
         const lateralDamping = .5;    // dampen player x speed
         const playerAccel = 1;        // player acceleration
-        const playerBrake = 4;        // player acceleration when braking
+        const playerBrake = 3;        // player acceleration when braking
         const playerMaxSpeed = 200;   // limit max player speed
-        const speedPercent = clamp(this.velocity.z/playerMaxSpeed);
+        const speedPercent = this.velocity.z/playerMaxSpeed;
 
         // update physics
         this.velocity.y += gravity;
@@ -478,13 +503,15 @@ class PlayerVehicle extends Vehicle
             else if (playerInputGas)
             {
                 // extra boost at low speeds
-                const lowSpeedPercent = percent(this.velocity.z, 100, 0)**2;
+                //const lowSpeedPercent = this.velocity.z**2/1e4;                
+                const lowSpeedPercent = percent(this.velocity.z, 90, 0)**2;
                 const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .5)
-                    * lerp(lowSpeedPercent, 1, 7);
+                    * lerp(lowSpeedPercent, 1, 6);
 
                 // apply acceleration in angle of road
-                const accelVec = vec3(0,0,accel).rotateX(trackSegment.pitch);
-                this.velocity = this.velocity.add(accelVec);
+                //const accelVec = vec3(0,0,accel).rotateX(trackSegment.pitch);
+                //this.velocity = this.velocity.add(accelVec);
+                this.velocity.z += accel;
             }
             else if (this.velocity.z < 30)
                 this.velocity.z *= .9; // slow to stop
@@ -496,8 +523,8 @@ class PlayerVehicle extends Vehicle
             this.onGround = 0;
         }
 
-        {
-            // clamp z velocity
+        { 
+            // dampen z velocity & clamp
             this.velocity.z = max(0, this.velocity.z*forwardDamping);
 
             // turning

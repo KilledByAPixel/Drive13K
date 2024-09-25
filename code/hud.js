@@ -131,7 +131,7 @@ function drawHUD()
 
     if (debugInfo&&!titleScreenMode) // mph
     {
-        const mph = playerVehicle.velocity.z>>1;
+        const mph = playerVehicle.velocity.z|0;
         const mphPos = vec3(.01,.95);
         drawHUDText(mph+' MPH', mphPos, .08, undefined,undefined,'left',900,'italic');
     }

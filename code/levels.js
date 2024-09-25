@@ -17,6 +17,7 @@ function initLevelInfos()
     LI.horizonSpriteSize = .5;
     //LI.tunnel = trackSprites.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
+    LI.trafficDensity = .7; // less traffic start
     
     // mostly straight with few well defined turns or bumps
     LI.turnChance = .6;
@@ -58,7 +59,7 @@ function initLevelInfos()
     LI.bumpFreqMin = .4;
     //LI.bumpFreqMax = .7;
     //LI.bumpScaleMin = 50;
-    LI.bumpScaleMax = 120;
+    LI.bumpScaleMax = 140;
 
     // Level 3 - desert - 
     // has long straight thin roads and tunnel
@@ -199,7 +200,7 @@ function initLevelInfos()
     LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .6;
     LI.bumpScaleMin = 80;
-    LI.bumpScaleMax = 160;
+    LI.bumpScaleMax = 200;
 
     // Level 7 - graveyard - 
     LI = new LevelInfo(level++, [
@@ -226,12 +227,10 @@ function initLevelInfos()
 
     // thin road over hills in graveyard
     //LI.turnChance = .5;
-    LI.turnMin = .1;
-    LI.turnMax = .7;
-    LI.bumpChance = .7;
-    LI.bumpFreqMin = .3;
-    LI.bumpFreqMax = .7;
-    LI.bumpScaleMin = 100;
+    LI.turnMax = .6;
+    LI.bumpChance = .6;
+    LI.bumpFreqMin = LI.bumpFreqMax = .7;
+    LI.bumpScaleMin = 80;
     //LI.bumpScaleMax = 150;
 
     // Level 8 - jungle - dirt road, many trees
@@ -267,9 +266,9 @@ function initLevelInfos()
     LI.turnMax = .3;  // lots of slight turns
     LI.bumpChance = 1;
     LI.bumpFreqMin = .4;
-    LI.bumpFreqMax = .8;
+    LI.bumpFreqMax = .6;
     LI.bumpScaleMin = 10;
-    LI.bumpScaleMax = 60;
+    LI.bumpScaleMax = 80;
 
     // Level 9 - strange area
     LI = new LevelInfo(level++, [
@@ -297,7 +296,7 @@ function initLevelInfos()
     LI.bumpFreqMin = .5;
     LI.bumpFreqMax = .9;
     LI.bumpScaleMin = 100;
-    //LI.bumpScaleMax = 150;
+    LI.bumpScaleMax = 200;
 
     // Level 10 - mountains - hilly, rocks on sides
     LI = new LevelInfo(level++, [
@@ -306,7 +305,7 @@ function initLevelInfos()
         trackSprites.grass_flower1,
         trackSprites.rock_huge2,
         trackSprites.rock_huge,
-    ], trackSprites.tree_pink, trackSprites.horizon_mountains);
+    ], trackSprites.tree_pink);
     LI.trackSideRate = 21;
     LI.skyColorTop = hsl(.2,1,.9);
     LI.skyColorBottom = hsl(.55,1,.5);
@@ -314,14 +313,19 @@ function initLevelInfos()
     LI.groundColor = hsl(.1,.5,.7);
     LI.cloudColor = hsl(0,0,1,.5);
     LI.tunnel = trackSprites.tunnel1;
-    LI.sunHeight = .6;
-    LI.horizonSpriteSize = .5;
+    if (js13kBuildLevel2)
+        LI.horizonSpriteSize = 0;
+    else
+    {
+        LI.sunHeight = .6;
+        LI.horizonSprite = trackSprites.horizon_mountains
+        LI.horizonSpriteSize = .5;
+    }
 
     // mountains, most difficult level
     LI.turnChance = .8;
     //LI.turnMin = 0;
-    LI.turnMax = 1;
-    LI.bumpChance = 1;
+    LI.turnMax = LI.bumpChance = 1;
     LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .9;
     //LI.bumpScaleMin = 50;
@@ -335,15 +339,21 @@ function initLevelInfos()
         trackSprites.grass_plain, 
         trackSprites.tree_oak,
         trackSprites.tree_bush,
-    ], trackSprites.tree_oak, trackSprites.horizon_mountains);
+    ], trackSprites.tree_oak);
     LI.sceneryListBias = 1;
     LI.groundColor = hsl(.2,.3,.5);
     LI.trackSideRate = LI.billboardChance = 0;
     LI.bumpScaleMin = 1e3; // hill in the distance
 
     // match settings to previous level
-    LI.sunHeight = .6;
-    LI.horizonSpriteSize = .5;
+    if (js13kBuildLevel2)
+        LI.horizonSpriteSize = 0;
+    else
+    {
+        LI.sunHeight = .6;
+        LI.horizonSprite = trackSprites.horizon_mountains
+        LI.horizonSpriteSize = .5;
+    }
 }
 
 const getLevelInfo = (level) => testLevelInfo || levelInfoList[level|0] || levelInfoList[0];

@@ -1,7 +1,6 @@
 'use strict';
 
 const gamepadsEnable = enhancedMode;
-const gamepadDirectionEmulateStick = 1;
 const inputWASDEmulateDirection = enhancedMode;
 const allowTouch = enhancedMode;
 const isTouchDevice = allowTouch && window.ontouchstart !== undefined;
@@ -11,23 +10,23 @@ const touchGamepadAlpha = .3;
 ///////////////////////////////////////////////////////////////////////////////
 // Input user functions
 
-const keyIsDown = (key) => inputData[key] & 1; 
-const keyWasPressed = (key) => inputData[key] & 2 ? 1 : 0;
+const keyIsDown      = (key) => inputData[key] & 1; 
+const keyWasPressed  = (key) => inputData[key] & 2 ? 1 : 0;
 const keyWasReleased = (key) => inputData[key] & 4 ? 1 : 0;
 const clearInput = () => inputData = [];
 
-let mousePos = vec3();
-const mouseIsDown = keyIsDown;
-const mouseWasPressed = keyWasPressed;
+let mousePos;
+const mouseIsDown      = keyIsDown;
+const mouseWasPressed  = keyWasPressed;
 const mouseWasReleased = keyWasReleased;
 
 let isUsingGamepad;
-const gamepadIsDown = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 1); 
-const gamepadWasPressed = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 2); 
+const gamepadIsDown      = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 1); 
+const gamepadWasPressed  = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 2); 
 const gamepadWasReleased = (key, gamepad=0) => !!(gamepadData[gamepad][key] & 4); 
-const gamepadStick = (stick, gamepad=0) =>
+const gamepadStick       = (stick, gamepad=0) =>
     gamepadStickData[gamepad] ? gamepadStickData[gamepad][stick] || vec3() : vec3();
-const gamepadGetValue = (key, gamepad=0) => gamepadDataValues[gamepad][key]; 
+const gamepadGetValue    = (key, gamepad=0) => gamepadDataValues[gamepad][key]; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input event handlers
@@ -36,6 +35,9 @@ let inputData = []; // track what keys are down
 
 function inputInit()
 {
+    if (!js13kBuildLevel2)
+        mousePos = vec3();
+
     if (gamepadsEnable)
     {
         gamepadData = [];
@@ -177,6 +179,7 @@ function gamepadsUpdate()
                 isUsingGamepad ||= !i && button.pressed;
             }
 
+            const gamepadDirectionEmulateStick = 1;
             if (gamepadDirectionEmulateStick)
             {
                 // copy dpad to left analog stick when pressed

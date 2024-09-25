@@ -598,7 +598,7 @@ function generateTetures()
         }
         else
         {
-            // city building
+            // y flippable city building
             color(BLACK);
             for(let i=19; i--;)
             {

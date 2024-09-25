@@ -138,7 +138,7 @@ function initTrackSprites()
     trackSprites.telephonePole    = new TrackSprite(vec3(0,4),1800,0,0,.03,0);
     //trackSprites.parts_girder  = new TrackSprite(vec3(0,6),500,0,.05,30,0);
     trackSprites.telephonePole.shadowScale = .3;
-    trackSprites.grave_stone      = new TrackSprite(vec3(2,6),500,.4,.05,.5,0);
+    trackSprites.grave_stone      = new TrackSprite(vec3(2,6),500,.3,.05,.5,0);
     trackSprites.grave_stone.lightnessRandomness = .5;
     trackSprites.light_tunnel      = new TrackSprite(vec3(0,0),200,0,0,0,0);
     trackSprites.light_tunnel.shadowScale = 0;
@@ -149,9 +149,6 @@ function initTrackSprites()
         trackSprites.horizon_city.lightnessRandomness = .15;
     trackSprites.horizon_city.colorHSL = vec3(1); // vary color
 
-    trackSprites.horizon_mountains      = new TrackSprite(vec3(7,6));
-    trackSprites.horizon_mountains.colorHSL = vec3(0, 0, .7);
-    trackSprites.horizon_mountains.canMirror = 0;
     trackSprites.horizon_islands        = new TrackSprite(vec3(7,6));
     trackSprites.horizon_islands.colorHSL = vec3(.25, .5, .6);
     trackSprites.horizon_islands.canMirror = 0;
@@ -176,6 +173,12 @@ function initTrackSprites()
     trackSprites.horizon_weird          = new TrackSprite(vec3(7,6));
     trackSprites.horizon_weird.colorHSL = vec3(.7, .5, .6);
     trackSprites.horizon_weird.canMirror = 0;
+    if (!js13kBuildLevel2)
+    {
+        trackSprites.horizon_mountains      = new TrackSprite(vec3(7,6));
+        trackSprites.horizon_mountains.colorHSL = vec3(0, 0, .7);
+        trackSprites.horizon_mountains.canMirror = 0;
+    }
 }
 
 // a sprite that can be placed on the track
@@ -483,7 +486,7 @@ function buildTrack()
 
         //turn = .5; height = 0;
         //turn = Math.sin(i/100)*.7;
-        //height = noise1D(i/29)*-1700;turn =0; // jumps test
+        //height = noise1D((i-50)/99)*2700;turn =0; // jumps test
 
         // create track segment
         const o = vec3(turn, height, i*trackSegmentLength);

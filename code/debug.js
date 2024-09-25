@@ -141,7 +141,7 @@ function debugUpdate()
         debugCapture = 1;
     if (keyWasPressed('KeyQ') && !freeCamMode)
         testDrive = !testDrive
-    if (keyWasPressed('KeyP'))
+    if (keyWasPressed('KeyU'))
         sound_win.play();
     if (debug && keyWasPressed('KeyV'))
         spawnVehicle(playerVehicle.pos.z-1300)

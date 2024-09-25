@@ -26,9 +26,8 @@ Features
 
 */
 
-//devMode = 1
+//devMode = debugInfo = 1
 //soundVolume = 0
-//debugInfo = 1
 //debugGenerativeCanvas = 1
 //autoPause = 0
 
@@ -63,7 +62,7 @@ const drawDistance = 1e3;          // how many track segments to draw for scener
 const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
-const startCheckpointTime = 50;
+const startCheckpointTime = 45;
 const extraCheckpointTime = 40;
 const levelLerpRange = .1;
 const levelGoal = 10;
@@ -102,9 +101,13 @@ function gameInit()
     mainContext = mainCanvas.getContext('2d');
 
     const styleCanvas = 'position:absolute;' +               // position
-        'top:50%;left:50%;transform:translate(-50%,-50%);' + // center
+        (clampAspectRatios?'top:50%;left:50%;transform:translate(-50%,-50%);':'') + // center
         (pixelate?' image-rendering: pixelated':'');         // pixelated
+
     glCanvas.style.cssText = mainCanvas.style.cssText = styleCanvas;
+
+    if (!clampAspectRatios)
+        document.body.style.margin = '0px';
 
     drawInit();
     inputInit()
@@ -120,7 +123,7 @@ function gameStart()
     time = frame = frameTimeLastMS = averageFPS = frameTimeBufferMS = 
         cameraOffset = checkpointTimeLeft = raceTime = playerLevel = playerWin = playerNewDistanceRecord = playerNewRecord = freeRide = checkpointSoundCount = 0;
     startCountdown = quickStart || testLevel ? 0 : 4;
-    worldHeading = titleScreenMode ? rand(7) : .9;
+    worldHeading = titleScreenMode ? rand(7) : .8;
     checkpointTimeLeft = startCheckpointTime;
     nextCheckpointDistance = checkpointDistance;
     startCountdownTimer = new Timer;
@@ -250,25 +253,7 @@ function gameUpdateInternal()
             }
         }
     }
-
-    // spawn in more vehicles
-    const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
-    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
-    const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
-    const trafficLevelInfo = getLevelInfo(trafficLevel);
-    const trafficDensity = trafficLevelInfo.trafficDensity;
-    const maxVehicleCount = 10*trafficDensity;
-    if (trafficDensity)
-    if (vehicles.length<maxVehicleCount && !gameOverTimer.isSet() && !vehicleSpawnTimer.active())
-    {
-        const spawnOffset = playerIsSlow ? -1300 : rand(5e4,6e4);
-        spawnVehicle(playerVehicle.pos.z + spawnOffset);
-        vehicleSpawnTimer.set(rand(1,2)/trafficDensity);
-    }
-
-    for(const v of vehicles)
-        v.update();
-    vehicles = vehicles.filter(o=>!o.destroyed);
+    updateCars();
 }
 
 function gameUpdate(frameTimeMS=0)
