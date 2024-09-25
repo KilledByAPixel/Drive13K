@@ -313,7 +313,7 @@ class PlayerVehicle extends Vehicle
             }
         }
 
-        const hitBump=(amount = .97)=>
+        const hitBump=(amount = .98)=>
         {
             this.velocity.z *= amount;
             if (this.bumpTime < 0)

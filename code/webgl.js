@@ -271,7 +271,7 @@ function glPushVert(pos, normal, uv, color)
     glVertexData[offset++] = 0;
     glVertexData[offset++] = uv.x;
     glVertexData[offset++] = uv.y;
-    glVertexData[offset++] = uv.z;
+    glVertexData[offset++] = uv.z; // >0 if untextured
     glVertexData[offset++] = !glEnableFog;
     glVertexData[offset++] = color.r;
     glVertexData[offset++] = color.g;
