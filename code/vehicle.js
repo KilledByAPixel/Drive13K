@@ -433,7 +433,7 @@ class PlayerVehicle extends Vehicle
             playerInputGas =  playerInputTurn = playerInputBrake = 0;
         this.isBraking = playerInputBrake;
 
-        const sound_velocity = max(50+playerInputGas*50,this.velocity.z);
+        const sound_velocity = max(40+playerInputGas*50,this.velocity.z);
         this.engineTime += sound_velocity*.01;
         if (this.engineTime > 1)
         {
