@@ -312,7 +312,7 @@ function handleTouchGamepad(e)
         else if (touchPos.distance(startCenter) < touchGamepadSize)
         {
             // hidden virtual start button in center
-            //touchGamepadButtons[9] = 1;
+            touchGamepadButtons[9] = 1;
         }
     }
 
