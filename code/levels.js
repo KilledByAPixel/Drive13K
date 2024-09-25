@@ -117,7 +117,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.hazardType = trackSprites.hazard_rocks;
     LI.hazardChance = .002;
-    LI.trafficDensity = 1.5; // extra traffic through snow
+    LI.trafficDensity = js13kBuildLevel2 ? 1.5 : 1.2; // extra traffic through snow
 
     // snowy mountains
     //LI.turnChance = .5;

@@ -133,8 +133,8 @@ class Vehicle
             if (this.pos.z < v.pos.z + (js13kBuildLevel2?0:500) &&  this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
-                if (!js13kBuildLevel2)
-                    this.destroyed |= (this.pos.z >= v.pos.z); // get rid of overlaps
+                if (!js13kBuildLevel2 && this.pos.z >= v.pos.z)
+                    this.destroyed = 1; // get rid of overlaps
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
                 this.isBraking = 20;
                 break;
