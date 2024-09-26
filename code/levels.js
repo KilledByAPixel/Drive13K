@@ -9,13 +9,13 @@ function initLevelInfos()
 
     // Level 1 - beach - 
     LI = new LevelInfo(level++, [
-        trackSprites.grass_plain, 
-        trackSprites.tree_palm,
-        trackSprites.rock_big,
-    ], trackSprites.tree_palm);
+        spriteList.grass_plain, 
+        spriteList.tree_palm,
+        spriteList.rock_big,
+    ], spriteList.tree_palm);
     LI.waterSide = -1;
     LI.horizonSpriteSize = .5;
-    //LI.tunnel = trackSprites.tunnel2; // test tunnel
+    //LI.tunnel = spriteList.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
     LI.trafficDensity = .7; // less traffic start
     
@@ -31,14 +31,14 @@ function initLevelInfos()
 
     // Level 2 - forest - 
     LI = new LevelInfo(level++, [
-        trackSprites.tree_oak,
-        trackSprites.grass_plain,
-        trackSprites.tree_bush,
-        trackSprites.tree_stump,
-        trackSprites.grass_flower1,
-        trackSprites.grass_flower3,
-        trackSprites.grass_flower2,
-    ], trackSprites.tree_bush, trackSprites.horizon_smallMountains);
+        spriteList.tree_oak,
+        spriteList.grass_plain,
+        spriteList.tree_bush,
+        spriteList.tree_stump,
+        spriteList.grass_flower1,
+        spriteList.grass_flower3,
+        spriteList.grass_flower2,
+    ], spriteList.tree_bush, spriteList.horizon_smallMountains);
     LI.trackSideRate = 10;
     LI.sceneryListBias = 9;
     //LI.skyColorTop = WHITE;
@@ -64,11 +64,11 @@ function initLevelInfos()
     // Level 3 - desert - 
     // has long straight thin roads and tunnel
     LI = new LevelInfo(level++, [
-        trackSprites.grass_dead, 
-        trackSprites.tree_dead,
-        trackSprites.rock_big,
-        trackSprites.tree_stump,
-    ], trackSprites.telephonePole, trackSprites.horizon_desert);
+        spriteList.grass_dead, 
+        spriteList.tree_dead,
+        spriteList.rock_big,
+        spriteList.tree_stump,
+    ], spriteList.telephonePole, spriteList.horizon_desert);
     LI.trackSideRate = 50;
     LI.trackSideChance = 1;
     LI.skyColorTop = hsl(.15,1,.9);
@@ -81,9 +81,9 @@ function initLevelInfos()
     LI.sunHeight = .9;
     LI.sideStreets = 1;
     LI.laneCount = 2;
-    LI.hazardType = trackSprites.hazard_sand;
+    LI.hazardType = spriteList.hazard_sand;
     LI.hazardChance = .005;
-    LI.tunnel = trackSprites.tunnel2;
+    LI.tunnel = spriteList.tunnel2;
     LI.trafficDensity = .7; // less traffic in desert, only 2 lanes
     LI.billboardRate = 87;
     LI.billboardScale = 8;
@@ -100,12 +100,12 @@ function initLevelInfos()
 
     // Level 4 - snow area - 
     LI = new LevelInfo(level++, [
-        trackSprites.grass_snow,
-        trackSprites.tree_dead,
-        trackSprites.tree_snow,
-        trackSprites.rock_big,
-        trackSprites.tree_stump,
-    ], trackSprites.tree_snow, trackSprites.horizon_snow);
+        spriteList.grass_snow,
+        spriteList.tree_dead,
+        spriteList.tree_snow,
+        spriteList.rock_big,
+        spriteList.tree_stump,
+    ], spriteList.tree_snow, spriteList.horizon_snow);
     LI.trackSideRate = 31;
     LI.skyColorTop = hsl(.5,.2,.4);
     LI.skyColorBottom = WHITE;
@@ -115,7 +115,7 @@ function initLevelInfos()
     LI.horizonSpriteSize = 3;
     LI.lineColor = hsl(0,0,1,.5);
     LI.sunHeight = .7;
-    LI.hazardType = trackSprites.hazard_rocks;
+    LI.hazardType = spriteList.hazard_rocks;
     LI.hazardChance = .002;
     LI.trafficDensity = js13kBuildLevel2 ? 1.5 : 1.2; // extra traffic through snow
 
@@ -133,15 +133,15 @@ function initLevelInfos()
     // Level 5 - canyon - 
     // has winding roads, hills, and sand onground
     LI = new LevelInfo(level++, [
-        trackSprites.rock_huge,
-        trackSprites.grass_dead,
-        trackSprites.tree_fall,
-        trackSprites.rock_huge2,
-        trackSprites.grass_flower2,
-        trackSprites.tree_dead,
-        trackSprites.tree_stump,
-        trackSprites.rock_big,
-    ], trackSprites.tree_fall,trackSprites.horizon_brownMountains);
+        spriteList.rock_huge,
+        spriteList.grass_dead,
+        spriteList.tree_fall,
+        spriteList.rock_huge2,
+        spriteList.grass_flower2,
+        spriteList.tree_dead,
+        spriteList.tree_stump,
+        spriteList.rock_big,
+    ], spriteList.tree_fall,spriteList.horizon_brownMountains);
     LI.sceneryListBias = 2;
     LI.trackSideRate = 31;
     LI.skyColorTop = hsl(.7,1,.7);
@@ -167,12 +167,12 @@ function initLevelInfos()
 
     // Level 6 - red fields and city 
     LI = new LevelInfo(level++, [
-        trackSprites.grass_red, 
-        trackSprites.tree_yellow,
-        trackSprites.rock_big,
-        trackSprites.tree_stump,
-        //trackSprites.rock_wide,
-    ], trackSprites.tree_yellow,trackSprites.horizon_city);
+        spriteList.grass_red, 
+        spriteList.tree_yellow,
+        spriteList.rock_big,
+        spriteList.tree_stump,
+        //spriteList.rock_wide,
+    ], spriteList.tree_yellow,spriteList.horizon_city);
     LI.trackSideRate = 31;
     LI.skyColorTop = YELLOW;
     LI.skyColorBottom = RED;
@@ -204,12 +204,12 @@ function initLevelInfos()
 
     // Level 7 - graveyard - 
     LI = new LevelInfo(level++, [
-        trackSprites.grass_dead,
-        trackSprites.grass_plain, 
-        trackSprites.grave_stone,
-        trackSprites.tree_dead,
-        trackSprites.tree_stump,
-    ], trackSprites.tree_oak, trackSprites.horizon_graveyard);
+        spriteList.grass_dead,
+        spriteList.grass_plain, 
+        spriteList.grave_stone,
+        spriteList.tree_dead,
+        spriteList.tree_stump,
+    ], spriteList.tree_oak, spriteList.horizon_graveyard);
     LI.sceneryListBias = 2;
     LI.trackSideRate = 50;
     LI.skyColorTop = hsl(.5,1,.5);
@@ -236,13 +236,13 @@ function initLevelInfos()
     // Level 8 - jungle - dirt road, many trees
     // has lots of physical hazards
     LI = new LevelInfo(level++, [
-        trackSprites.grass_large, 
-        trackSprites.tree_palm,
-        trackSprites.grass_flower1,
-        trackSprites.rock_tall,
-        trackSprites.rock_big,
-        trackSprites.rock_huge2,
-    ], trackSprites.rock_big, trackSprites.horizon_redMountains);
+        spriteList.grass_large, 
+        spriteList.tree_palm,
+        spriteList.grass_flower1,
+        spriteList.rock_tall,
+        spriteList.rock_big,
+        spriteList.rock_huge2,
+    ], spriteList.rock_big, spriteList.horizon_redMountains);
     LI.sceneryListBias = 5;
     LI.trackSideRate = 25;
     LI.skyColorTop = hsl(0,1,.8);
@@ -256,7 +256,7 @@ function initLevelInfos()
     //LI.cloudHeight = .3;
     LI.sunHeight = .7;
     LI.sunColor = hsl(.1,1,.7);
-    LI.hazardType = trackSprites.rock_big;
+    LI.hazardType = spriteList.rock_big;
     LI.hazardChance = .2;
     LI.trafficDensity = 0;  // no other cars in jungle
 
@@ -272,10 +272,10 @@ function initLevelInfos()
 
     // Level 9 - strange area
     LI = new LevelInfo(level++, [
-        trackSprites.grass_red,
-        trackSprites.rock_weird,
-        trackSprites.tree_huge, 
-    ], trackSprites.rock_weird2, trackSprites.horizon_weird);
+        spriteList.grass_red,
+        spriteList.rock_weird,
+        spriteList.tree_huge, 
+    ], spriteList.rock_weird2, spriteList.horizon_weird);
     LI.trackSideRate = 50;
     LI.skyColorTop = hsl(.05,1,.8);
     LI.skyColorBottom = hsl(.15,1,.7);
@@ -300,25 +300,25 @@ function initLevelInfos()
 
     // Level 10 - mountains - hilly, rocks on sides
     LI = new LevelInfo(level++, [
-        trackSprites.grass_plain,
-        trackSprites.rock_huge3,
-        trackSprites.grass_flower1,
-        trackSprites.rock_huge2,
-        trackSprites.rock_huge,
-    ], trackSprites.tree_pink);
+        spriteList.grass_plain,
+        spriteList.rock_huge3,
+        spriteList.grass_flower1,
+        spriteList.rock_huge2,
+        spriteList.rock_huge,
+    ], spriteList.tree_pink);
     LI.trackSideRate = 21;
     LI.skyColorTop = hsl(.2,1,.9);
     LI.skyColorBottom = hsl(.55,1,.5);
     LI.roadColor = hsl(0,0,.1);
     LI.groundColor = hsl(.1,.5,.7);
     LI.cloudColor = hsl(0,0,1,.5);
-    LI.tunnel = trackSprites.tunnel1;
+    LI.tunnel = spriteList.tunnel1;
     if (js13kBuildLevel2)
         LI.horizonSpriteSize = 0;
     else
     {
         LI.sunHeight = .6;
-        LI.horizonSprite = trackSprites.horizon_mountains
+        LI.horizonSprite = spriteList.horizon_mountains
         LI.horizonSpriteSize = .5;
     }
 
@@ -333,13 +333,13 @@ function initLevelInfos()
 
     // Level 11 - win area
     LI = new LevelInfo(level++, [
-        trackSprites.grass_flower1,
-        trackSprites.grass_flower2,
-        trackSprites.grass_flower3,
-        trackSprites.grass_plain, 
-        trackSprites.tree_oak,
-        trackSprites.tree_bush,
-    ], trackSprites.tree_oak);
+        spriteList.grass_flower1,
+        spriteList.grass_flower2,
+        spriteList.grass_flower3,
+        spriteList.grass_plain, 
+        spriteList.tree_oak,
+        spriteList.tree_bush,
+    ], spriteList.tree_oak);
     LI.sceneryListBias = 1;
     LI.groundColor = hsl(.2,.3,.5);
     LI.trackSideRate = LI.billboardChance = 0;
@@ -351,7 +351,7 @@ function initLevelInfos()
     else
     {
         LI.sunHeight = .6;
-        LI.horizonSprite = trackSprites.horizon_mountains
+        LI.horizonSprite = spriteList.horizon_mountains
         LI.horizonSpriteSize = .5;
     }
 }
@@ -361,7 +361,7 @@ const getLevelInfo = (level) => testLevelInfo || levelInfoList[level|0] || level
 // info about how to build and draw each level
 class LevelInfo
 {
-    constructor(level, scenery, trackSideSprite,horizonSprite=trackSprites.horizon_islands)
+    constructor(level, scenery, trackSideSprite,horizonSprite=spriteList.horizon_islands)
     {
         // add self to list
         levelInfoList[level] = this;
@@ -413,5 +413,33 @@ class LevelInfo
         this.bumpFreqMax = .7;   // more often bumps
         this.bumpScaleMin = 50;  // rapid bumps
         this.bumpScaleMax = 150; // largest hills
+    }
+
+    randomize()
+    {
+        shuffle(this.scenery);
+        this.sceneryListBias = random.float(5,30);
+        this.groundColor = random.mutateColor(this.groundColor);
+        this.skyColorTop = random.mutateColor(this.skyColorTop);
+        this.skyColorBottom = random.mutateColor(this.skyColorBottom);
+        this.lineColor = random.mutateColor(this.lineColor);
+        this.roadColor = random.mutateColor(this.roadColor);
+        this.cloudColor = random.mutateColor(this.cloudColor);
+        this.sunColor = random.mutateColor(this.sunColor);
+
+        // track generation
+        this.laneCount = random.int(2,5);
+        this.trafficDensity = random.float(.5,1.5);
+
+        // default turns and bumps
+        this.turnChance = random.float();
+        this.turnMin = random.float();
+        this.turnMax = random.float();
+        this.bumpChance = random.float();
+        this.bumpFreqMin = random.float(.5);    // no bumps
+        this.bumpFreqMax = random.float();   // more often bumps
+        this.bumpScaleMin = random.float(20,50);  // rapid bumps
+        this.bumpScaleMax = random.float(50,150); // largest hills
+        this.hazardChance = 0;
     }
 }

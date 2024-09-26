@@ -2,11 +2,10 @@
 
 const hardAlpha = 1;
 const generativeTileSize = 512;
-const generativeCanvasScaleFactor = 8;
-const generativeCanvasSize = generativeTileSize*generativeCanvasScaleFactor;
-const generativeCanvasSizeInverse = 1/generativeCanvasSize;
+const generativeCanvasSize = generativeTileSize*8;
 const fixFirefoxFontBug = 1; // fix firefox not drawing fonts below a min size
-    
+const spriteSize = (generativeTileSize - 2*bleedPixels) / generativeCanvasSize;
+
 function initGenerative()
 {
     // create the textures

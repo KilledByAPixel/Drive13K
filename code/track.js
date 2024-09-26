@@ -131,20 +131,20 @@ function drawTrackScenery()
         if (!trackSegment.sideStreet) // no sprites on side streets
         for(let k=3;k--;)
         {
-            const trackSpriteSide = (segmentIndex+k)%2 ? 1 : -1;
-            if (trackSpriteSide == levelInfo.waterSide)
+            const spriteListide = (segmentIndex+k)%2 ? 1 : -1;
+            if (spriteListide == levelInfo.waterSide)
             {
                 // water
-                const sprite = trackSprites.water;
+                const sprite = spriteList.water;
                 const s = sprite.size*sprite.getRandomSpriteScale();
                 const o2 = w+random.float(12e3,8e4);
-                const o = trackSpriteSide * o2;
+                const o = spriteListide * o2;
                 // get taller in distance to cover horizon
                 const h = .4;
                 const wave = time-segmentIndex/70;
                 const p = trackSegment.pos.add(vec3(o+2e3*Math.sin(wave),0));
                 const waveWind = 9*Math.cos(wave); // fake wind to make wave seam more alive
-                pushTrackObject(p, vec3(trackSpriteSide*s,s*h,s), WHITE, sprite, waveWind);
+                pushTrackObject(p, vec3(spriteListide*s,s*h,s), WHITE, sprite, waveWind);
             }
             else
             {
@@ -164,7 +164,7 @@ function drawTrackScenery()
 
                     // push farther away if big collision
                     const xm = w+sprite.size+6*sprite.collideScale*s; 
-                    const o = trackSpriteSide * random.float(xm,3e4);
+                    const o = spriteListide * random.float(xm,3e4);
                     const p = trackSegment.pos.add(vec3(o,0));
                     const wind = trackSegment.getWind();
                     const color = sprite.getRandomSpriteColor();
@@ -199,17 +199,18 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
             return; // behind camera
     }
 
-    const tilePos = sprite.tilePos;
     const shadowScale = sprite.shadowScale;
     const wind = sprite.windScale * trackWind;
     const yShadowOffset = freeCamMode ? cameraPos.y/20 : 10; // fix shadows in free cam mode
     const spriteYOffset = scale.y*(1+sprite.spriteYOffset) + (freeCamMode?cameraPos.y/20:0);
 
+    pos.y += yShadowOffset;
     if (shadowScale)
-        pushShadow(pos.add(vec3(0,yShadowOffset)), scale.y*shadowScale, scale.y*shadowScale/6);
+        pushShadow(pos, scale.y*shadowScale, scale.y*shadowScale/6);
 
     // draw on top of shadow
-    pushSprite(pos.add(vec3(0,spriteYOffset)), scale, color, new SpriteTile(tilePos), wind);
+    pos.y += spriteYOffset - yShadowOffset;
+    pushSprite(pos, scale, color, sprite.spriteTile, wind);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

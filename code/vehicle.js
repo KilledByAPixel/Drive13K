@@ -200,7 +200,7 @@ class Vehicle
             
             const m2 = buildMatrix(shadowPosBase, vec3(trackPitch,0)).multiply(mHeading);
             const mshadow = m2.multiply(buildMatrix(0, 0, shadowSize));
-            shadowMesh.renderTile(mshadow, shadowColor, new SpriteTile(vec3(2,0))); 
+            shadowMesh.renderTile(mshadow, shadowColor, spriteList.carShadow.spriteTile); 
             glPolygonOffset();
             glSetDepthTest();
         }
@@ -269,11 +269,11 @@ class Vehicle
             cubeMesh.render(m1.multiply(buildMatrix(vec3(0,10,440), 0, vec3(240,30,30))), hsl(0,0,.5));
 
             // license plate
-            quadMesh.renderTile(m1.multiply(buildMatrix(vec3(0,bumperY-80,bumperZ-20), vec3(0,PI,0), vec3(80,25,1))),WHITE, new SpriteTile(vec3(3,0)));
+            quadMesh.renderTile(m1.multiply(buildMatrix(vec3(0,bumperY-80,bumperZ-20), vec3(0,PI,0), vec3(80,25,1))),WHITE, spriteList.carLicense.spriteTile);
 
             // top number
             const m3 = buildMatrix(0,vec3(0,PI)); // flip for some reason
-            quadMesh.renderTile(m1.multiply(buildMatrix(vec3(0,230,-200), vec3(PI/2-.2,0,0), vec3(140)).multiply(m3)),WHITE, new SpriteTile(vec3(4,0)));
+            quadMesh.renderTile(m1.multiply(buildMatrix(vec3(0,230,-200), vec3(PI/2-.2,0,0), vec3(140)).multiply(m3)),WHITE, spriteList.carNumber.spriteTile);
         }
         
         glPolygonOffset();
@@ -434,12 +434,12 @@ class PlayerVehicle extends Vehicle
         this.isBraking = playerInputBrake;
 
         const sound_velocity = max(40+playerInputGas*50,this.velocity.z);
-        this.engineTime += sound_velocity*.01;
+        this.engineTime += sound_velocity*sound_velocity/1e4;
         if (this.engineTime > 1)
         {
             --this.engineTime;
             const f = sound_velocity;
-            sound_engine.play(.1,f/40+rand(.1));
+            sound_engine.play(.1,f*f/5e3+rand(.1));
         }
 
         // player settings
@@ -504,9 +504,10 @@ class PlayerVehicle extends Vehicle
             {
                 // extra boost at low speeds
                 //const lowSpeedPercent = this.velocity.z**2/1e4;                
-                const lowSpeedPercent = percent(this.velocity.z, 90, 0)**2;
+                const lowSpeedPercent = percent(this.velocity.z, 150, 0)**2;
                 const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .5)
-                    * lerp(lowSpeedPercent, 1, 6);
+                    * lerp(lowSpeedPercent, 1, 9);
+                    //console.log(lerp(lowSpeedPercent, 1, 9))
 
                 // apply acceleration in angle of road
                 //const accelVec = vec3(0,0,accel).rotateX(trackSegment.pitch);
@@ -551,6 +552,49 @@ class PlayerVehicle extends Vehicle
             this.velocity.x += 
                 this.velocity.z * physicsTurn -
                 this.velocity.z ** turnPow * centrifugal * playerTrackInfo.offset.x;
+
+
+            /* // slip test
+
+            const playerMaxTurnStart = 50; // fade on turning visual
+            const turnVisualRamp = clamp(this.velocity.z/playerMaxTurnStart,0,.1);
+            this.wheelTurn = lerp(.1, this.wheelTurn, 1.5*desiredPlayerTurn);
+            this.playerTurn = lerp(.1, this.playerTurn, desiredPlayerTurn);
+
+            // fade off turn at top speed
+            const turnStrength = .02;
+           // const physicsTurn = this.onGround ?this.playerTurn*turnStrength*lerp(speedPercent, 1, .5) : 0;
+
+            const physicsTurn = this.playerTurn*turnStrength;
+
+            // apply turn velocity
+
+            const centrifugal = .5;  
+            const centripetalForce = -this.velocity.z * playerTrackInfo.offset.x * centrifugal;
+            const turnForce = 50*this.velocity.z * physicsTurn;
+
+            const maxStaticFriction = 40;
+
+            //const deltaX = turnForce + centripetalForce;;
+
+            let slip = 1;
+
+            if (abs(centripetalForce) > maxStaticFriction)
+            {
+                let s = abs(centripetalForce) / maxStaticFriction;
+                slip = 1/s;
+                //slip = slip**2
+                console.log(abs(centripetalForce), slip)
+            }
+
+            this.velocity.x += turnForce*slip + centripetalForce;
+
+            const slipVis = lerp(percent(slip, 1, .5),1,1.5)
+
+            this.drawTurn = lerp(turnVisualRamp,
+                this.drawTurn, (this.playerTurn)*slipVis);
+
+            */
         }
 
         if (playerWin)

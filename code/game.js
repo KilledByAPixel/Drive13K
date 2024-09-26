@@ -1,44 +1,13 @@
 'use strict';
 
-/*
-
-Dr1v3n Wild by Frank Force
-A 13k game for js13kGames 2024
-
-Controls
-- Arrows or Mouse = Drive
-- Spacebar = Brake
-- F = Free Ride Mode
-- Escape = Title Screen
-
-Features
-- 10 stages with unique visuals
-- Fast custom WebGL rendering
-- Procedural art (trees, rocks, scenery)
-- Track generator
-- Arcade style driving physics
-- 2 types of AI vehicles
-- Parallax horizon and sky
-- ZZFX sounds
-- Persistent save data
-- Keyboard or mouse input
-- All written from scratch in vanilla JS
-
-*/
-
-//devMode = debugInfo = 1
-//soundVolume = 0
-//debugGenerativeCanvas = 1
-//autoPause = 0
-
 // debug settings
-const testLevel = 0;
-const quickStart = 0;
-const aiVehicles = 1;
+let testLevel = 0;
+let quickStart = 0;
+let aiVehicles = 1;
 let testDrive = 0;
 let freeCamMode = 0;
 let testLevelInfo;
-const testQuick = 0;
+let testQuick = 0;
 const js13kBuild = 1; // hacks made when building for js13k
 const js13kBuildLevel2 = 0; // if more space is needed for js13k
 
@@ -91,6 +60,12 @@ let freeRide;
 
 function gameInit()
 {
+    if (enhancedMode)
+    {
+        console.log(`Dr1v3n Wild by Frank Force`);
+        console.log(`www.frankforce.com 🚗🌴`);
+    }
+
     if (quickStart || testLevel)
         titleScreenMode = 0;
 
@@ -112,7 +87,7 @@ function gameInit()
     drawInit();
     inputInit()
     initGenerative();
-    initTrackSprites();
+    initSprites();
     initLevelInfos();
     gameStart();
     gameUpdate();
@@ -140,6 +115,15 @@ function gameStart()
     {
         const level = titleModeStartCount*2%9;
         playerVehicle.pos.z = 8e4+level*checkpointDistance;
+    }
+
+    if (enhancedMode)
+    {
+        // match camera to ground at start
+        cameraOffset = playerVehicle.pos.z - cameraPlayerOffset.z;
+        const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
+        cameraPos.y = cameraTrackInfo.offset.y;
+        cameraRot.x = cameraTrackInfo.pitch/3;
     }
 }
 
@@ -417,13 +401,3 @@ function writeSaveData()
     localStorage[saveName+3] = bestTime;
     localStorage[saveName+4] = bestDistance;
 }
-
-///////////////////////////////////////
-
-if (enhancedMode)
-{
-    console.log(`Dr1v3n Wild by Frank Force`);
-    console.log(`www.frankforce.com 🚗🌴`);
-}
-
-gameInit();

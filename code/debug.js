@@ -2,6 +2,7 @@
 
 const debug = 1;
 let enhancedMode = 1;
+let enableAsserts = 1;
 let devMode = 0;
 let autoPause = 1;
 let downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
@@ -10,7 +11,7 @@ let debugGenerativeCanvasCached, showMap;
 let freeCamPos, freeCamRot, mouseDelta;
 
 function ASSERT(assert, output) 
-{ output ? console.assert(assert, output) : console.assert(assert); }
+{ enableAsserts&&(output ? console.assert(assert, output) : console.assert(assert)); }
 function LOG() { console.log(...arguments); }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -121,6 +122,8 @@ function debugUpdate()
     {
         // randomize track
         trackSeed = randInt(1e9);
+        
+        //initGenerative();
         const endLevel = levelInfoList.pop();
         shuffle(endLevel.scenery);
         shuffle(levelInfoList);
@@ -128,12 +131,21 @@ function debugUpdate()
         {
             const info = levelInfoList[i];
             info.level = i;
-            shuffle(info.scenery);
-            info.sceneryListBias = random.float(5,30);
+            info.randomize();
         }
         levelInfoList.push(endLevel);
         buildTrack();
-        gameStart();
+
+        for(const s in spriteList)
+        {
+           const sprite = spriteList[s];
+            if (sprite instanceof GameSprite)
+                sprite.randomize();
+        }
+
+        const playerTrackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
+        playerVehicle.pos.y = playerTrackInfo.offset.y;
+        //gameStart();
     }
     if (keyWasPressed('Digit7'))
         debugGenerativeCanvas = !debugGenerativeCanvas;
@@ -160,7 +172,7 @@ function debugDraw()
     const c = mainCanvas;
     const context = mainContext;
 
-    if (testDrive && !titleScreenMode)
+    if (testDrive && !titleScreenMode && !freeRide)
         drawHUDText('AUTO', vec3(.5,.95),.05,RED);
 
     if (showMap)
