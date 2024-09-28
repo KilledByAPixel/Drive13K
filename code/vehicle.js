@@ -30,7 +30,7 @@ function updateCars()
 
 function spawnVehicle(z)
 {
-    if (!aiVehicles)
+    if (disableAiVehicles)
         return;
 
     const v = new Vehicle(z);

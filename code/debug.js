@@ -4,11 +4,11 @@ const debug = 1;
 let enhancedMode = 1;
 let enableAsserts = 1;
 let devMode = 0;
-let autoPause = 1;
 let downloadLink, debugMesh, debugTile, debugCapture, debugCanvas;
 let debugGenerativeCanvas=0, debugInfo=0, debugSkipped=0;
 let debugGenerativeCanvasCached, showMap;
 let freeCamPos, freeCamRot, mouseDelta;
+const js13kBuildLevel2 = 0; // more space is needed for js13k
 
 function ASSERT(assert, output) 
 { enableAsserts&&(output ? console.assert(assert, output) : console.assert(assert)); }
@@ -24,39 +24,8 @@ function debugInit()
     debugCanvas = document.createElement('canvas');
     downloadLink = document.createElement('a');
 }
-
-function enhancedModeUpdate()
-{
-    if (!enhancedMode)
-        return;
-
-    if (autoPause && !document.hasFocus() && !titleScreenMode && !isTouchDevice)
-        paused = 1; // pause when losing focus
-
-    if (keyWasPressed('Home')) // dev mode
-        devMode || (debugInfo = devMode = 1);
-    if (keyWasPressed('KeyI')) // debug info
-        debugInfo = !debugInfo;
-    if (keyWasPressed('KeyM')) // toggle mute
-    {
-        if (soundVolume)
-            sound_bump.play(.4,3);
-        soundVolume = soundVolume ? 0 : .3;
-        if (soundVolume)
-            sound_bump.play();
-    }
-    if (keyWasPressed('KeyR')) // restart
-    {
-        titleScreenMode = 0;
-        sound_lose.play(1,2);
-        gameStart();
-    }
-}
-
 function debugUpdate()
 {
-    enhancedModeUpdate();
-
     if (!devMode)
         return;
 

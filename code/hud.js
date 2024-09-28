@@ -37,7 +37,9 @@ function drawHUD()
             for(let i=0;i<text.length;i++)
             {
                 const p = Math.sin(i-time*2-j*2);
-                const size2 = size + p*mainCanvasSize.y/20;
+                let size2 = (size + p*mainCanvasSize.y/20);
+                if (enhancedMode)
+                    size2 *= lerp(time*2-2+j,0,1)
                 context.font = `${style} ${weight} ${size2}px ${font}`;
                 const c = text[i];
                 const w = context.measureText(c).width;
@@ -58,16 +60,19 @@ function drawHUD()
             }
         }
 
-        if (bestTime && (!enhancedMode || time%20<10))
+        if (!enhancedMode || time > 5)
         {
-            const timeString = formatTimeString(bestTime);
-            if (!js13kBuildLevel2)
-                drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
-            drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
-        }
-        else if (enhancedMode && !isTouchDevice)
-        {
-            drawHUDText('CLICK TO PLAY', vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            if (bestTime && (!enhancedMode || time%20<10))
+            {
+                const timeString = formatTimeString(bestTime);
+                if (!js13kBuildLevel2)
+                    drawHUDText('BEST TIME', vec3(.5,.9), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+                drawHUDText(timeString, vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            }
+            else if (enhancedMode && !isTouchDevice)
+            {
+                drawHUDText('CLICK TO PLAY', vec3(.5,.97), .07, undefined, 'monospace',undefined,900,undefined,undefined,undefined,3);
+            }
         }
     }
     else if (startCountdownTimer.active() || startCountdown)

@@ -1,15 +1,14 @@
 'use strict';
 
 // debug settings
-let testLevel = 0;
-let quickStart = 0;
-let aiVehicles = 1;
-let testDrive = 0;
-let freeCamMode = 0;
+let testLevel;
+let quickStart;
+let disableAiVehicles;
+let testDrive;
+let freeCamMode;
 let testLevelInfo;
-let testQuick = 0;
-const js13kBuild = 1; // hacks made when building for js13k
-const js13kBuildLevel2 = 0; // if more space is needed for js13k
+let testQuick;
+const js13kBuild = 1; // fixes for legacy code made during js13k
 
 ///////////////////////////////////////////////////
 
@@ -22,6 +21,7 @@ const pixelateScale = 3;
 const clampAspectRatios = enhancedMode;
 const optimizedCulling = 1;
 const random = new Random;
+let autoPause = enhancedMode;
 let autoFullscreen = 0;
 
 // setup
@@ -332,6 +332,7 @@ function gameUpdate(frameTimeMS=0)
         // increment frame and update time
         time = frame++ / frameRate;
         gameUpdateInternal();
+        enhancedModeUpdate();
         debugUpdate();
         inputUpdate();
     
@@ -360,6 +361,34 @@ function gameUpdate(frameTimeMS=0)
     touchGamepadRender();
     drawHUD();
     debugDraw();
+}
+
+function enhancedModeUpdate()
+{
+    if (!enhancedMode)
+        return;
+
+    if (autoPause && !document.hasFocus() && !titleScreenMode && !isTouchDevice)
+        paused = 1; // pause when losing focus
+
+    if (keyWasPressed('Home')) // dev mode
+        devMode || (debugInfo = devMode = 1);
+    if (keyWasPressed('KeyI')) // debug info
+        debugInfo = !debugInfo;
+    if (keyWasPressed('KeyM')) // toggle mute
+    {
+        if (soundVolume)
+            sound_bump.play(.4,3);
+        soundVolume = soundVolume ? 0 : .3;
+        if (soundVolume)
+            sound_bump.play();
+    }
+    if (keyWasPressed('KeyR')) // restart
+    {
+        titleScreenMode = 0;
+        sound_lose.play(1,2);
+        gameStart();
+    }
 }
 
 function updateCamera()

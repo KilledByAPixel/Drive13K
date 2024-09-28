@@ -408,7 +408,6 @@ function generateTetures()
             drawRock(x,random.float(.03),random.float(.05),.005,.4,.3,.3,y,z,500,cHSL,.4);
         }
         setupContext(5,4);
-        random.setSeed(9);
         for(let i=99; i--;) // water
         {
             const p = i/99;

@@ -34,7 +34,7 @@ Features
 //debugGenerativeCanvas = 1
 //autoPause = 0
 //quickStart = 1
-//aiVehicles = 0
+//disableAiVehicles = 1
 
 ///////////////////////////////////////////////////
 
