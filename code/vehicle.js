@@ -10,7 +10,7 @@ function updateCars()
 {
     // spawn in more vehicles
     const playerIsSlow = titleScreenMode || playerVehicle.velocity.z < 20;
-    const trafficPosOffset = playerIsSlow? 0 : 18e4; // check in front/behind
+    const trafficPosOffset = playerIsSlow? 0 : 16e4; // check in front/behind
     const trafficLevel = (playerVehicle.pos.z+trafficPosOffset)/checkpointDistance;
     const trafficLevelInfo = getLevelInfo(trafficLevel);
     const trafficDensity = trafficLevelInfo.trafficDensity;
@@ -130,10 +130,10 @@ class Vehicle
         {
             // slow down if behind
             if (v != this && v != playerVehicle)
-            if (this.pos.z < v.pos.z + (js13kBuildLevel2?0:500) &&  this.pos.z > v.pos.z - 2e3)
+            if (this.pos.z < v.pos.z + 500 &&  this.pos.z > v.pos.z - 2e3)
             if (abs(x-v.laneOffset) < 500) // lane space 
             {
-                if (!js13kBuildLevel2 && this.pos.z >= v.pos.z)
+                if (this.pos.z >= v.pos.z)
                     this.destroyed = 1; // get rid of overlaps
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
                 this.isBraking = 20;
@@ -195,7 +195,7 @@ class Vehicle
             glPolygonOffset(60);
             const lightOffset = vec3(0,0,-60).rotateY(worldHeading);
             const shadowColor = rgb(0,0,0,.5);
-            const shadowPosBase = vec3(p.x,trackInfo.pos.y,p.z).add(lightOffset);
+            const shadowPosBase = vec3(p.x,trackInfo.pos.y,p.z).addSelf(lightOffset);
             const shadowSize = vec3(-720,200,600); // why x negative?
             
             const m2 = buildMatrix(shadowPosBase, vec3(trackPitch,0)).multiply(mHeading);
@@ -221,7 +221,7 @@ class Vehicle
         }
         glPolygonOffset(); // turn it off!
 
-        if (optimizedCulling && !js13kBuildLevel2)
+        if (optimizedCulling)
         {
             const distanceFromPlayer = this.pos.z - playerVehicle.pos.z;
             if (distanceFromPlayer > 4e4)
@@ -374,14 +374,14 @@ class PlayerVehicle extends Vehicle
         if (!testDrive)
         for(const v of vehicles)
         {
-            const d = this.pos.subtract(v.pos).abs();
+            const d = this.pos.subtract(v.pos);
             const s = this.collisionSize.add(v.collisionSize);
-            if (v != this && d.x < s.x && d.z < s.z)
+            if (v != this && abs(d.x) < s.x && abs(d.z) < s.z)
             {
                 // collision
                 this.velocity.z = v.velocity.z/2;
                 v.velocity.z = max(v.velocity.z, this.velocity.z*1.5); // push other car
-                this.velocity.x = 99*sign(this.pos.x-v.pos.x); // push away from car
+                this.velocity.x = 99*sign(d.x); // push away from car
                 playHitSound();
             }
         }
@@ -434,16 +434,16 @@ class PlayerVehicle extends Vehicle
         this.isBraking = playerInputBrake;
 
         const sound_velocity = max(40+playerInputGas*50,this.velocity.z);
-        this.engineTime += sound_velocity*sound_velocity/1e4;
+        this.engineTime += sound_velocity*sound_velocity/5e4;
         if (this.engineTime > 1)
         {
             --this.engineTime;
             const f = sound_velocity;
-            sound_engine.play(.1,f*f/5e3+rand(.1));
+            sound_engine.play(.1,f*f/4e3+rand(.1));
         }
 
         // player settings
-        const forwardDamping = .998;  // dampen player z speed
+        const forwardDamping = .9978;  // dampen player z speed
         const playerTurnControl = .4  // player turning rate
         const gravity = -3;           // gravity to apply in y axis
         const lateralDamping = .5;    // dampen player x speed
@@ -455,7 +455,7 @@ class PlayerVehicle extends Vehicle
         // update physics
         this.velocity.y += gravity;
         this.velocity.x *= lateralDamping;
-        this.pos = this.pos.add(this.velocity);
+        this.pos.addSelf(this.velocity);
 
         const playerTrackInfo = new TrackSegmentInfo(this.pos.z);
         const playerTrackSegment = playerTrackInfo.segmentIndex;
@@ -483,7 +483,7 @@ class PlayerVehicle extends Vehicle
             (Math.cos(trackPitch) * this.velocity.y + Math.sin(trackPitch) * this.velocity.z));
 
             if (!gameOverTimer.isSet()) // dont roll in game over
-                this.velocity = this.velocity.add(reflectVelocity);
+                this.velocity.addSelf(reflectVelocity);
 
             if (!wasOnGround)
             {
@@ -511,11 +511,14 @@ class PlayerVehicle extends Vehicle
 
                 // apply acceleration in angle of road
                 //const accelVec = vec3(0,0,accel).rotateX(trackSegment.pitch);
-                //this.velocity = this.velocity.add(accelVec);
+                //this.velocity.addSelf(accelVec);
                 this.velocity.z += accel;
             }
             else if (this.velocity.z < 30)
                 this.velocity.z *= .9; // slow to stop
+                
+            // dampen z velocity & clamp
+            this.velocity.z = max(0, this.velocity.z*forwardDamping);
         }
         else
         {
@@ -524,10 +527,7 @@ class PlayerVehicle extends Vehicle
             this.onGround = 0;
         }
 
-        { 
-            // dampen z velocity & clamp
-            this.velocity.z = max(0, this.velocity.z*forwardDamping);
-
+        {
             // turning
             let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn * playerTurnControl;
             if (testDrive)
@@ -628,7 +628,7 @@ class PlayerVehicle extends Vehicle
                     if (abs(dp.z) > 430 || abs(dp.x) > csx)
                         continue;
 
-                    //const cs = this.collisionSize.add(vec3(trackObject.collideSize,0,50));
+                    //const cs = vec3(trackObject.collideSize,0,50),addSelf(this.collisionSize);
                     //if (abs(dp.z) > cs.z || abs(dp.x) > cs.x)// js13k hack
                     //    continue;
 

@@ -131,20 +131,20 @@ function drawTrackScenery()
         if (!trackSegment.sideStreet) // no sprites on side streets
         for(let k=3;k--;)
         {
-            const spriteListide = (segmentIndex+k)%2 ? 1 : -1;
-            if (spriteListide == levelInfo.waterSide)
+            const spriteSide = (segmentIndex+k)%2 ? 1 : -1;
+            if (spriteSide == levelInfo.waterSide)
             {
                 // water
                 const sprite = spriteList.water;
                 const s = sprite.size*sprite.getRandomSpriteScale();
                 const o2 = w+random.float(12e3,8e4);
-                const o = spriteListide * o2;
+                const o = spriteSide * o2;
                 // get taller in distance to cover horizon
                 const h = .4;
                 const wave = time-segmentIndex/70;
-                const p = trackSegment.pos.add(vec3(o+2e3*Math.sin(wave),0));
+                const p = vec3(o+2e3*Math.sin(wave),0).addSelf(trackSegment.pos);
                 const waveWind = 9*Math.cos(wave); // fake wind to make wave seam more alive
-                pushTrackObject(p, vec3(spriteListide*s,s*h,s), WHITE, sprite, waveWind);
+                pushTrackObject(p, vec3(spriteSide*s,s*h,s), WHITE, sprite, waveWind);
             }
             else
             {
@@ -164,8 +164,8 @@ function drawTrackScenery()
 
                     // push farther away if big collision
                     const xm = w+sprite.size+6*sprite.collideScale*s; 
-                    const o = spriteListide * random.float(xm,3e4);
-                    const p = trackSegment.pos.add(vec3(o,0));
+                    const o = spriteSide * random.float(xm,3e4);
+                    const p = vec3(o,0).addSelf(trackSegment.pos);
                     const wind = trackSegment.getWind();
                     const color = sprite.getRandomSpriteColor();
                     const scale = vec3(s);
@@ -239,7 +239,7 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
         const w = segment1.width;
         const o =(segmentIndex%2?1:-1)*(random.float(5e4,1e5))
         const r = vec3(0,-heading,0);
-        const p = segment1.pos.add(vec3(-o,0));
+        const p = vec3(-o,0).addSelf(segment1.pos);
 
         const s = vec3(random.float(500,1e3),random.float(1e3,4e3),random.float(500,1e3));
         //const s = vec3(500,random.float(2e3,2e4),500);
@@ -249,3 +249,169 @@ function pushTrackObject(pos, scale, color, sprite, trackWind)
     }
 }
 */
+
+///////////////////////////////////////////////////////////////////////////////
+
+// an instance of a sprite
+class TrackObject
+{
+    constructor(trackSegment, sprite, offset, color=WHITE, sizeScale=1)
+    {
+        this.trackSegment = trackSegment;
+        this.sprite = sprite;
+        this.offset = offset;
+        this.color = color;
+
+        const scale = sprite.size * sizeScale;
+        this.scale = vec3(scale);
+        const trackWidth = trackSegment.width;
+        const trackside = offset.x < trackWidth*2 && offset.x > -trackWidth*2;
+        if (trackside && sprite.trackFace)
+            this.scale.x *= sign(offset.x);
+        else if (sprite.canMirror && random.bool())
+            this.scale.x *= -1;
+        this.collideSize = sprite.collideScale*abs(scale);
+    }
+
+    draw()
+    {
+        const trackSegment = this.trackSegment;
+        const pos = trackSegment.pos.add(this.offset);
+        const wind = trackSegment.getWind();
+        pushTrackObject(pos, this.scale, this.color, this.sprite, wind);
+    }
+}
+
+class TrackSegment
+{
+    constructor(segmentIndex,offset,width)
+    {
+        if (segmentIndex >= levelGoal*checkpointTrackSegments)
+            width = 0; // no track after end
+
+        this.offset = offset;
+        this.width = width;
+        this.pitch = 0;
+        this.normal = vec3();
+
+        this.trackObjects = [];
+        const levelFloat = segmentIndex/checkpointTrackSegments;
+        const level = this.level = testLevelInfo ? testLevelInfo.level : levelFloat|0;
+        const levelInfo = getLevelInfo(level);
+        const levelInfoNext = getLevelInfo(levelFloat+1);
+        const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
+
+        const checkpointLine = segmentIndex > 25 && segmentIndex < 30
+            || segmentIndex%checkpointTrackSegments > checkpointTrackSegments-10;
+        const recordPoint = bestDistance/trackSegmentLength;
+        const recordPointLine = segmentIndex>>3 == recordPoint>>3;
+        this.sideStreet = levelInfo.sideStreets && ((segmentIndex%checkpointTrackSegments)%495<36);
+
+        {
+            // setup colors
+            const groundColor = levelInfo.groundColor.lerp(levelInfoNext.groundColor,levelLerpPercent);
+            const lineColor = levelInfo.lineColor.lerp(levelInfoNext.lineColor,levelLerpPercent);
+            const roadColor = levelInfo.roadColor.lerp(levelInfoNext.roadColor,levelLerpPercent);
+
+            const largeSegmentIndex = segmentIndex/9|0;
+            const stripe = largeSegmentIndex% 2 ? .1: 0;
+            this.colorGround = groundColor.brighten(Math.cos(segmentIndex*2/PI)/20);
+            this.colorRoad = roadColor.brighten(stripe&&.05);
+            if (recordPointLine)
+                this.colorRoad = hsl(0,.8,.5);
+            else if (checkpointLine)
+                this.colorRoad = WHITE; // starting line
+            this.colorLine = lineColor;
+            if (stripe)
+                this.colorLine.a = 0;
+            if (this.sideStreet)
+                this.colorLine = this.colorGround = this.colorRoad;
+        }
+
+        // spawn track objects
+        if (debug && testGameSprite)
+        {
+            // test sprite
+            this.addSprite(testGameSprite,random.floatSign(width/2,1e4));
+        }
+        else if (debug && testTrackBillboards)
+        {
+            // test billboard
+            const billboardSprite = random.fromList(spriteList.billboards);
+            this.addSprite(billboardSprite,random.floatSign(width/2,1e4));
+        }
+        else if (segmentIndex == levelGoal*checkpointTrackSegments)
+        {
+            // goal!
+            this.addSprite(spriteList.sign_goal);
+        }
+        else if (segmentIndex%checkpointTrackSegments == 0)
+        {
+            // checkpoint
+            if (segmentIndex < levelGoal*checkpointTrackSegments)
+            {
+                this.addSprite(spriteList.sign_checkpoint1,-width+500);
+                this.addSprite(spriteList.sign_checkpoint2, width-500);
+            }
+        }
+
+        if (segmentIndex == 30)
+        {
+            // starting area
+            this.addSprite(spriteList.sign_start);
+
+            // left
+            const ol = -(width+100);
+            this.addSprite(spriteList.sign_opGames,ol,1450);
+            this.addSprite(spriteList.sign_zzfx,ol,850);
+            this.addSprite(spriteList.sign_avalanche,ol);
+            
+            // right
+            const or = width+100;
+            this.addSprite(spriteList.sign_frankForce,or,1500);
+            this.addSprite(spriteList.sign_github,or,350);
+            this.addSprite(spriteList.sign_js13k,or);
+            if (js13kBuild)
+                random.seed = 1055752394; // hack, reset seed for js13k
+        }
+    }
+
+    getWind()
+    {
+        const offset = this.offset;
+        const noiseScale = .001;
+        return Math.sin(time+(offset.x+offset.z)*noiseScale)/2;
+    }
+
+    addSprite(sprite,x=0,y=0,extraScale=1)
+    {
+        // add a sprite to the track as a new track object 
+        const offset = vec3(x,y);
+        const sizeScale = extraScale*sprite.getRandomSpriteScale();
+        const color = sprite.getRandomSpriteColor();
+        const trackObject = new TrackObject(this, sprite, offset, color, sizeScale);
+        this.trackObjects.push(trackObject);
+    }
+}
+
+// get lerped info about a track segment
+class TrackSegmentInfo
+{
+    constructor(z)
+    {
+        const segment = this.segmentIndex = z/trackSegmentLength|0;
+        const percent = this.percent = z/trackSegmentLength%1;
+        if (track[segment] && track[segment+1])
+        {
+            if (track[segment].pos && track[segment+1].pos)
+                this.pos = track[segment].pos.lerp(track[segment+1].pos, percent);
+            else
+                this.pos = vec3(0,0,z);
+            this.pitch = lerp(percent, track[segment].pitch, track[segment+1].pitch);
+            this.offset = track[segment].offset.lerp(track[segment+1].offset, percent);
+            this.width = lerp(percent, track[segment].width,track[segment+1].width);
+        }
+        else
+            this.offset = this.pos = vec3(this.pitch = this.width = 0,0,z);
+    }
+}

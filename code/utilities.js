@@ -66,8 +66,8 @@ class Vector3
         this.x=x; this.y=y; this.z=z; 
     }
     copy() { return vec3(this.x, this.y, this.z); }
-    abs() { return vec3(abs(this.x), abs(this.y), abs(this.z)); }
     add(v) { ASSERT_VEC3(v); return vec3(this.x + v.x, this.y + v.y, this.z + v.z); }
+    addSelf(v) { ASSERT_VEC3(v); this.x += v.x, this.y += v.y, this.z += v.z; return this }
     subtract(v) { ASSERT_VEC3(v); return vec3(this.x - v.x, this.y - v.y, this.z - v.z); }
     multiply(v) { ASSERT_VEC3(v); return vec3(this.x * v.x, this.y * v.y, this.z * v.z); }
     divide(v) { ASSERT_VEC3(v); return vec3(this.x / v.x, this.y / v.y, this.z / v.z); }
@@ -80,13 +80,9 @@ class Vector3
     clampLength(length=1) { const l = this.length(); return l > length ? this.scale(length/l) : this; }
     dot(v) { ASSERT_VEC3(v); return this.x*v.x + this.y*v.y + this.z*v.z; }
     angleBetween(v) { ASSERT_VEC3(v); return Math.acos(clamp(this.dot(v), -1, 1)); }
-    max(v) { ASSERT_VEC3(v); return vec3(max(this.x, v.x), max(this.y, v.y), max(this.z, v.z)); }
-    min(v) { ASSERT_VEC3(v); return vec3(min(this.x, v.x), min(this.y, v.y), min(this.z, v.z)); }
-    floor() { return vec3(floor(this.x), floor(this.y), floor(this.z)); }
-    round() { return vec3(Math.round(this.x), Math.round(this.y), Math.round(this.z)); }
     clamp(a, b) { return vec3(clamp(this.x, a, b), clamp(this.y, a, b), clamp(this.z, a, b)); }
     cross(v) { ASSERT_VEC3(v); return vec3(this.y*v.z-this.z*v.y, this.z*v.x-this.x*v.z, this.x*v.y-this.y*v.x); }
-    lerp(v, p) { ASSERT_VEC3(v); return this.add(v.subtract(this).scale(clamp(p))); }
+    lerp(v, p) { ASSERT_VEC3(v); return v.subtract(this).scale(clamp(p)).addSelf(this); }
     rotateX(a)
     {
         const c=Math.cos(a), s=Math.sin(a); 

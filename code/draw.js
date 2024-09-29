@@ -395,7 +395,7 @@ class Mesh
 function pushGradient(pos, size, color, color2)
 {
     const mesh = quadMesh;
-    const points = mesh.points.map(p=>p.multiply(size).add(pos));
+    const points = mesh.points.map(p=>p.multiply(size).addSelf(pos));
     const colors = [color, color, color2, color2];
     glPushColoredVerts(points, colors);
 }

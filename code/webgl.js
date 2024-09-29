@@ -214,6 +214,8 @@ function glCreateProjectionMatrix(fov=.5, near = 1, far = 1e4)
 ///////////////////////////////////////////////////////////////////////////////
 // drawing functions
 
+const vectorOne = vec3(1); // no lighting/texture
+
 // push a list of colored verts with optonal normals and uvs
 function glPushVerts(points, normals, color, uvs)
 {
@@ -221,7 +223,7 @@ function glPushVerts(points, normals, color, uvs)
     if (!(count < gl_MAX_BATCH - glBatchCount))
         glRender();
 
-    const na = vec3(1); // no lighting/texture
+    const na = vectorOne; // no lighting/texture
     for(let i=count; i--;)
         glPushVert(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
 }
@@ -235,7 +237,7 @@ function glPushVertsCapped(points, normals, color, uvs)
     if (!(count+2 < gl_MAX_BATCH - glBatchCount))
         glRender();
 
-    const na = vec3(1); // no lighting/texture
+    const na = vectorOne; // no lighting/texture
     glPushVert(points[count-1], na, na, color);
     for(let i=count; i--;)
         glPushVert(points[i], normals ? normals[i] : na, uvs ? uvs[i] : na, color);
@@ -250,7 +252,7 @@ function glPushColoredVerts(points, colors)
     if (!(count+2 < gl_MAX_BATCH - glBatchCount))
         glRender();
 
-    const na = vec3(1); // no lighting/texture
+    const na = vectorOne; // no lighting/texture
     glPushVert(points[count-1], na, na, colors[count-1]);
     for(let i=count; i--;)
         glPushVert(points[i], na, na, colors[i]);

@@ -31,7 +31,7 @@ const drawDistance = 1e3;          // how many track segments to draw
 const cameraPlayerOffset = vec3(0,680,1050);
 const checkpointTrackSegments = testQuick?1e3:4500;
 const checkpointDistance = checkpointTrackSegments*trackSegmentLength;
-const startCheckpointTime = 50;
+const startCheckpointTime = 45;
 const extraCheckpointTime = 40;
 const levelLerpRange = .1;
 const levelGoal = 10;
@@ -129,13 +129,6 @@ function gameStart()
 
 function gameUpdateInternal()
 {
-    if (document.hasFocus())
-    {
-        if (autoFullscreen && !isFullscreen())
-            toggleFullscreen();
-        autoFullscreen = 0;
-    }
-
     if (titleScreenMode)
     {
         // update title screen
@@ -242,7 +235,6 @@ function gameUpdateInternal()
 
 function gameUpdate(frameTimeMS=0)
 {
-    requestAnimationFrame(gameUpdate);
     if (!clampAspectRatios)
         mainCanvasSize = vec3(mainCanvas.width=innerWidth, mainCanvas.height=innerHeight);
     else
@@ -361,6 +353,7 @@ function gameUpdate(frameTimeMS=0)
     touchGamepadRender();
     drawHUD();
     debugDraw();
+    requestAnimationFrame(gameUpdate);
 }
 
 function enhancedModeUpdate()
@@ -368,7 +361,14 @@ function enhancedModeUpdate()
     if (!enhancedMode)
         return;
 
-    if (autoPause && !document.hasFocus() && !titleScreenMode && !isTouchDevice)
+    if (document.hasFocus())
+    {
+        if (autoFullscreen && !isFullscreen())
+            toggleFullscreen();
+        autoFullscreen = 0;
+    }
+
+    if (!titleScreenMode && !isTouchDevice && autoPause && !document.hasFocus())
         paused = 1; // pause when losing focus
 
     if (keyWasPressed('Home')) // dev mode

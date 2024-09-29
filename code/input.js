@@ -15,7 +15,7 @@ const keyWasPressed  = (key) => inputData[key] & 2 ? 1 : 0;
 const keyWasReleased = (key) => inputData[key] & 4 ? 1 : 0;
 const clearInput = () => inputData = [];
 
-let mousePos;
+let mousePos = vec3();
 const mouseIsDown      = keyIsDown;
 const mouseWasPressed  = keyWasPressed;
 const mouseWasReleased = keyWasReleased;
@@ -35,9 +35,6 @@ let inputData = []; // track what keys are down
 
 function inputInit()
 {
-    if (!js13kBuildLevel2)
-        mousePos = vec3();
-
     if (gamepadsEnable)
     {
         gamepadData = [];

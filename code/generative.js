@@ -437,7 +437,7 @@ function generateTetures()
         // road signs
         setupContext(0,5); // turn left
         {
-            drawSignBackground(.5,.5,WHITE,BLACK,.04,GRAY,.3,.3,1);
+            drawSignBackground(.5,.5,WHITE,BLACK,.05,GRAY,.3,.3,1);
             color(BLACK);
             triangle(.42,.5,.12,-PI/2)
             context.lineWidth=.09;

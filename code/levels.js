@@ -17,7 +17,7 @@ function initLevelInfos()
     LI.horizonSpriteSize = .5;
     //LI.tunnel = spriteList.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
-    LI.trafficDensity = .7; // less traffic start
+    //LI.trafficDensity = .7; // less traffic start
     
     // mostly straight with few well defined turns or bumps
     LI.turnChance = .6;
@@ -117,7 +117,7 @@ function initLevelInfos()
     LI.sunHeight = .7;
     LI.hazardType = spriteList.hazard_rocks;
     LI.hazardChance = .002;
-    LI.trafficDensity = js13kBuildLevel2 ? 1.5 : 1.2; // extra traffic through snow
+    LI.trafficDensity = 1.2; // extra traffic through snow
 
     // snowy mountains
     //LI.turnChance = .5;

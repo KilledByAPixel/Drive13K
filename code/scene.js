@@ -30,7 +30,7 @@ function drawSky()
         // top/bottom gradient
         const skyColorTop = levelInfoLast.skyColorTop.lerp(levelInfo.skyColorTop, levelLerpPercent);
         const skyColorBottom = levelInfoLast.skyColorBottom.lerp(levelInfo.skyColorBottom, levelLerpPercent);
-        pushGradient(cameraPos.add(vec3(0,skyH,skyZ)), vec3(skyW,skyH), skyColorTop,  skyColorBottom);
+        pushGradient(vec3(0,skyH,skyZ).addSelf(cameraPos), vec3(skyW,skyH), skyColorTop,  skyColorBottom);
         
         // light settings from sky
         glLightDirection = vec3(0,1,1).rotateY(worldHeading).normalize();
@@ -51,7 +51,7 @@ function drawSky()
         for(let i=0;i<1;i+=.05)
         {
             sunColor.a = i?(1-i)**7:1;
-            pushSprite(cameraPos.add(vec3( x*headingScale, sunHeight, skyZ)), vec3(sunSize*(1+i*30)), sunColor, i?dotSpriteTile:circleSpriteTile);
+            pushSprite(vec3( x*headingScale, sunHeight, skyZ).addSelf(cameraPos), vec3(sunSize*(1+i*30)), sunColor, i?dotSpriteTile:circleSpriteTile);
         }
     }
 
@@ -68,7 +68,7 @@ function drawSky()
         x = mod(x,range) - range/2;
         const y = random.float(skyTop);
         const s = random.float(3e2,8e2);
-        pushSprite(cameraPos.add(vec3( x, y, skyZ)), vec3(s*cloudWidth,s*cloudHeight), cloudColor, dotSpriteTile)
+        pushSprite(vec3( x, y, skyZ).addSelf(cameraPos), vec3(s*cloudWidth,s*cloudHeight), cloudColor, dotSpriteTile)
     }
 
     // parallax
@@ -83,7 +83,7 @@ function drawSky()
         const levelTransition = levelFloat<.5 || levelFloat > levelGoal-.5 ? 1 : levelPercent < ltt ? (levelPercent/ltt)**ltp : 
                 levelPercent > 1-ltt ? 1-((levelPercent-1)/ltt+1)**ltp : 1;
             
-        const parallax = lerp(p, 1.01, 1.07);
+        const parallax = lerp(p, 1.01, 1.1);
         const s = random.float(1e2,2e2)*horizonSpriteSize;
         const size = vec3(random.float(1,2)*(horizonSprite.canMirror ? s*random.sign() : s),s,s);
         const x = mod(worldHeading*headingScale/parallax + random.float(range),range) - range/2;
@@ -97,7 +97,7 @@ function drawSky()
         }
         const y = lerp(levelTransition, -yMax*1.5, yMax);
         const c = horizonSprite.getRandomSpriteColor();
-        pushSprite(cameraPos.add(vec3( x, y, skyZ)), size, c, horizonSpriteTile);
+        pushSprite(vec3( x, y, skyZ).addSelf(cameraPos), size, c, horizonSpriteTile);
     }
 
     {
@@ -111,7 +111,7 @@ function drawSky()
 
         // horizon bottom
         const groundColor = levelInfoLast.groundColor.lerp(levelInfo.groundColor, levelLerpPercent).brighten(.1);
-        pushSprite(cameraPos.add(vec3(0,-skyH,skyZ)), vec3(skyW,skyH), groundColor);
+        pushSprite(vec3(0,-skyH,skyZ).addSelf(cameraPos), vec3(skyW,skyH), groundColor);
     }
 
     glRender();
