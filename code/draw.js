@@ -94,7 +94,7 @@ function initSprites()
 
     // rocks
     spriteList.rock_tall     = new GameSprite(vec3(1,4),1e3,.3,0,.6,0);
-    spriteList.rock_big      = new GameSprite(vec3(2,4),800,.2,0,.6,0);
+    spriteList.rock_big      = new GameSprite(vec3(2,4),800,.2,0,.57,0);
     spriteList.rock_huge     = new GameSprite(vec3(1,4),5e3,.7,0,.6,0);
     spriteList.rock_huge.shadowScale = 0;
     spriteList.rock_huge.colorHSL  = vec3(.08, 1, .8);
