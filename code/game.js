@@ -328,7 +328,7 @@ function gameUpdate(frameTimeMS=0)
         debugUpdate();
         inputUpdate();
     
-        if (debug && !titleScreenMode)
+        if (enhancedMode && !titleScreenMode)
         if (keyWasPressed('KeyP') || isUsingGamepad && gamepadWasPressed(9))
         if (!gameOverTimer.isSet())
         {
