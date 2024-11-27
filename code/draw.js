@@ -12,6 +12,7 @@ const YELLOW = rgb(1,1,0);
 const GREEN  = rgb(0,1,0);
 const CYAN   = rgb(0,1,1);
 const BLUE   = rgb(0,0,1);
+const PURPLE = rgb(.5,0,1);
 const MAGENTA= rgb(1,0,1);
 const GRAY   = rgb(.5,.5,.5);
 let spriteList;
