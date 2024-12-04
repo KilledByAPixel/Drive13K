@@ -322,9 +322,9 @@ function generateTetures()
         //drawGenericSign('GAME BY FRANK FORCE',.25,BLACK,WHITE);
         drawDoubleLineSign('FRANK FORCE','GAME BY',BLACK,0,.42,.2);
         //drawGenericSign('Frank Force Games',.3,undefined,undefined,'monospace');
-        //drawLittleJSSign();
         setupContext(4,2);
-        drawDoubleLineSign('DRIVE','SAFELY',hsl(.35,1,.2));
+        //drawDoubleLineSign('DRIVE','SAFELY',hsl(.35,1,.2));
+        drawLittleJSSign();
         setupContext(5,2);
         drawOPSign();
         //drawGenericSign('VOTE',.5,WHITE,hsl(0,.9,.4),hsl(.6,.9,.3),0,'impact');
@@ -1023,9 +1023,9 @@ function generateTetures()
 
     function drawLittleJSSign()
     {
-        drawSignBackground(1,.7,WHITE,BLACK,.05,WHITE,0);
-        ljsText('LittleJS',0.05,.25);
-        ljsText('Engine',0.11,.5,2);
+        drawSignBackground(1,.7,WHITE,BLACK,.05,WHITE,.4,.2);
+        ljsText('LittleJS',0.05,.45);
+        ljsText('Engine',0.11,.67,2);
         function ljsText(t,x,y,o=0)
         {
             for(let i=0; i<t.length; ++i)
