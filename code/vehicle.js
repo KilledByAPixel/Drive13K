@@ -379,8 +379,10 @@ class PlayerVehicle extends Vehicle
             if (v != this && abs(d.x) < s.x && abs(d.z) < s.z)
             {
                 // collision
+                const oldV = this.velocity.z;
                 this.velocity.z = v.velocity.z/2;
-                v.velocity.z = max(v.velocity.z, this.velocity.z*1.5); // push other car
+                //console.log(v.velocity.z, oldV*.9);
+                v.velocity.z = max(v.velocity.z, oldV*.9); // push other car
                 this.velocity.x = 99*sign(d.x); // push away from car
                 playHitSound();
             }
@@ -537,7 +539,7 @@ class PlayerVehicle extends Vehicle
 
         {
             // turning
-            let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn;
+            let desiredPlayerTurn = startCountdown ? 0 : playerInputTurn;
             if (testDrive)
             {
                 desiredPlayerTurn = clamp(-this.pos.x/2e3, -1, 1);
@@ -568,7 +570,7 @@ class PlayerVehicle extends Vehicle
 
         if (playerWin)
             this.drawTurn = lerp(gameOverTimer.get(), this.drawTurn, -1);
-        if (startCountdown > 0)
+        if (startCountdown)
             this.velocity.z = 0; // wait to start
         if (gameOverTimer.isSet())
             this.velocity = this.velocity.scale(.95);
