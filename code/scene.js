@@ -44,7 +44,7 @@ function drawSky()
     const dotSpriteTile = spriteList.dot.spriteTile;
     { 
         // sun
-        const sunSize = 1e2;
+        const sunSize = 2e2;
         const sunHeight = skyTop*lerp(levelLerpPercent, levelInfoLast.sunHeight, levelInfo.sunHeight);
         const sunColor = levelInfoLast.sunColor.lerp(levelInfo.sunColor, levelLerpPercent);
         const x = mod(worldHeading+PI,2*PI)-PI;
