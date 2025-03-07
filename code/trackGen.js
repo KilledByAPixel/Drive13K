@@ -144,7 +144,10 @@ function buildTrack()
         }
 
         if (t.sideStreet || i < 50)
+        {
+            tunnelOn = 0;
             continue; // no objects on side streets
+        }
 
         // check what kinds of turns are ahead
         const lookAheadTurn = 150;
