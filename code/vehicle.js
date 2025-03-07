@@ -413,7 +413,7 @@ class PlayerVehicle extends Vehicle
         if (mouseControl || mouseIsDown(0))
         {
             mouseControl = 1;
-            playerInputTurn = clamp(10*(mousePos.x-.5),-1,1);
+            playerInputTurn = clamp(5*(mousePos.x-.5),-1,1);
             playerInputGas = mouseIsDown(0);
             playerInputBrake = mouseIsDown(2);
 
@@ -437,28 +437,35 @@ class PlayerVehicle extends Vehicle
         this.engineTime += sound_velocity*sound_velocity/5e4;
         if (this.engineTime > 1)
         {
-            --this.engineTime;
+            if (--this.engineTime > 1)
+                this.engineTime = 0;
             const f = sound_velocity;
             sound_engine.play(.1,f*f/4e3+rand(.1));
         }
 
-        // player settings
-        const forwardDamping = .9978;  // dampen player z speed
-        const playerTurnControl = .4  // player turning rate
-        const gravity = -3;           // gravity to apply in y axis
-        const lateralDamping = .5;    // dampen player x speed
-        const playerAccel = 1;        // player acceleration
-        const playerBrake = 3;        // player acceleration when braking
-        const playerMaxSpeed = 200;   // limit max player speed
-        const speedPercent = this.velocity.z/playerMaxSpeed;
-
-        // update physics
-        this.velocity.y += gravity;
-        this.velocity.x *= lateralDamping;
-        this.pos.addSelf(this.velocity);
-
         const playerTrackInfo = new TrackSegmentInfo(this.pos.z);
         const playerTrackSegment = playerTrackInfo.segmentIndex;
+
+        // gravity
+        const gravity = -3;           // gravity to apply in y axis
+        this.velocity.y += gravity;
+
+        // player settings
+        const forwardDamping = .9978;  // dampen player z speed
+        const lateralDamping = .5;    // dampen player x speed
+        const playerAccel = 1;        // player acceleration
+        const playerBrake = 2;        // player acceleration when braking
+        const playerMaxSpeed = 200;   // limit max player speed
+        const speedPercent = this.velocity.z/playerMaxSpeed;
+        const centrifugal = .5;  
+
+        // update physics
+        const velocityAdjusted = this.velocity.copy();
+        const trackHeadingScale = 20;
+        const trackHeading = Math.atan2(trackHeadingScale*playerTrackInfo.offset.x, trackSegmentLength);
+        const trackScaling = 1 / (1 + (this.pos.x/(2*laneWidth)) * Math.tan(-trackHeading));
+        velocityAdjusted.z *= trackScaling;
+        this.pos.addSelf(velocityAdjusted);
 
         // clamp player x position
         const maxPlayerX = playerTrackInfo.width + 500;
@@ -506,7 +513,7 @@ class PlayerVehicle extends Vehicle
                 //const lowSpeedPercent = this.velocity.z**2/1e4;                
                 const lowSpeedPercent = percent(this.velocity.z, 150, 0)**2;
                 const accel = playerInputGas*playerAccel*lerp(speedPercent, 1, .5)
-                    * lerp(lowSpeedPercent, 1, 9);
+                    * lerp(lowSpeedPercent, 1, 3);
                     //console.log(lerp(lowSpeedPercent, 1, 9))
 
                 // apply acceleration in angle of road
@@ -519,6 +526,7 @@ class PlayerVehicle extends Vehicle
                 
             // dampen z velocity & clamp
             this.velocity.z = max(0, this.velocity.z*forwardDamping);
+            this.velocity.x *= lateralDamping;
         }
         else
         {
@@ -529,72 +537,33 @@ class PlayerVehicle extends Vehicle
 
         {
             // turning
-            let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn * playerTurnControl;
+            let desiredPlayerTurn = startCountdown > 0 ? 0 : playerInputTurn;
             if (testDrive)
             {
                 desiredPlayerTurn = clamp(-this.pos.x/2e3, -1, 1);
                 this.pos.x = clamp(this.pos.x, -playerTrackInfo.width, playerTrackInfo.width);
             }
-
-            const playerMaxTurnStart = 50; // fade on turning visual
-            const turnVisualRamp = clamp(this.velocity.z/playerMaxTurnStart);
-            this.wheelTurn = lerp(.1, this.wheelTurn, 1.5*desiredPlayerTurn);
-            this.playerTurn = lerp(.05, this.playerTurn, desiredPlayerTurn);
-            this.drawTurn = lerp(turnVisualRamp*turnVisualRamp,this.drawTurn,this.playerTurn);
-
-            // fade off turn at top speed
-            const turnStrength = 1.8;
-            const physicsTurn = this.onGround ?this.playerTurn*turnStrength*lerp(speedPercent, 1, .5) : 0;
-
-            // apply turn velocity
-            const centrifugal = .04;       // how much to pull player on turns
-            const turnPow = 1.5;
-            this.velocity.x += 
-                this.velocity.z * physicsTurn -
-                this.velocity.z ** turnPow * centrifugal * playerTrackInfo.offset.x;
-
-
-            /* // slip test
-
+  
+            // scale desired turn input
+            desiredPlayerTurn *= .4;
             const playerMaxTurnStart = 50; // fade on turning visual
             const turnVisualRamp = clamp(this.velocity.z/playerMaxTurnStart,0,.1);
-            this.wheelTurn = lerp(.1, this.wheelTurn, 1.5*desiredPlayerTurn);
-            this.playerTurn = lerp(.1, this.playerTurn, desiredPlayerTurn);
+            this.wheelTurn = lerp(.1, this.wheelTurn, 1.3*desiredPlayerTurn);
+            this.playerTurn = lerp(.05, this.playerTurn, desiredPlayerTurn);
+            this.drawTurn = lerp(turnVisualRamp, this.drawTurn, this.playerTurn);
+            
+            // centripetal force
+            const centripetalForce = -velocityAdjusted.z * playerTrackInfo.offset.x * centrifugal;
+            this.pos.x += centripetalForce
 
-            // fade off turn at top speed
-            const turnStrength = .02;
-           // const physicsTurn = this.onGround ?this.playerTurn*turnStrength*lerp(speedPercent, 1, .5) : 0;
+            // apply turn velocity and slip
+            const physicsTurn = this.onGround ? this.playerTurn : 0;
+            const maxStaticFriction = 30;
+            const slip = maxStaticFriction/max(maxStaticFriction,abs(centripetalForce));
 
-            const physicsTurn = this.playerTurn*turnStrength;
-
-            // apply turn velocity
-
-            const centrifugal = .5;  
-            const centripetalForce = -this.velocity.z * playerTrackInfo.offset.x * centrifugal;
-            const turnForce = 50*this.velocity.z * physicsTurn;
-
-            const maxStaticFriction = 40;
-
-            //const deltaX = turnForce + centripetalForce;;
-
-            let slip = 1;
-
-            if (abs(centripetalForce) > maxStaticFriction)
-            {
-                let s = abs(centripetalForce) / maxStaticFriction;
-                slip = 1/s;
-                //slip = slip**2
-                console.log(abs(centripetalForce), slip)
-            }
-
-            this.velocity.x += turnForce*slip + centripetalForce;
-
-            const slipVis = lerp(percent(slip, 1, .5),1,1.5)
-
-            this.drawTurn = lerp(turnVisualRamp,
-                this.drawTurn, (this.playerTurn)*slipVis);
-
-            */
+            const turnStrength = .8;
+            const turnForce = turnStrength * physicsTurn * this.velocity.z;
+            this.velocity.x += turnForce*slip;
         }
 
         if (playerWin)

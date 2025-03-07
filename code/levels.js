@@ -323,9 +323,9 @@ function initLevelInfos()
     }
 
     // mountains, most difficult level
-    LI.turnChance = .8;
+    LI.turnChance = LI.turnMax = .8;
     //LI.turnMin = 0;
-    LI.turnMax = LI.bumpChance = 1;
+    LI.bumpChance = 1;
     LI.bumpFreqMin = .3;
     LI.bumpFreqMax = .9;
     //LI.bumpScaleMin = 50;

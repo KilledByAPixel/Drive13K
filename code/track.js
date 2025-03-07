@@ -127,6 +127,9 @@ function drawTrackScenery()
 
         // random scenery
         const levelInfo = getLevelInfo(trackSegment.level);
+        const levelFloat = trackSegment.offset.z/checkpointDistance;
+        const levelInfoNext = getLevelInfo(levelFloat+1);
+        const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
         const w = trackSegment.width;
         if (!trackSegment.sideStreet) // no sprites on side streets
         for(let k=3;k--;)
@@ -149,9 +152,6 @@ function drawTrackScenery()
             else
             {
                 // lerp in next level scenery at end
-                const levelFloat = trackSegment.offset.z/checkpointDistance;
-                const levelInfoNext = getLevelInfo(levelFloat+1);
-                const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
                 const sceneryLevelInfo = random.bool(levelLerpPercent) ? levelInfoNext : levelInfo;
                 
                 // scenery on far side like grass and flowers
