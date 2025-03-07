@@ -324,7 +324,7 @@ function generateTetures()
         //drawGenericSign('Frank Force Games',.3,undefined,undefined,'monospace');
         setupContext(4,2);
         //drawDoubleLineSign('DRIVE','SAFELY',hsl(.35,1,.2));
-        drawLittleJSSign();
+        //drawLittleJSSign();
         setupContext(5,2);
         drawOPSign();
         //drawGenericSign('VOTE',.5,WHITE,hsl(0,.9,.4),hsl(.6,.9,.3),0,'impact');

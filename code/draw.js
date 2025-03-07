@@ -80,7 +80,7 @@ function initSprites()
     PB(spriteList.sign_zzfx      = new GameSprite(vec3(1,2),500,0,.02,.5,0));
     PB(spriteList.sign_avalanche = new GameSprite(vec3(7,2),600,0,.02,1,0));
     PB(spriteList.sign_github    = new GameSprite(vec3(2,2),750,0,.02,.5,0));
-    PB(spriteList.sign_littlejs  = new GameSprite(vec3(4,2),600,0,.02,1,0));
+    //PB(spriteList.sign_littlejs  = new GameSprite(vec3(4,2),600,0,.02,1,0));
     spriteList.sign_frankForce   = new GameSprite(vec3(3,2),500,0,.02,1,0);
     //PB(spriteList.sign_dwitter   = new GameSprite(vec3(6,2),550,0,.02,1,0));
     
