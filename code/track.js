@@ -131,6 +131,16 @@ function drawTrackScenery()
         const levelInfoNext = getLevelInfo(levelFloat+1);
         const levelLerpPercent = percent(levelFloat%1, 1-levelLerpRange, 1);
         const w = trackSegment.width;
+    
+        if (enhancedMode && trackSegment.level == 3)
+        {
+            // snow
+            const x = random.floatSign(1e4);
+            const h = 1e4;
+            const y = h-(random.float(h)+time*2e3)%h;
+            pushSprite(vec3(x + 1e3*trackSegment.getWind(),y).addSelf(trackSegment.pos), vec3(50), WHITE, spriteList.dot.spriteTile);
+        }
+        
         if (!trackSegment.sideStreet) // no sprites on side streets
         for(let k=3;k--;)
         {

@@ -453,7 +453,7 @@ class PlayerVehicle extends Vehicle
         this.velocity.y += gravity;
 
         // player settings
-        const forwardDamping = .9978;  // dampen player z speed
+        const forwardDamping = .998;  // dampen player z speed
         const lateralDamping = .5;    // dampen player x speed
         const playerAccel = 1;        // player acceleration
         const playerBrake = 2;        // player acceleration when braking
@@ -592,16 +592,12 @@ class PlayerVehicle extends Vehicle
                     if (!trackObject.collideSize)
                         continue;
 
+                    // check for overlap
                     const pos = trackSegment.offset.add(trackObject.offset);
                     const dp = this.pos.subtract(pos);
-
-                    const csx = 230+trackObject.collideSize; // js13k hack
+                    const csx = this.collisionSize.x+trackObject.collideSize;
                     if (abs(dp.z) > 430 || abs(dp.x) > csx)
                         continue;
-
-                    //const cs = vec3(trackObject.collideSize,0,50),addSelf(this.collisionSize);
-                    //if (abs(dp.z) > cs.z || abs(dp.x) > cs.x)// js13k hack
-                    //    continue;
 
                     if (trackObject.sprite.isBump)
                     {

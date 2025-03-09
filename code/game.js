@@ -394,12 +394,13 @@ function enhancedModeUpdate()
 function updateCamera()
 {
     // update camera
+    const lastCameraOffset = cameraOffset;
     cameraOffset = playerVehicle.pos.z - cameraPlayerOffset.z;
     const cameraTrackInfo = new TrackSegmentInfo(cameraOffset);
     const playerTrackInfo = new TrackSegmentInfo(playerVehicle.pos.z);
 
     // update world heading based on speed and track turn
-    const v = playerVehicle.velocity.z;
+    const v = cameraOffset - lastCameraOffset;
     worldHeading += v*cameraTrackInfo.offset.x/turnWorldScale;
 
     // put camera above player
