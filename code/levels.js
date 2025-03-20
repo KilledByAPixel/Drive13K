@@ -111,7 +111,7 @@ function initLevelInfos()
     LI.trackSideRate = 21;
     LI.skyColorTop = hsl(.5,.2,.4);
     LI.skyColorBottom = WHITE;
-    LI.roadColor = hsl(0,0,.5,.3);
+    LI.roadColor = hsl(0,0,.5,.5);
     LI.groundColor = hsl(.6,.3,.9);
     LI.cloudColor = hsl(0,0,.8,.5);
     LI.horizonSpriteSize = 2;

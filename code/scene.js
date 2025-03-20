@@ -34,8 +34,8 @@ function drawSky()
         
         // light settings from sky
         glLightDirection = vec3(0,1,1).rotateY(worldHeading).normalize();
-        glLightColor = skyColorTop.lerp(WHITE,.8).lerp(BLACK,.3);
-        glAmbientColor = skyColorBottom.lerp(WHITE,.8).lerp(BLACK,.3);
+        glLightColor = skyColorTop.lerp(WHITE,.8).lerp(BLACK,.1);
+        glAmbientColor = skyColorBottom.lerp(WHITE,.8).lerp(BLACK,.6);
         glFogColor = skyColorBottom.lerp(WHITE,.5);
     }
 

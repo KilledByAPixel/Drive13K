@@ -41,15 +41,6 @@ function glInit()
     glContext = glCanvas.getContext('webgl2', {alpha: hasAlpha});
     ASSERT(glContext, 'Failed to create WebGL canvas!');
 
-    // epxeriment with adding specular lighting to the scene
-    const specularLightingCode = `float shininess = 64.;
-            vec3 normal = normalize((transpose(inverse(o))*n).xyz);
-            vec3 viewPos = vec3(0,680,0);
-            vec3 viewDir = normalize(viewPos - vec3(gl_Position.xyz));
-            vec3 halfwayDir = normalize(l.xyz + viewDir);
-            float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
-            d=vec4(spec*g.xyz,0.)+c*(a+vec4(g.xyz*dot(l.xyz,normal),1));`;
-
     // setup vertex and fragment shaders
     glShader = glCreateProgram(
         '#version 300 es\n' +     // specify GLSL ES version
@@ -61,9 +52,8 @@ function glInit()
         'void main(){'+           // shader entry point
         'gl_Position=m*o*p;'+     // transform position
         'v=u,q=f;'+               // pass uv and fog to fragment shader
-        (glSpecular ? specularLightingCode : // specular lighting test
-            'd=c*vec4(a.xyz+g.xyz*dot(l.xyz,'+                  // lighting
-            'normalize((transpose(inverse(o))*n).xyz)),1);') +  // transform light
+        'd=c*vec4(a.xyz+g.xyz*max(0.,dot(l.xyz,'+                  // lighting
+        'normalize((transpose(inverse(o))*n).xyz))),1);' +  // transform light
         '}'                       // end of shader
         ,
         '#version 300 es\n' +            // specify GLSL ES version
