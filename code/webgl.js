@@ -262,7 +262,7 @@ function glPushColoredVerts(points, colors)
 // push a single vert to the buffer
 function glPushVert(pos, normal, uv, color)
 {
-    let offset = glBatchCount * gl_INDICIES_PER_VERT;
+    let offset = glBatchCount++ * gl_INDICIES_PER_VERT;
     glVertexData[offset++] = pos.x/glRenderScale;
     glVertexData[offset++] = pos.y/glRenderScale;
     glVertexData[offset++] = pos.z/glRenderScale;
@@ -279,7 +279,6 @@ function glPushVert(pos, normal, uv, color)
     glVertexData[offset++] = color.g;
     glVertexData[offset++] = color.b;
     glVertexData[offset++] = color.a;
-    ++glBatchCount;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -13,8 +13,8 @@ function initLevelInfos()
         spriteList.tree_palm,
         spriteList.rock_big,
     ], spriteList.tree_palm);
+    LI.horizonSpriteSize = .7;
     LI.waterSide = -1;
-    LI.horizonSpriteSize = .5;
     //LI.tunnel = spriteList.tunnel2; // test tunnel
     LI.billboardChance = .3 // more billboards at start
     //LI.trafficDensity = .7; // less traffic start
@@ -39,6 +39,7 @@ function initLevelInfos()
         spriteList.grass_flower3,
         spriteList.grass_flower2,
     ], spriteList.tree_bush, spriteList.horizon_smallMountains);
+    LI.horizonSpriteSize = 10;
     LI.trackSideRate = 10;
     LI.sceneryListBias = 9;
     //LI.skyColorTop = WHITE;
@@ -106,13 +107,14 @@ function initLevelInfos()
         spriteList.rock_big,
         spriteList.tree_stump,
     ], spriteList.tree_snow, spriteList.horizon_snow);
-    LI.trackSideRate = 31;
+    LI.sceneryListBias = 9;
+    LI.trackSideRate = 21;
     LI.skyColorTop = hsl(.5,.2,.4);
     LI.skyColorBottom = WHITE;
     LI.roadColor = hsl(0,0,.5,.3);
     LI.groundColor = hsl(.6,.3,.9);
     LI.cloudColor = hsl(0,0,.8,.5);
-    LI.horizonSpriteSize = 3;
+    LI.horizonSpriteSize = 2;
     LI.lineColor = hsl(0,0,1,.5);
     LI.sunHeight = .7;
     LI.hazardType = spriteList.hazard_rocks;
@@ -183,7 +185,7 @@ function initLevelInfos()
     //LI.cloudHeight = .3;
     LI.billboardRate = 23; // more billboards in city
     LI.billboardChance = .5
-    LI.horizonSpriteSize = 1;
+    LI.horizonSpriteSize = 1.5;
     if (!js13kBuildLevel2)
         LI.horizonFlipChance = .3;
     LI.sunHeight = .5;
@@ -319,7 +321,7 @@ function initLevelInfos()
     {
         LI.sunHeight = .6;
         LI.horizonSprite = spriteList.horizon_mountains
-        LI.horizonSpriteSize = .5;
+        LI.horizonSpriteSize = 1;
     }
 
     // mountains, most difficult level
@@ -352,7 +354,7 @@ function initLevelInfos()
     {
         LI.sunHeight = .6;
         LI.horizonSprite = spriteList.horizon_mountains
-        LI.horizonSpriteSize = .5;
+        LI.horizonSpriteSize = 1;
     }
 }
 

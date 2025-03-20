@@ -46,7 +46,7 @@ class Vehicle
     {
         this.pos = vec3(0,0,z);
         this.color = color;
-        this.isBraking = 0;
+        this.isBraking =
         this.drawTurn = 
         this.drawPitch = 
         this.wheelTurn = 0;
@@ -136,7 +136,7 @@ class Vehicle
                 if (this.pos.z >= v.pos.z)
                     this.destroyed = 1; // get rid of overlaps
                 this.velocity.z = min(this.velocity.z, v.velocity.z++); // clamp velocity & push
-                this.isBraking = 20;
+                this.isBraking = 30;
                 break;
             }
         }
@@ -482,23 +482,18 @@ class PlayerVehicle extends Vehicle
             const trackPitch = playerTrackInfo.pitch;
             this.drawPitch = lerp(.2,this.drawPitch, trackPitch);
         
-            // bounce elasticity (2 is full bounce, 1 is none)
-            const elasticity = 1.2;            
-            
             // bounce off track
-            // todo use vector math
-            const reflectVelocity = vec3(0, Math.cos(trackPitch), Math.sin(trackPitch))
-            .scale(-elasticity *
-            (Math.cos(trackPitch) * this.velocity.y + Math.sin(trackPitch) * this.velocity.z));
+            const trackNormal = vec3(0, 1, 0).rotateX(trackPitch);
+            const elasticity = 1.2;    
+            const normalDotVel = this.velocity.dot(trackNormal);
+            const reflectVelocity = trackNormal.scale(-elasticity * normalDotVel);
 
             if (!gameOverTimer.isSet()) // dont roll in game over
                 this.velocity.addSelf(reflectVelocity);
-
             if (!wasOnGround)
             {
                 const p = percent(reflectVelocity.length(), 20, 80);
                 sound_bump.play(p*2,.5);
-                this.onGround = 1;
             }
 
             const trackSegment = track[playerTrackSegment];    

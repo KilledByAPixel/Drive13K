@@ -31,7 +31,7 @@ function initSprites()
     spriteList.tree_palm.trackFace = 1;
     spriteList.tree_oak    = new GameSprite(vec3(1,1),2e3,.5,.06,.1);
     spriteList.tree_stump  = new GameSprite(vec3(2,1),1e3,.6,.04);
-    spriteList.tree_dead   = new GameSprite(vec3(3,1),800,.3,.03,.06);
+    spriteList.tree_dead   = new GameSprite(vec3(3,1),1e3,.3,.1,.06);
     spriteList.tree_pink   = new GameSprite(vec3(4,1),1500,.3,.1,.04);
     spriteList.tree_pink.trackFace = 1;
     spriteList.tree_bush   = new GameSprite(vec3(5,1),1e3,.5,.1,.06);

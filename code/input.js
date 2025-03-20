@@ -132,7 +132,7 @@ function gamepadsUpdate()
 {
     const applyDeadZones = (v)=>
     {
-        const min=.3, max=.8;
+        const min=.2, max=.8;
         const deadZone = (v)=> 
             v >  min ?  percent( v, min, max) : 
             v < -min ? -percent(-v, min, max) : 0;

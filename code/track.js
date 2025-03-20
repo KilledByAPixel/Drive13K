@@ -178,9 +178,7 @@ function drawTrackScenery()
                     const p = vec3(o,0).addSelf(trackSegment.pos);
                     const wind = trackSegment.getWind();
                     const color = sprite.getRandomSpriteColor();
-                    const scale = vec3(s);
-                    if (sprite.canMirror && random.bool())
-                        scale.x *= -1;
+                    const scale = vec3(sprite.canMirror && random.bool() ? -s : s,s,s);
                     pushTrackObject(p, scale, color, sprite, wind);
                 }
             }

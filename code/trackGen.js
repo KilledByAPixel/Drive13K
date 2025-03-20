@@ -142,7 +142,7 @@ function buildTrack()
             // reset level settings
             trackSideChanceScale = 1;
         }
-
+        
         if (t.sideStreet || i < 50)
         {
             tunnelOn = 0;

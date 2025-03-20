@@ -78,13 +78,13 @@ function drawSky()
     for(let i=99;i--;)
     {
         const p = i/99;
-        const ltp = lerp(p,1,2);
+        const ltp = lerp(p,1,.5);
         const ltt = .1;
         const levelTransition = levelFloat<.5 || levelFloat > levelGoal-.5 ? 1 : levelPercent < ltt ? (levelPercent/ltt)**ltp : 
                 levelPercent > 1-ltt ? 1-((levelPercent-1)/ltt+1)**ltp : 1;
             
-        const parallax = lerp(p, 1.01, 1.1);
-        const s = random.float(1e2,2e2)*horizonSpriteSize;
+        const parallax = lerp(p, .9, .98);
+        const s = random.float(1e2,2e2)*horizonSpriteSize* lerp(p,1,.5)
         const size = vec3(random.float(1,2)*(horizonSprite.canMirror ? s*random.sign() : s),s,s);
         const x = mod(worldHeading*headingScale/parallax + random.float(range),range) - range/2;
 
