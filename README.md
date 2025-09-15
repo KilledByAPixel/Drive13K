@@ -46,5 +46,5 @@ This github version has some extra features not included in the 13k build.
 - Gamepad support
 - Pause feature
 - Slight gameplay tweaks
-- 
+
 ![Cat Favicon](/favicon.png)
